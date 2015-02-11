@@ -1,0 +1,26 @@
+{
+    "name": "edysanchez/mathtrade",
+    "description": "MathTrade lists helper",
+    "authors": [
+        {
+            "name": "Edgar Sánchez",
+            "email": "edysanchez@gmail.com"
+        }
+    ],
+    "require": {
+        "silex/silex": "~1.2"
+
+    },
+    "require-dev": {
+        "behat/behat": "~3",
+        "behat/gherkin": "*",
+        "fabpot/php-cs-fixer": "0.5.7",
+        "phpmd/phpmd": "2.0.0",
+        "squizlabs/php_codesniffer": "1.5.*",
+        "phpunit/phpunit": "4.2.*"
+    },
+    "config": {
+        "bin-dir": "bin/"
+    }
+
+}
