@@ -8,7 +8,8 @@
         }
     ],
     "require": {
-        "silex/silex": "~1.2"
+        "silex/silex": "~1.2",
+        "twig/twig": "*"
 
     },
     "require-dev": {
