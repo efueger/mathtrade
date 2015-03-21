@@ -80,7 +80,7 @@ define(['views/hb','lib/MC','MT','textcomplete'],function(HB,MC,MT){
 		  			uploaded:function(up, file, info) {
 		                // Called when file has finished uploading
 		                var obj = JSON.parse(info.response);
-		                $('#img').html('<img src="/mathtrade/public/uploads/'+obj.file+'" />');
+		                $('#img').html('<img src="/public/uploads/'+obj.file+'" />');
 		                model.set('img',obj.file,{silent:true});
 		                model.setMedia();
 		                model.trigger('img_added');
