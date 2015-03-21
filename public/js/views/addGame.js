@@ -28,7 +28,7 @@ define(['views/hb','lib/MC','MT','textcomplete'],function(HB,MC,MT){
 			        match: /((.|\s){2,})$/,
 			        search: function (term, callback) {
 			        	$.ajax({
-							url: 'http://mc.dev/api/game',
+							url: 'http://muevecubos.com/api/game',
 							data:{id:term},
 							dataType: "jsonp",
 							jsonp : "jsonp",
