@@ -7,3 +7,5 @@ Tool for helping the user to generate games lists ,wantlists and show mathtrade 
 * Manage a user Want List
 * connectivity with bgg
 
+#Run 
+php -S localhost:8080 -t src/Mathtrade/Infrastructure/Ui/Web/Silex/
