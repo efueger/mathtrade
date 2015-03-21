@@ -25,7 +25,7 @@ define(['views/hb','lib/MC/upload'],function(HB,MC){
 		                else {
 			               	model.get('additional_images').push({
 			               		img:obj.file,
-			               		full_img:'public/uploads/'+obj.file
+			               		full_img:'/public/uploads/'+obj.file
 			               	});
 		                }
 		               	model.trigger('img_added');
