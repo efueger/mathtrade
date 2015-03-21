@@ -8,7 +8,7 @@ define(['lib/MC','plupload'],function(MC,pu){
 			    runtimes : 'html5,flash,html4',
 			    originalId: data.original,
 			    browse_button : id, // you can pass in id...
-			    url : "/mathtrade/public/",
+			    url : "/public/",
 			    flash_swf_url : '../bower_components/plupload/js/Moxie.swf',
 			    init: {
 			        PostInit: function() {
