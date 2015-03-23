@@ -129,7 +129,13 @@
 	<div>
 		{{#each this}}
 		<div class="row">
+			{{#if is_pack}}
+				{{#each packItems}}
+				<img class="col-md-1" src="{{bgg_img}}" />
+				{{/each}}
+			{{else}}
 			<img class="col-md-1" src="{{bgg_img}}" />
+			{{/if}}
 			{{name}}
   		</div>
   		{{/each}}

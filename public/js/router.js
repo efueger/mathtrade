@@ -40,9 +40,10 @@ var Router = Backbone.Router.extend({
 
 	  	list: function() {
 	  		console.log('test');
-	  		require(['jquery','views/mathList','models/items','views/hb'],function($,mathView,Items,HB){
+	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,Items,HB){
 	  			console.log(mathItems);
 	  			var m = new Items(mathItems);
+	  			console.log(m);
 	  			$('#main').html(new mathView({
 	  				model:m,
 	  				nestedViews:{
@@ -50,7 +51,9 @@ var Router = Backbone.Router.extend({
 	  						model:m,
 	  						template:'fullmt-list-template'
 	  					})
-	  				}
+	  				},
+	  				skipchange:true
+
 	  			}).el);
 	  		});
 	  	},
