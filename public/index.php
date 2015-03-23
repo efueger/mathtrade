@@ -10,8 +10,111 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 // ... definitions
 $app->get('/', function (Silex\Application $app) {
     return $app['twig']->render('index.twig', array(
-        'name' => 'edgard',
+        'items' => file_get_contents("mtitems.data"),
     ));
+});
+
+$app->get('/mt', function (Silex\Application $app) {
+	//file_put_contents('test.html', file_get_contents('http://labsk.net/index.php?topic=151319.0'));
+	$html = file_get_contents('test.html');
+
+	$string = preg_replace('/\n/', '', $html);
+
+	preg_match('/"forumposts">(.*)<a id="lastPost/', $string,$match);
+
+	//ini_set('display_errors',0);
+	// print_r($match[1]);
+	// die();
+	preg_match_all('/post_wrapper">(.*?)class="botslice"/', $match[1], $posts);
+
+	//print_r($posts[1][1]);
+	unset($posts[1][0]);
+	$items = array();
+	foreach ( array_slice($posts[1],0,4)  as $post) {
+		$dom = new DOMDocument();
+		ini_set('display_errors',0);
+		$dom->loadHTML('<div>'.$post.'></span>');
+		ini_set('display_errors',1);
+		$xpath = new DomXpath($dom);
+		$innerpost = $xpath->query('//*[@class="inner"]');
+
+		
+		
+		foreach ($innerpost as $el) {
+
+			$nodes = $el->childNodes;
+		    foreach ($nodes as $node) {
+		    	if ($node->nodeName != 'table') continue;
+
+		    	//Skip tablebody
+		    	$gamelist = $node->childNodes;
+
+
+		    	//Check if it's a group
+		    	if ($gamelist->item(0)->childNodes->item(0)->childNodes->item(0)->nodeName == 'strong') {
+			    	$Group = array();
+		    		foreach ($gamelist as $id=>$game) {
+		    			if($id == 0) {
+
+			    			
+			    			foreach ($game->childNodes->item(0)->childNodes as $i=>$grgame) {
+								if ($i<2) continue;
+			    				if ($grgame->nodeName == 'a' ) {
+			    					$GI = new stdClass();
+			    					$GI->name =$grgame->nodeValue;
+				    				$Group[] = $GI;
+			    				}
+			    				else {
+			    					$Group[count($Group)-1]->description = $grgame->nodeValue;
+			    				}
+			    			}
+		    			}
+		    			if($id==1) {
+			    			foreach ($game->childNodes->item(0)->childNodes as $i => $grgame) {
+			    				if ($grgame->nodeName == 'a' ) {
+			    					$Group[$i]->bgg_url =$grgame->getAttribute('href');
+				    				$Group[$i]->bgg_img =$grgame->childNodes->item(0)->getAttribute('src');
+				    				
+			    				}
+			    			}
+		    			}
+			    	}
+			    	$items[] = $Group;
+		    	}
+		    	else 
+		    	foreach ($gamelist as $game) {
+		    		$G = new stdClass();
+			    		$G->bgg_url = $game->childNodes->item(0)->childNodes->item(0)->getAttribute('href');
+			    		$G->bgg_img = $game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)->getAttribute('src');
+			    		
+			    		//Second Columm table
+			    		$col2 = $game->childNodes->item(1)->childNodes->item(0);
+			    		$G->name = $col2->childNodes->item(0)->nodeValue;
+			    		$G->description = '';
+			    		foreach ($col2->childNodes as $i => $row) {
+			    			if ($i == 0) continue;
+			    			$G->description .= $row->nodeValue;
+			    		}
+			    		$items[] = $G;
+		    	}
+		    }
+		}
+	}
+	echo "<pre>";
+	print_r($items);
+	echo "</pre>";
+	file_put_contents('mtitems.data', json_encode($items,JSON_HEX_APOS));
+	
+	return;
+	//Let's get all the items offered
+	preg_match_all('/<tr>(.*?)<\/tr>/', $posts[1][1], $games);
+	print_r($games[1]);
+	
+
+    // return $app['twig']->render('index.twig', array(
+    //     'name' => 'edgard',
+    // ));
+    //return "ed";	
 });
 
 

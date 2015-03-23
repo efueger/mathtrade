@@ -100,10 +100,48 @@
   	{{/if}}
 </script>
 
+
+<script id="additional-images-template" type="text/x-handelbars-template">
+	{{#if img}}
+	<div class="row">
+		{{#each additional_images}}
+		<div id="additional-img-{{@index}}"  data-add-upload='{{@index}}'>
+  		<img  {{#unless img}}style="max-width:200px;"{{/unless}} class="col-xs-6 col-md-3" src="{{#if img}}{{full_img}}{{else}}img/placeholder.png{{/if}}" />
+  		</div>
+  		{{/each}}
+  		<div id="additional-placeholder" data-add-upload=''>
+  		<img  style="max-width:200px;" class="col-xs-6 col-md-3" src="img/placeholder.png" />
+  		</div>
+  	</div>
+  	{{/if}}
+</script>
+
+<script id="math-items-template" type="text/x-handelbars-template">
+	<div>
+		<input type="text" data-math-filter='' placeholder="Teclea para filtrar tus resultados" />
+	</div>
+
+	<div id="items">
+	</div>
+
+</script>
+<script id="fullmt-list-template" type="text/x-handelbars-template">
+	<div>
+		{{#each this}}
+		<div class="row">
+			<img class="col-md-1" src="{{bgg_img}}" />
+			{{name}}
+  		</div>
+  		{{/each}}
+  	</div>
+</script>
+
+
+
 {% endverbatim %}
 
 <script type="text/javascript">
-	
+	var mathItems = JSON.parse('{{ items|raw }}');	
 	
 //require(['jquery','underscore','backbone'],function($,_,Backbone){
 //	console.log('buu')
