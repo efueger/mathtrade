@@ -22,6 +22,7 @@ MT.init({
 var Router = Backbone.Router.extend({
 	  routes: {
 	    "":                 "home",    // #help
+	    "list":          	"list",  // #search/kiwis
 	    "addgame":          "addgame",  // #search/kiwis
 	    "edit/:id": 		"addgame"   // #search/kiwis/p7
 	  },
@@ -35,6 +36,23 @@ var Router = Backbone.Router.extend({
 				//$('#mathtrade').html(new mtView({model:mt}).el);
 				//this.currentView.remove();
 			});	
+	  	},
+
+	  	list: function() {
+	  		console.log('test');
+	  		require(['jquery','views/mathList','models/items','views/hb'],function($,mathView,Items,HB){
+	  			console.log(mathItems);
+	  			var m = new Items(mathItems);
+	  			$('#main').html(new mathView({
+	  				model:m,
+	  				nestedViews:{
+	  					'#items':new HB({
+	  						model:m,
+	  						template:'fullmt-list-template'
+	  					})
+	  				}
+	  			}).el);
+	  		});
 	  	},
 
 		addgame: function(id) {
