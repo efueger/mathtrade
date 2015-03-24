@@ -9,13 +9,13 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 
 // ... definitions
 $app->get('/', function (Silex\Application $app) {
-    return $app['twig']->render('index.twig', array(
-        'items' => file_get_contents("mtitems.data"),
+	 return $app['twig']->render('index.twig', array(
+        'items' => file_get_contents('mtitems.data')
     ));
 });
 
 $app->get('/mt', function (Silex\Application $app) {
-	//file_put_contents('test.html', file_get_contents('http://labsk.net/index.php?topic=151319.0'));
+	file_put_contents('test.html', file_get_contents('http://labsk.net/index.php?topic=151319.0'));
 	$html = file_get_contents('test.html');
 
 	$string = preg_replace('/\n/', '', $html);
@@ -30,7 +30,7 @@ $app->get('/mt', function (Silex\Application $app) {
 	//print_r($posts[1][1]);
 	unset($posts[1][0]);
 	$items = array();
-	foreach ( array_slice($posts[1],0,4)  as $post) {
+	foreach ( array_slice($posts[1],0)  as $post) {
 		$dom = new DOMDocument();
 		ini_set('display_errors',0);
 		$dom->loadHTML('<div>'.$post.'></span>');
@@ -85,7 +85,9 @@ $app->get('/mt', function (Silex\Application $app) {
 		    	foreach ($gamelist as $game) {
 		    		$G = new stdClass();
 			    		$G->bgg_url = $game->childNodes->item(0)->childNodes->item(0)->getAttribute('href');
-			    		$G->bgg_img = $game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)->getAttribute('src');
+			    		if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0))
+					$G->bgg_img = $game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)->getAttribute('src');
+					else continue;
 			    		
 			    		//Second Columm table
 			    		$col2 = $game->childNodes->item(1)->childNodes->item(0);
@@ -100,10 +102,11 @@ $app->get('/mt', function (Silex\Application $app) {
 		    }
 		}
 	}
+//	unset($items[55][2]->description);
 	echo "<pre>";
 	print_r($items);
 	echo "</pre>";
-	file_put_contents('mtitems.data', json_encode($items,JSON_HEX_APOS));
+	file_put_contents('mtitems.data', str_replace('"','\\"',json_encode($items,JSON_HEX_APOS)));
 	
 	return;
 	//Let's get all the items offered
