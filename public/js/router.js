@@ -1,4 +1,4 @@
-define(['backbone','models/items','MT'],function(Backbone,Items,MT) {
+define(['backbone','models/items','MT','handlebars'],function(Backbone,Items,MT,Handlebars) {
 
 var games = [
 	{
@@ -18,6 +18,9 @@ var gs = new Items(games);
 MT.init({
 	user:gs
 });
+
+
+
 
 var Router = Backbone.Router.extend({
 	  routes: {
@@ -41,7 +44,7 @@ var Router = Backbone.Router.extend({
 	  	list: function() {
 	  		console.log('test');
 	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,Items,HB){
-	  			console.log(mathItems);
+	  			//console.log(mathItems);
 	  			var m = new Items(mathItems);
 	  			console.log(m);
 	  			$('#main').html(new mathView({

@@ -15,93 +15,114 @@ $app->get('/', function (Silex\Application $app) {
 });
 
 $app->get('/mt', function (Silex\Application $app) {
-	file_put_contents('test.html', file_get_contents('http://labsk.net/index.php?topic=151319.0'));
-	$html = file_get_contents('test.html');
-
-	$string = preg_replace('/\n/', '', $html);
-
-	preg_match('/"forumposts">(.*)<a id="lastPost/', $string,$match);
-
-	//ini_set('display_errors',0);
-	// print_r($match[1]);
-	// die();
-	preg_match_all('/post_wrapper">(.*?)class="botslice"/', $match[1], $posts);
-
-	//print_r($posts[1][1]);
-	unset($posts[1][0]);
+	$max = 1;
 	$items = array();
-	foreach ( array_slice($posts[1],0)  as $post) {
-		$dom = new DOMDocument();
-		ini_set('display_errors',0);
-		$dom->loadHTML('<div>'.$post.'></span>');
-		ini_set('display_errors',1);
-		$xpath = new DomXpath($dom);
-		$innerpost = $xpath->query('//*[@class="inner"]');
+	do {
+
+		$url = isset($pages[1])?$pages[1]:'http://labsk.net/index.php?topic=151319.15';
+		//file_put_contents('test.html', file_get_contents($url));
+		$html = file_get_contents('test.html');
+		$string = preg_replace('/\n/', '', $html);
+		
+
+		preg_match('/"forumposts">(.*)<a id="lastPost/', $string,$match);
+
+
+		//ini_set('display_errors',0);
+		// die();
+		preg_match_all('/post_wrapper">(.*?)class="botslice"/', $match[1], $posts);
+
+		if (!isset($pages))
+			unset($posts[1][0]);
+			
+		//Get pagination
+		preg_match('/<a class="navPages" href="([^"]*?)">>><\/a>/', $string,$pages);
 
 		
-		
-		foreach ($innerpost as $el) {
+		foreach ( array_slice($posts[1],5,1)  as $post) {
+			$dom = new DOMDocument();
+			ini_set('display_errors',0);
+			$dom->loadHTML('<div>'.$post.'></span>');
+			ini_set('display_errors',1);
+			$xpath = new DomXpath($dom);
+			$innerpost = $xpath->query('//*[@class="inner"]');
 
-			$nodes = $el->childNodes;
-		    foreach ($nodes as $node) {
-		    	if ($node->nodeName != 'table') continue;
+			
+			
+			foreach ($innerpost as $el) {
 
-		    	//Skip tablebody
-		    	$gamelist = $node->childNodes;
+				$nodes = $el->childNodes;
+			    foreach ($nodes as $node) {
+			    	if ($node->nodeName != 'table') continue;
+
+			    	//Skip tablebody
+			    	$gamelist = $node->childNodes;
 
 
-		    	//Check if it's a group
-		    	if ($gamelist->item(0)->childNodes->item(0)->childNodes->item(0)->nodeName == 'strong') {
-			    	$Group = array();
-		    		foreach ($gamelist as $id=>$game) {
-		    			if($id == 0) {
+			    	//Check if it's a group
+			    	if ($gamelist->item(0)->childNodes->item(0)->childNodes->item(0)->nodeName == 'strong') {
+				    	
+			    		foreach ($gamelist as $id=>$game) {
+			    			if($id % 2 == 0 ) {
+			    				$Group = array();
+				    			foreach ($game->childNodes->item(0)->childNodes as $i=>$grgame) {
+									if ($i<2) continue;
+				    				if ($grgame->nodeName == 'a' ) {
+				    					if (strpos($grgame->nodeValue, '[')===false) {
 
-			    			
-			    			foreach ($game->childNodes->item(0)->childNodes as $i=>$grgame) {
-								if ($i<2) continue;
-			    				if ($grgame->nodeName == 'a' ) {
-			    					$GI = new stdClass();
-			    					$GI->name =$grgame->nodeValue;
-				    				$Group[] = $GI;
-			    				}
-			    				else {
-			    					$Group[count($Group)-1]->description = $grgame->nodeValue;
-			    				}
+					    					$GI = new stdClass();
+					    					$GI->name =$grgame->nodeValue;
+						    				$Group[] = $GI;
+				    					}
+				    				}
+				    				else {
+				    					$Group[count($Group)-1]->description = $grgame->nodeValue;
+				    				}
+				    			}
 			    			}
-		    			}
-		    			if($id==1) {
-			    			foreach ($game->childNodes->item(0)->childNodes as $i => $grgame) {
-			    				if ($grgame->nodeName == 'a' ) {
-			    					$Group[$i]->bgg_url =$grgame->getAttribute('href');
-				    				$Group[$i]->bgg_img =$grgame->childNodes->item(0)->getAttribute('src');
-				    				
-			    				}
+			    			if($id % 2 ==1) {
+				    			foreach ($game->childNodes->item(0)->childNodes as $i => $grgame) {
+				    				if ($grgame->nodeName == 'a' ) {
+				    					$Group[$i]->bgg_url =$grgame->getAttribute('href');
+					    				$Group[$i]->bgg_img =$grgame->childNodes->item(0)->getAttribute('src');
+					    				
+				    				}
+				    			}
+				    			$items[] = $Group;
 			    			}
-		    			}
+				    	}
+				    	
 			    	}
-			    	$items[] = $Group;
-		    	}
-		    	else 
-		    	foreach ($gamelist as $game) {
-		    		$G = new stdClass();
-			    		$G->bgg_url = $game->childNodes->item(0)->childNodes->item(0)->getAttribute('href');
-			    		if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0))
-					$G->bgg_img = $game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)->getAttribute('src');
-					else continue;
-			    		
-			    		//Second Columm table
-			    		$col2 = $game->childNodes->item(1)->childNodes->item(0);
-			    		$G->name = $col2->childNodes->item(0)->nodeValue;
-			    		$G->description = '';
-			    		foreach ($col2->childNodes as $i => $row) {
-			    			if ($i == 0) continue;
-			    			$G->description .= $row->nodeValue;
-			    		}
-			    		$items[] = $G;
-		    	}
-		    }
+			    	else 
+				    	foreach ($gamelist as $game) {
+				    		$G = new stdClass();
+
+				    		if (!$game->childNodes->item(0)->childNodes->item(0)) continue;
+					    	$G->bgg_url = $game->childNodes->item(0)->childNodes->item(0)->getAttribute('href');
+					    	if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0))
+								$G->bgg_img = $game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)->getAttribute('src');
+							else continue;
+					    		
+				    		//Second Columm table
+
+				    		if ( count($game->childNodes) <2) continue;
+				    		$col2 = $game->childNodes->item(1)->childNodes->item(0);
+				    		$G->name = $col2->childNodes->item(0)->nodeValue;
+				    		$G->description = '';
+				    		foreach ($col2->childNodes as $i => $row) {
+				    			if ($i == 0) continue;
+				    			$G->description .= $row->nodeValue;
+				    		}
+				    		if ($G->name != '') {
+				    			$items[] = $G;
+				    		}
+				    	}
+			    }
+			}
 		}
+		$max--;
 	}
+	while (!empty($pages[1]) && $max>0);
 //	unset($items[55][2]->description);
 	echo "<pre>";
 	print_r($items);

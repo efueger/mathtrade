@@ -21,7 +21,10 @@ define(['backbone'],function(Backbone){
 		setupPack:function() {
 			console.log(this.attributes);
 			this.attributes = {};
-			this.attributes['name'] = 'Pack';
+			this.attributes['name'] = 'Pack ';
+			_.each(this.packItems,function(i){
+				this.attributes['name'] += '+'+i.get('name');
+			}.bind(this));
 			this.attributes['is_pack'] = true;
 		},
 
@@ -41,12 +44,12 @@ define(['backbone'],function(Backbone){
 
 		toJSON : function(options) {
 			var d = _.clone(this.attributes);
+			d.id = this.cid;
 			if (d.is_pack) {
 				d.packItems = [];
 				_.each(this.packItems,function(m){
 					d.packItems.push(m.toJSON());
 				});
-				console.log(d);
 			}
 			return d;
 		}

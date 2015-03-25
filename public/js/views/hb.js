@@ -1,4 +1,4 @@
-define(['backbone','lib/MC/handlebars'],function(Backbone){
+define(['backbone','lib/MC/handlebars'],function(Backbone,Handlebars){
 
 	//Base Handlebars View that has all boilerplate already done for us
 	var HB = Backbone.View.extend({

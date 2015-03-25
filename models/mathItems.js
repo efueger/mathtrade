@@ -16,6 +16,10 @@ define(['backbone','models/item','underscore'],function(Backbone,Item,_){
 			});
 			console.log(this.filtered);
 		},
+
+		resetFilter:function() {
+			this.filtered = _.clone(this.models);
+		},
 		
 		/**
 		 * Override default to display filtered items instead

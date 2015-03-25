@@ -1,4 +1,4 @@
-define(['views/hb'],function(HB){
+define(['views/hb','MT'],function(HB,MT){
 
 
 var gamesView =  HB.extend({
@@ -7,10 +7,14 @@ var gamesView =  HB.extend({
 		this.model.on('add',this.render);
 	},
 	template:'item-list-template',
-	events: {
-		'click [data-add]':'add',
-		'click [data-delete]':'delete',
+	events:{
+		'click [data-exclude]':'exclude',
+		'click [data-want]':'want',
 	},
+
+	
+	
+
 	add:function(evt){
 		var id = $(evt.target).data('add');
 		var m = this.model.get(id);

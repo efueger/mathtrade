@@ -117,8 +117,33 @@
 </script>
 
 <script id="math-items-template" type="text/x-handelbars-template">
-	<div>
-		<input type="text" data-math-filter='' placeholder="Teclea para filtrar tus resultados" />
+	<nav class="navbar navbar-default">
+	  <div class="container-fluid">
+	    <div class="navbar-header">
+	      
+	      <ul class="nav nav-pills" role="tablist">
+			  <li role="presentation" class="active"><a href="#">Juegos <span class="badge">{{count this}}</span></a></li>
+			  <li role="presentation"><a href="#">Me interesan</a></li>
+			  <li role="presentation"><a href="#">Excluidos</a></li>
+			  <li role="presentation"><a href="#">Todos <span class="badge">{{count this}}</span></a></li>
+			</ul>
+	    </div>
+	  </div>
+	</nav>
+	
+	<div class="row">
+		<div class="col-md-4">
+			
+			  <input type="text" class="form-control" data-math-filter='' placeholder="Teclea para filtrar los juegos" />
+			
+		</div>
+		<div class="col-md-4">
+
+		 <div class="btn-group" role="group" aria-label="...">
+		  <button type="button" class="btn btn-default">Excluir todos</button>
+		  <button type="button" class="btn btn-default">Me interesan todos</button>
+		</div>
+		</div>
 	</div>
 
 	<div id="items">
@@ -126,17 +151,30 @@
 
 </script>
 <script id="fullmt-list-template" type="text/x-handelbars-template">
-	<div>
+	<div class="col-md-9" >
 		{{#each this}}
-		<div class="row">
+		<div class="row" style="margin-top:10px;">
 			{{#if is_pack}}
+				<h4>{{name}}</h4>
 				{{#each packItems}}
-				<img class="col-md-1" src="{{bgg_img}}" />
+				<img class="" src="{{bgg_img}}" />
 				{{/each}}
 			{{else}}
-			<img class="col-md-1" src="{{bgg_img}}" />
+			<div class="col-md-3">
+				<img class="" src="{{bgg_img}}" />
+			</div>
+			<div class="col-md-9">
+				<h4>{{name}}</h4>
+				<p>
+					{{description}}
+				</p>
+				<div class="btn-group" role="group" aria-label="...">
+				  <button type="button" data-exclude='{{id}}' class="btn btn-danger btn-sm">Excluir</button>
+				  <button type="button" data-want='{{id}}'class="btn btn-success btn-sm">Me interesa</button>
+				</div>
+			</div>
 			{{/if}}
-			{{name}}
+			
   		</div>
   		{{/each}}
   	</div>

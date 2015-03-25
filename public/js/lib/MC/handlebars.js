@@ -1,5 +1,8 @@
-define(['lib/MC','handlebars'],function(MC,Handlebars){
-
+define(['lib/MC','handlebars','HBhelpers'],function(MC,Handlebars){
+	Handlebars.registerHelper('count', function(array, url) {
+	  return new Handlebars.SafeString(array.length);
+	});
+	
 	/**
 	 * Module to work with handlebars templates, handles the compilation and caches it 
 	 * so further requests can use the compiled code
