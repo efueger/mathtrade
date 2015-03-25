@@ -8,5 +8,5 @@ php:
 before_install:
   - wget http://getcomposer.org/composer.phar
 install: php composer.phar install
-script: phpunit 
+script: bin/phpunit 
 
