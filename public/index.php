@@ -1,5 +1,8 @@
 <?php
 // web/index.php
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
 require_once __DIR__.'/../vendor/autoload.php';
 $app = new Silex\Application();
 
@@ -12,6 +15,18 @@ $app->get('/', function (Silex\Application $app) {
 	 return $app['twig']->render('index.twig', array(
         'items' => file_get_contents('mtitems.data')
     ));
+});
+
+$app->get('api/collection', function(Request $request) use ($app) {
+	$post = [];
+
+	$csv = new CsvIterator('mt.csv');
+	foreach ($csv->parse() as $row) {
+		$post[]=$row;
+	}
+
+
+	return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
 });
 
 $app->get('/mt', function (Silex\Application $app) {
@@ -225,4 +240,26 @@ $app->post('/', function (Silex\Application $app) {
 
 
 
+
+class CsvIterator {
+
+	protected $file;
+
+	public function __construct($file) {
+		$this->file = fopen($file, 'r');
+	}
+
+	public function parse() {
+		$headers = array_map('trim', fgetcsv($this->file, 4096));
+		while (!feof($this->file)) {
+			$row = array_map('trim', (array)fgetcsv($this->file, 4096));
+			if (count($headers) !== count($row)) {
+				continue;
+			}
+			$row = array_combine($headers, $row);
+			yield $row;
+		}
+		return;
+	}
+}
 $app->run();
