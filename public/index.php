@@ -15,12 +15,12 @@ $app->get('/', function (Silex\Application $app) {
 });
 
 $app->get('/mt', function (Silex\Application $app) {
-	$max = 1;
+	$max = 2;
 	$items = array();
 	do {
 
-		$url = isset($pages[1])?$pages[1]:'http://labsk.net/index.php?topic=151319.15';
-		//file_put_contents('test.html', file_get_contents($url));
+		$url = isset($pages[1])?$pages[1]:'http://labsk.net/index.php?topic=151319.0';
+		file_put_contents('test.html', file_get_contents($url));
 		$html = file_get_contents('test.html');
 		$string = preg_replace('/\n/', '', $html);
 		
@@ -39,7 +39,7 @@ $app->get('/mt', function (Silex\Application $app) {
 		preg_match('/<a class="navPages" href="([^"]*?)">>><\/a>/', $string,$pages);
 
 		
-		foreach ( array_slice($posts[1],5,1)  as $post) {
+		foreach ( array_slice($posts[1],0)  as $post) {
 			$dom = new DOMDocument();
 			ini_set('display_errors',0);
 			$dom->loadHTML('<div>'.$post.'></span>');
@@ -98,15 +98,20 @@ $app->get('/mt', function (Silex\Application $app) {
 				    		$G = new stdClass();
 
 				    		if (!$game->childNodes->item(0)->childNodes->item(0)) continue;
-					    	$G->bgg_url = $game->childNodes->item(0)->childNodes->item(0)->getAttribute('href');
-					    	if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0))
+					    	if ($game->childNodes->item(0)->childNodes->item(0) instanceof DOMText)continue;	
+						$G->bgg_url = $game->childNodes->item(0)->childNodes->item(0)->getAttribute('href');	
+						  if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0) instanceof DOMText)continue;
+						if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0))
 								$G->bgg_img = $game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)->getAttribute('src');
-							else continue;
+						//	else continue;
 					    		
 				    		//Second Columm table
 
-				    		if ( count($game->childNodes) <2) continue;
-				    		$col2 = $game->childNodes->item(1)->childNodes->item(0);
+				    		//if ( count($game->childNodes) <2) continue;
+				    		//if (!$game->childNodes->item(1))continue;
+						if(count($game->childNodes->item(1)->childNodes)>0){
+
+						$col2 = $game->childNodes->item(1)->childNodes->item(0);
 				    		$G->name = $col2->childNodes->item(0)->nodeValue;
 				    		$G->description = '';
 				    		foreach ($col2->childNodes as $i => $row) {
@@ -116,6 +121,7 @@ $app->get('/mt', function (Silex\Application $app) {
 				    		if ($G->name != '') {
 				    			$items[] = $G;
 				    		}
+								}
 				    	}
 			    }
 			}
