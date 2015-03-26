@@ -19,7 +19,7 @@ define(['backbone'],function(Backbone){
 		},
 
 		setupPack:function() {
-			console.log(this.attributes);
+			//console.log(this.attributes);
 			this.attributes = {};
 			this.attributes['name'] = 'Pack ';
 			_.each(this.packItems,function(i){

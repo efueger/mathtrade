@@ -116,6 +116,79 @@
   	{{/if}}
 </script>
 
+<script id="want-items-template" type="text/x-handelbars-template">
+	<nav class="navbar navbar-default">
+	  <div class="container-fluid">
+	    <div class="navbar-header">
+	      
+	      <ul class="nav nav-pills" role="tablist">
+			  <li role="presentation" class="active"><a href="#">Juegos <span class="badge">{{count this}}</span></a></li>
+			  <li role="presentation"><a href="#">Me interesan</a></li>
+			  <li role="presentation"><a href="#">Excluidos</a></li>
+			  <li role="presentation"><a href="#">Todos <span class="badge">{{count this}}</span></a></li>
+			</ul>
+	    </div>
+	  </div>
+	</nav>
+	
+	<div class="row">
+		<div class="col-md-4">
+			
+			  <input type="text" class="form-control" data-math-filter='' placeholder="Teclea para filtrar los juegos" />
+			
+		</div>
+		<div class="col-md-4">
+
+		 <div class="btn-group" role="group" aria-label="...">
+		  <button type="button" class="btn btn-default">Excluir todos</button>
+		  <button type="button" class="btn btn-default">Me interesan todos</button>
+		</div>
+		</div>
+	</div>
+
+	<div id="items">
+		<div class="col-md-8" >
+			{{#each items}}
+			<div class="row" style="margin-top:10px;">
+				{{#if is_pack}}
+					<h4>{{name}}</h4>
+					{{#each packItems}}
+					<img class="" src="{{bgg_img}}" />
+					{{/each}}
+				{{else}}
+				<div class="col-md-2">
+					<img class="" src="{{bgg_img}}" />
+				</div>
+				<div class="col-md-9">
+					<h4>{{name}}</h4>
+					<ul>
+						{{#each ../../want}}
+						<li>{{name}}</li>
+						{{/each}}
+					</ul>
+				</div>
+				{{/if}}
+				
+	  		</div>
+	  		{{/each}}
+	  	</div>
+	  	{{#if onlyMode}}
+	  	<div class="col-md-4">
+	  		Mis intereses:
+	  		<ul>
+	  		{{#each wish}}
+	  		<li>
+	  			<button type="button" data-addToWant='{{id}}'  class="btn btn-success btn-xs">+</button>
+	  			{{name}}
+	  		</li>
+	  		{{/each}}
+	  		</ul>
+	  	</div>
+	  	{{/if}}
+	</div>
+
+</script>
+
 <script id="math-items-template" type="text/x-handelbars-template">
 	<nav class="navbar navbar-default">
 	  <div class="container-fluid">

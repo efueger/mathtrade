@@ -17,6 +17,10 @@ define(['backbone','models/item','underscore'],function(Backbone,Item,_){
 			console.log(this.filtered);
 		},
 
+		filterByUser: function(user){
+			this.filtered = this.where({user:user});
+		},
+
 		resetFilter:function() {
 			this.filtered = _.clone(this.models);
 		},

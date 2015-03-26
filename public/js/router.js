@@ -24,10 +24,12 @@ MT.init({
 
 var Router = Backbone.Router.extend({
 	  routes: {
-	    "":                 "home",    // #help
-	    "list":          	"list",  // #search/kiwis
-	    "addgame":          "addgame",  // #search/kiwis
-	    "edit/:id": 		"addgame"   // #search/kiwis/p7
+	    "":                 "home",
+	    "list":          	"list", 
+	    "want": 			"want", 
+	    "want/:id": 		"want", 
+	    "addgame":          "addgame",  
+	    "edit/:id": 		"addgame"   
 	  },
 
 		home: function() {
@@ -55,6 +57,31 @@ var Router = Backbone.Router.extend({
 	  						template:'fullmt-list-template'
 	  					})
 	  				},
+	  				skipchange:true
+
+	  			}).el);
+	  		});
+	  	},
+
+	  	want: function(id) {
+	  		require(['jquery','views/wantList','models/mathItems','views/hb'],function($,wantView,Items,HB){
+	  			var m = new Items(mathItems);
+
+	  			m.at(0).set('user','edgard');
+	  			m.filterByUser('edgard');
+	  			if (id != undefined) {
+	  				m.onlyMode = true;
+	  			}
+
+	  			var wish = new Items(mathItems.slice(0,5));
+
+	  			m.wantlist = new Items([]);
+
+
+
+	  			$('#main').html(new wantView({
+	  				model:m,
+	  				wish:wish,
 	  				skipchange:true
 
 	  			}).el);
