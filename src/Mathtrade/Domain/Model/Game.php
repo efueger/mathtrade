@@ -4,7 +4,7 @@ namespace Mathtrade\Domain\Model;
 
 class Game
 {
-    protected $gameId;
+    protected $id;
     protected $name;
     protected $description;
 
@@ -32,5 +32,15 @@ class Game
     public function description()
     {
         return $this->description;
+    }
+
+    public function id()
+    {
+        return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 }
