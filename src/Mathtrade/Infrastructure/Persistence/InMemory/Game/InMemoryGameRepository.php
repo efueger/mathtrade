@@ -7,12 +7,12 @@ use Mathtrade\Domain\Model\GameRepository;
 
 class InMemoryGameRepository implements GameRepository
 {
-    protected $repo=[];
+    protected $repo;
     protected $nextId=0;
 
     public function __construct()
     {
-
+        $this->repo = array();
     }
 
     /**
@@ -22,11 +22,10 @@ class InMemoryGameRepository implements GameRepository
     public function persist($game)
     {
         $tmpGame = $this->find($game->id());
-        if($tmpGame === null) {
+        if ($tmpGame === null) {
             $game->setId($this->nextId);
             $this->nextId++;
-            $this->repo[]=$game;
-
+            array_push($this->repo, $game);
         } else {
             $tmpGame = $game;
         }
@@ -38,8 +37,8 @@ class InMemoryGameRepository implements GameRepository
      */
     public function find($id)
     {
-        foreach($this->repo as $game)  {
-            if($game->id() === $id) {
+        foreach ($this->repo as $game) {
+            if ($game->id() === $id) {
                 return $game;
             }
         }
