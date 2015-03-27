@@ -38,7 +38,7 @@ $app->get('/mt', function (Silex\Application $app) {
 		file_put_contents('test.html', file_get_contents($url));
 		$html = file_get_contents('test.html');
 		$string = preg_replace('/\n/', '', $html);
-		
+
 
 		preg_match('/"forumposts">(.*)<a id="lastPost/', $string,$match);
 
@@ -49,11 +49,11 @@ $app->get('/mt', function (Silex\Application $app) {
 
 		if (!isset($pages))
 			unset($posts[1][0]);
-			
+
 		//Get pagination
 		preg_match('/<a class="navPages" href="([^"]*?)">>><\/a>/', $string,$pages);
 
-		
+
 		foreach ( array_slice($posts[1],0)  as $post) {
 			$dom = new DOMDocument();
 			ini_set('display_errors',0);
@@ -62,8 +62,8 @@ $app->get('/mt', function (Silex\Application $app) {
 			$xpath = new DomXpath($dom);
 			$innerpost = $xpath->query('//*[@class="inner"]');
 
-			
-			
+
+
 			foreach ($innerpost as $el) {
 
 				$nodes = $el->childNodes;
@@ -76,7 +76,7 @@ $app->get('/mt', function (Silex\Application $app) {
 
 			    	//Check if it's a group
 			    	if ($gamelist->item(0)->childNodes->item(0)->childNodes->item(0)->nodeName == 'strong') {
-				    	
+
 			    		foreach ($gamelist as $id=>$game) {
 			    			if($id % 2 == 0 ) {
 			    				$Group = array();
@@ -100,26 +100,26 @@ $app->get('/mt', function (Silex\Application $app) {
 				    				if ($grgame->nodeName == 'a' ) {
 				    					$Group[$i]->bgg_url =$grgame->getAttribute('href');
 					    				$Group[$i]->bgg_img =$grgame->childNodes->item(0)->getAttribute('src');
-					    				
+
 				    				}
 				    			}
 				    			$items[] = $Group;
 			    			}
 				    	}
-				    	
+
 			    	}
-			    	else 
+			    	else
 				    	foreach ($gamelist as $game) {
 				    		$G = new stdClass();
 
 				    		if (!$game->childNodes->item(0)->childNodes->item(0)) continue;
-					    	if ($game->childNodes->item(0)->childNodes->item(0) instanceof DOMText)continue;	
-						$G->bgg_url = $game->childNodes->item(0)->childNodes->item(0)->getAttribute('href');	
+					    	if ($game->childNodes->item(0)->childNodes->item(0) instanceof DOMText)continue;
+						$G->bgg_url = $game->childNodes->item(0)->childNodes->item(0)->getAttribute('href');
 						  if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0) instanceof DOMText)continue;
 						if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0))
 								$G->bgg_img = $game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)->getAttribute('src');
 						//	else continue;
-					    		
+
 				    		//Second Columm table
 
 				    		//if ( count($game->childNodes) <2) continue;
@@ -149,17 +149,17 @@ $app->get('/mt', function (Silex\Application $app) {
 	print_r($items);
 	echo "</pre>";
 	file_put_contents('mtitems.data', str_replace('"','\\"',json_encode($items,JSON_HEX_APOS)));
-	
+
 	return;
 	//Let's get all the items offered
 	preg_match_all('/<tr>(.*?)<\/tr>/', $posts[1][1], $games);
 	print_r($games[1]);
-	
+
 
     // return $app['twig']->render('index.twig', array(
     //     'name' => 'edgard',
     // ));
-    //return "ed";	
+    //return "ed";
 });
 
 
@@ -172,7 +172,7 @@ $app->post('/', function (Silex\Application $app) {
 	header("Cache-Control: no-store, no-cache, must-revalidate");
 	header("Cache-Control: post-check=0, pre-check=0", false);
 	header("Pragma: no-cache");
-	/* 
+	/*
 	// Support CORS
 	header("Access-Control-Allow-Origin: *");
 	// other CORS headers if any...
@@ -202,11 +202,11 @@ $app->post('/', function (Silex\Application $app) {
 		$fileName = uniqid("file_");
 	}
 	$filePath = $targetDir . DIRECTORY_SEPARATOR . $fileName;
-	
+
 	// Chunking might be enabled
 	$chunk = isset($_REQUEST["chunk"]) ? intval($_REQUEST["chunk"]) : 0;
 	$chunks = isset($_REQUEST["chunks"]) ? intval($_REQUEST["chunks"]) : 0;
-		
+
 	// Open temp file
 	if (!$out = @fopen("{$filePath}.part", $chunks ? "ab" : "wb")) {
 		die('{"jsonrpc" : "2.0", "error" : {"code": 102, "message": "Failed to open output stream."}, "id" : "id"}');
@@ -219,7 +219,7 @@ $app->post('/', function (Silex\Application $app) {
 		if (!$in = @fopen($_FILES["file"]["tmp_name"], "rb")) {
 			die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
 		}
-	} else {	
+	} else {
 		if (!$in = @fopen("php://input", "rb")) {
 			die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
 		}
@@ -231,7 +231,7 @@ $app->post('/', function (Silex\Application $app) {
 	@fclose($in);
 	// Check if file has been uploaded
 	if (!$chunks || $chunk == $chunks - 1) {
-		// Strip the temp .part suffix off 
+		// Strip the temp .part suffix off
 		rename("{$filePath}.part", $filePath);
 	}
 	// Return Success JSON-RPC response
@@ -241,25 +241,27 @@ $app->post('/', function (Silex\Application $app) {
 
 
 
-class CsvIterator {
+class CsvIterator
+{
+    protected $file;
 
-	protected $file;
+    public function __construct($file) {
+        $this->file = fopen($file, 'r');
+    }
 
-	public function __construct($file) {
-		$this->file = fopen($file, 'r');
-	}
-
-	public function parse() {
-		$headers = array_map('trim', fgetcsv($this->file, 4096));
-		while (!feof($this->file)) {
-			$row = array_map('trim', (array)fgetcsv($this->file, 4096));
-			if (count($headers) !== count($row)) {
-				continue;
-			}
-			$row = array_combine($headers, $row);
-			yield $row;
-		}
-		return;
-	}
+    public function parse() {
+        $headers = array_map('trim', fgetcsv($this->file, 4096));
+        $rows = array();
+        while (!feof($this->file)) {
+            $row = array_map('trim', (array)fgetcsv($this->file, 4096));
+            if (count($headers) !== count($row)) {
+                continue;
+            }
+            $row = array_combine($headers, $row);
+            array_push($rows, $row);
+        }
+        return $rows;
+    }
 }
+
 $app->run();
