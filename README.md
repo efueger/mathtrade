@@ -2,6 +2,17 @@
 Tool for helping the user to generate games lists ,wantlists and show mathtrade results
 [![Build Status](https://travis-ci.org/edysanchez/mathtrade.svg?branch=master)](http://travis-ci.org/edysanchez/mathtrade)
 
+#Current Features
+##Wantlist
+- Add items to the wantlist of a game
+- Remvo items of a watlist
+- Create wildcards
+- Delete wildcards
+- Add items to a wildcard
+- Delete itesm from a wildcard
+- Add wildcard to the wantlist
+- Remove wildcard from the wantlist
+
 #RoadMap
 * Manage a user name List
 * Manage a user Want List
