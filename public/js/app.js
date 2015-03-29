@@ -3,6 +3,7 @@ require.config({
   paths: {
   	bower: '../../bower_components',
     jquery: '../../bower_components/jquery/dist/jquery.min',
+    jqueryui: '../../bower_components/jquery-ui/jquery-ui.min',
     underscore: '../../bower_components/underscore/underscore-min',
     backbone: '../../bower_components/backbone/backbone',
     handlebars: '../../bower_components/handlebars/handlebars.min',

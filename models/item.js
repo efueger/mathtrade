@@ -30,7 +30,6 @@ define(['backbone'],function(Backbone){
 
 
 		setMedia:function(){
-			console.log('setting media');
 			if (this.attributes['img']) {
 				var id = /pic_([0-9]+)/i.exec(this.get('img'));
 				if (id) {

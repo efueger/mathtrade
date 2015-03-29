@@ -17,6 +17,12 @@ define(['backbone','models/item','underscore'],function(Backbone,Item,_){
 			console.log(this.filtered);
 		},
 
+		make: function() {
+			var i  = new Item({});
+			this.add(i);
+			return i;
+		},
+
 		filterByUser: function(user){
 			this.filtered = this.where({user:user});
 		},

@@ -160,24 +160,42 @@
 					<img class="" src="{{bgg_img}}" />
 				</div>
 				<div class="col-md-9">
-					<h4>{{name}}</h4>
-					<ul>
+					<h4><a href="#want/{{id}}">{{name}}</a></h4>
+					<ul class="want-items">
 						{{#each ../../want}}
 						<li>{{name}}</li>
 						{{/each}}
 					</ul>
 				</div>
 				{{/if}}
-				
 	  		</div>
 	  		{{/each}}
 	  	</div>
 	  	{{#if onlyMode}}
-	  	<div class="col-md-4">
-	  		Mis intereses:
+	  	<div class="col-md-4" id="wishlist">
+	  		Comodines:<button type="button" data-createWildcard='' class="btn btn-primary btn-xs">Crear comodín</button>
 	  		<ul>
+	  		{{#each wildcards}}
+	  			<li>
+	  			{{#if name}}
+	  			<button type="button" data-addWildcardToWant='{{id}}'  class="btn btn-success btn-xs">+</button>
+	  			{{name}}
+	  			<ul class="wildcard-items">
+	  				{{#each items}}
+	  				<li>{{name}}</li>
+	  				{{/each}}
+	  				<li class="wilcard-drop" data-wild-id='{{../id}}'>drop target</li>
+	  			</ul>
+	  			{{else}}
+	  			<input type="text" data-wild-id='{{id}}' name="name"/> <button type="button" data-saveWildcard='{{id}}'>Guardar</button>
+	  			{{/if}}
+	  			</li>
+	  		{{/each}}
+	  		</ul>
+	  		Mis intereses:
+	  		<ul id="myinterests">
 	  		{{#each wish}}
-	  		<li>
+	  		<li data-id='{{id}}'>
 	  			<button type="button" data-addToWant='{{id}}'  class="btn btn-success btn-xs">+</button>
 	  			{{name}}
 	  		</li>

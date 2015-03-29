@@ -11,6 +11,7 @@
     "bootstrap": "~3.3.2",
     "jquery-textcomplete": "~0.3.9",
     "plupload": "~2.1.2",
-    "requirejs": "~2.1.16"
+    "requirejs": "~2.1.16",
+    "jquery-ui": "~1.11.4"
   }
 }

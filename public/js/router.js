@@ -64,7 +64,8 @@ var Router = Backbone.Router.extend({
 	  	},
 
 	  	want: function(id) {
-	  		require(['jquery','views/wantList','models/mathItems','views/hb'],function($,wantView,Items,HB){
+	  		require(['jquery','views/wantList','models/mathItems','views/hb','models/wildcard','models/wildcards','jqueryui'
+	  			],function($,wantView,Items,HB,Wildcard,Wildcards){
 	  			var m = new Items(mathItems);
 
 	  			m.at(0).set('user','edgard');
@@ -76,12 +77,16 @@ var Router = Backbone.Router.extend({
 	  			var wish = new Items(mathItems.slice(0,5));
 
 	  			m.wantlist = new Items([]);
+	  			var wildcards = new Wildcards([]);
+
+
 
 
 
 	  			$('#main').html(new wantView({
 	  				model:m,
 	  				wish:wish,
+	  				wildcards:wildcards,
 	  				skipchange:true
 
 	  			}).el);
