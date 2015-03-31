@@ -50,6 +50,7 @@ define(['backbone'],function(Backbone){
 					d.packItems.push(m.toJSON());
 				});
 			}
+			d.wantname = d.id;
 			return d;
 		}
 

@@ -1,4 +1,8 @@
 <?php
+/* {{#each wildcards}}
+			({{../user}}): {{name}} : {{#each items}}{{id}} {{/each}}
+			{{/each}} */ 
+
 // web/index.php
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +22,7 @@ $app->get('/', function (Silex\Application $app) {
 });
 
 $app->get('api/collection', function(Request $request) use ($app) {
-	$post = [];
+	$post = array();
 
 	$csv = new CsvIterator('mt.csv');
 	foreach ($csv->parse() as $row) {
