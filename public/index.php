@@ -18,8 +18,7 @@ $app->get('/', function (Silex\Application $app) {
 });
 
 $app->get('api/collection', function(Request $request) use ($app) {
-	$post = [];
-
+	$post = array();
 	$csv = new CsvIterator('mt.csv');
 	foreach ($csv->parse() as $row) {
 		$post[]=$row;
