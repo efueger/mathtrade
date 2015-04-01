@@ -1,0 +1,14 @@
+---
+- name: ensure mathtrade app ready 
+  hosts: all
+  sudo: yes
+  tasks: 
+    - apt: name={{ item }} state=present update_cache=yes
+      with_items:
+      - php5
+      - apache2
+    - copy: src=templates/apache/default dest=/etc/apache2/sites-available/default mode=0755
+    - apache2_module: name=rewrite state=present
+    - service: name=apache2 enabled=yes
+    - service: name=apache2 state=restarted
+
