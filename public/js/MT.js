@@ -27,6 +27,11 @@ define(['models/items'],function(Items){
 		 */
 		mt.want = function(item){
 			interested.add(item);
+
+			$.post('/public/rest/useritems/1',{id:1,type:1},function(resp){
+				console.log(resp);
+			});
+
 		}
 
 

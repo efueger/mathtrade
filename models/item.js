@@ -43,7 +43,7 @@ define(['backbone'],function(Backbone){
 
 		toJSON : function(options) {
 			var d = _.clone(this.attributes);
-			d.id = this.cid;
+			if (d.id == undefined)d.id = this.cid;
 			if (d.is_pack) {
 				d.packItems = [];
 				_.each(this.packItems,function(m){
@@ -51,6 +51,12 @@ define(['backbone'],function(Backbone){
 				});
 			}
 			d.wantname = d.id;
+
+			if (this.want) {
+				d.wantlist = this.wantlist.toJSON();
+				console.log('has want',d.wantlist)
+			}
+
 			return d;
 		}
 

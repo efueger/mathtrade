@@ -6,18 +6,35 @@ var wantList =  HB.extend({
 		this.wildcards = options.wildcards;
 		// this.model.on('remove',this.render);
 		this.model.wantlist.on('repaint',this.render);
+		this.wish.on('reset',this.render);
+		this.model.on('reset',this.render);
 	},
 	template:'want-items-template',
 	events:{
 		'click [data-createWildcard]':'createWildcard',
 		'click [data-saveWildcard]':'saveWildcard',
 		'click [data-addToWant]':'addToWant',
+		'click [data-save-want]':'saveWant',
 		'click [data-delete-wild]':'deleteWild',
 		'click [data-remove-from-want]':'removeFromWant',
 		'click [data-remove-from-wild]':'removeFromWild',
 		'click [data-addwildcardtowant]':'addWildcardToWant',
 
 	},
+
+	saveWant: function(evt) {
+		var id = $(evt.target).data('save-want');
+		console.log(id);
+		console.log(this.model.wantlist.toJSON());
+		console.log(this.model.wantlist.serialize());
+		$.post('/public/rest/wantlist/1',{
+			d:this.model.wantlist.serialize(),
+			wid:id,
+		});
+
+
+	},
+
 	filter:function(evt) {
 		var val = $(evt.target).val();
 		this.model.setFilter(val);
@@ -141,15 +158,20 @@ var wantList =  HB.extend({
 		this.render();
 	},
 	dataForTpl:function(){
-		console.log(this);
+		
 		var d = {};
-			d.user = this.model.at(0).get('user');
-			d.current = this.model.at(0).toJSON();
+			if (this.model.length > 0) {
+				d.user = this.model.at(0).get('username');
+				d.current = this.model.at(0).toJSON();
+
+			}
 			d.items = this.model.toJSON();
 			d.onlyMode = this.model.onlyMode;
 			d.wish = this.wish.toJSON();
 			d.want = this.model.wantlist.toJSON();
 			d.wildcards = this.wildcards.toJSON();
+
+			console.log(d.items,'tojsonyes')
 		return d;
 	},
 	//skipchange:true

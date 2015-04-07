@@ -9,16 +9,141 @@ use Symfony\Component\HttpFoundation\Response;
 
 require_once __DIR__.'/../vendor/autoload.php';
 $app = new Silex\Application();
+$app['debug'] = true;
 
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/../views',
 ));
+
+$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
+    'db.options' => array(
+        'driver'    => 'pdo_mysql',
+        'host'      => 'core.mordamir.com',
+        'dbname'    => 'mathtrade',
+        'user'      => 'mathtrade',
+        'password'  => 'getthejobdone',
+        'charset'   => 'utf8',
+    )
+));
+
 
 // ... definitions
 $app->get('/', function (Silex\Application $app) {
 	 return $app['twig']->render('index.twig', array(
         'items' => file_get_contents('mtitems.data')
     ));
+});
+
+//Returns all the items
+$app->get('/rest/items', function (Silex\Application $app) {
+	$sql = "SELECT * FROM items";
+    $post = $app['db']->fetchAll($sql);
+    return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+});
+
+$app->get('/rest/items/{id}', function ($id)  use($app){
+	$sql = "SELECT * FROM items WHERE id = ?";
+    $post = $app['db']->fetchAll($sql,array($id));
+
+    //Fetch want lists
+    $ids = array();
+    foreach ($post as $i) {
+    	$ids[] = $i['id'];
+    }
+    $sql = "SELECT w.*,i.name FROM wantlist w INNER JOIN items i ON type =1 AND w.target_id = i.item_id WHERE w.item_id IN (?)";
+    $want = $app['db']->fetchAll($sql,
+    array($ids),
+    array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+    //echo $sql;
+
+    foreach ($post as $key => &$p) {
+    	foreach ($want as $j => $w) {
+    		if ($w['item_id'] == $p['item_id']) {
+    			$p['want'][] = $w;
+    			unset($want[$j]);
+    		}
+    	}
+    }
+    
+    return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+});
+
+$app->get('/rest/itemsbyuser/{user}', function ($user) use($app) {
+	$sql = "SELECT * FROM items where username = ?";
+    $post = $app['db']->fetchAll($sql,array($user));
+
+    //Fetch want lists
+    $ids = array();
+    foreach ($post as $i) {
+    	$ids[] = $i['id'];
+    }
+    $sql = "SELECT w.*,i.name FROM wantlist w INNER JOIN items i ON type =1 AND w.target_id = i.item_id WHERE w.item_id IN (?)";
+    $want = $app['db']->fetchAll($sql,
+    array($ids),
+    array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+    //echo $sql;
+
+    foreach ($post as $key => &$p) {
+    	foreach ($want as $j => $w) {
+    		if ($w['item_id'] == $p['item_id']) {
+    			$p['want'][] = $w;
+    			unset($want[$j]);
+    		}
+    	}
+    }
+
+
+    return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+});
+
+
+$app->get('/rest/useritems/{user}', function ($user) use ($app) {
+	$sql = "SELECT i.* FROM user_items ui INNER JOIN items i ON ui.item_id = i.id WHERE user_id = ?";
+    $post = $app['db']->fetchAll($sql,array((int)$user));
+    return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+});
+
+
+$app->post('/rest/useritems/{user}', function ($user,Request $request) use ($app) {
+	$sql = "SELECT * FROM user_items WHERE user_id = ?";
+    $post = $app['db']->insert('user_items',array(
+    	'user_id'=>$user,
+    	'item_id'=>$request->get('id'),
+    	'type'=>$request->get('type')
+
+    	));
+    return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+});
+
+$app->get('/rest/userwantlist/{user}', function ($user)  use($app){
+	$sql = "SELECT * FROM wantlist WHERE user_id = ?";
+    $post = $app['db']->fetchAll($sql,array($user));
+    return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+});
+
+$app->post('/rest/wantlist/{id}', function ($id,Request $request) use ($app) {
+	
+	print_r($request->request);
+	$d = json_decode($request->get('d'));
+	$wantid = $request->get('wid');
+	echo "id $wantid";
+	if (is_numeric($id)) {
+		$app['db']->delete('wantlist',array('item_id'=>$wantid));
+	}
+
+	//Now prepare to insert the items / wildcards
+	foreach ($d as $pos=>$i) {
+		$app['db']->insert('wantlist',array(
+			'item_id'=>$wantid,
+			'user_id'=>1,
+			'target_id'=>$i->id,
+			'type'=>$i->t,
+			'pos'=>$pos
+		));
+	}
+
+	print_r($d);
+    return new Response(json_encode($d),200,array('Content-Type'=>'application/json'));
 });
 
 $app->get('api/collection', function(Request $request) use ($app) {
