@@ -29,7 +29,6 @@ $app->get('api/collection', function(Request $request) use ($app) {
 });
 
 $app->get('/mt', function (Silex\Application $app) {
-	$max = 2;
 	$items = array();
 	do {
 
@@ -37,7 +36,6 @@ $app->get('/mt', function (Silex\Application $app) {
 		file_put_contents('test.html', file_get_contents($url));
 		$html = file_get_contents('test.html');
 		$string = preg_replace('/\n/', '', $html);
-
 
 		preg_match('/"forumposts">(.*)<a id="lastPost/', $string,$match);
 
@@ -51,7 +49,6 @@ $app->get('/mt', function (Silex\Application $app) {
 
 		//Get pagination
 		preg_match('/<a class="navPages" href="([^"]*?)">>><\/a>/', $string,$pages);
-
 
 		foreach ( array_slice($posts[1],0)  as $post) {
 			$dom = new DOMDocument();
@@ -142,7 +139,7 @@ $app->get('/mt', function (Silex\Application $app) {
 		}
 		$max--;
 	}
-	while (!empty($pages[1]) && $max>0);
+	while (!empty($pages[1]));
 //	unset($items[55][2]->description);
 	echo "<pre>";
 	print_r($items);
