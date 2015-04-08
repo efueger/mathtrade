@@ -170,7 +170,7 @@
 			({{user}}) {{../current.id}}: {{#each ../items.0.wantlist}}{{id}} {{/each}} <br/>
 			{{else}}
 			{{#each items}}
-			({{../user}}) {{id}}: {{#each items.0.wantlist}}{{id}} {{/each}} <br/>
+			({{../user}}) {{id}}: {{#each wantlist}}{{id}} {{/each}} <br/>
 			{{/each}}
 			{{/if}}
 			</pre>
