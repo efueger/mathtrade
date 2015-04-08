@@ -4,6 +4,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 require_once __DIR__.'/../vendor/autoload.php';
+const TMP_FILE = 'test.html';
 $app = new Silex\Application();
 
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
@@ -29,36 +30,50 @@ $app->get('api/collection', function(Request $request) use ($app) {
 });
 
 $app->get('/mt', function (Silex\Application $app) {
+	$url='http://labsk.net/index.php?topic=151319.0';
+
 	$items = array();
+	/**
+	 * @param $string
+	 * @return mixed
+	 */
+	function getNextPageUrl($string)
+	{
+		preg_match('/<a class="navPages" href="([^"]*?)">>><\/a>/', $string, $pages);
+		return $pages;
+	}
+
+	/**
+	 * @param $content
+	 * @param $match
+	 * @return mixed
+	 */
+	function getPagePosts($content)
+	{
+		preg_match('/"forumposts">(.*)<a id="lastPost/', $content, $match);
+		preg_match_all('/post_wrapper">(.*?)class="botslice"/', $match[1], $posts);
+		return array_slice($posts[1],0);
+	}
+
 	do {
 
-		$url = isset($pages[1])?$pages[1]:'http://labsk.net/index.php?topic=151319.0';
 		file_put_contents('test.html', file_get_contents($url));
-		$html = file_get_contents('test.html');
-		$string = preg_replace('/\n/', '', $html);
+		$html = file_get_contents(TMP_FILE);
+		$content = preg_replace('/\n/', '', $html);
+		$posts = getPagePosts($content);
 
-		preg_match('/"forumposts">(.*)<a id="lastPost/', $string,$match);
+		if (!isset($nextPageUrl))
+			unset($posts);
 
+		$nextPageUrl = getNextPageUrl($content);
 
-		//ini_set('display_errors',0);
-		// die();
-		preg_match_all('/post_wrapper">(.*?)class="botslice"/', $match[1], $posts);
-
-		if (!isset($pages))
-			unset($posts[1][0]);
-
-		//Get pagination
-		preg_match('/<a class="navPages" href="([^"]*?)">>><\/a>/', $string,$pages);
-
-		foreach ( array_slice($posts[1],0)  as $post) {
+		foreach ($posts as $post) {
 			$dom = new DOMDocument();
 			ini_set('display_errors',0);
 			$dom->loadHTML('<div>'.$post.'></span>');
 			ini_set('display_errors',1);
 			$xpath = new DomXpath($dom);
 			$innerpost = $xpath->query('//*[@class="inner"]');
-
-
 
 			foreach ($innerpost as $el) {
 
@@ -68,7 +83,6 @@ $app->get('/mt', function (Silex\Application $app) {
 
 			    	//Skip tablebody
 			    	$gamelist = $node->childNodes;
-
 
 			    	//Check if it's a group
 			    	if ($gamelist->item(0)->childNodes->item(0)->childNodes->item(0)->nodeName == 'strong') {
@@ -114,15 +128,12 @@ $app->get('/mt', function (Silex\Application $app) {
 						  if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0) instanceof DOMText)continue;
 						if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0))
 								$G->bgg_img = $game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)->getAttribute('src');
-						//	else continue;
 
 				    		//Second Columm table
 
-				    		//if ( count($game->childNodes) <2) continue;
-				    		//if (!$game->childNodes->item(1))continue;
 						if(count($game->childNodes->item(1)->childNodes)>0){
 
-						$col2 = $game->childNodes->item(1)->childNodes->item(0);
+							$col2 = $game->childNodes->item(1)->childNodes->item(0);
 				    		$G->name = $col2->childNodes->item(0)->nodeValue;
 				    		$G->description = '';
 				    		foreach ($col2->childNodes as $i => $row) {
@@ -137,25 +148,15 @@ $app->get('/mt', function (Silex\Application $app) {
 			    }
 			}
 		}
-		$max--;
+		$url=$nextPageUrl[1];
 	}
-	while (!empty($pages[1]));
-//	unset($items[55][2]->description);
+	while (!empty($url));
 	echo "<pre>";
 	print_r($items);
 	echo "</pre>";
 	file_put_contents('mtitems.data', str_replace('"','\\"',json_encode($items,JSON_HEX_APOS)));
 
 	return;
-	//Let's get all the items offered
-	preg_match_all('/<tr>(.*?)<\/tr>/', $posts[1][1], $games);
-	print_r($games[1]);
-
-
-    // return $app['twig']->render('index.twig', array(
-    //     'name' => 'edgard',
-    // ));
-    //return "ed";
 });
 
 
