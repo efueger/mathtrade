@@ -15,6 +15,8 @@ define(['backbone'],function(Backbone){
 
 				this.setMedia();
 			}
+			if (!this.attributes['target_id'])
+			this.attributes['target_id'] = this.attributes['id']
 			
 		},
 
@@ -52,7 +54,7 @@ define(['backbone'],function(Backbone){
 			}
 			d.wantname = d.id;
 
-			if (this.want) {
+			if (this.wantlist) {
 				d.wantlist = this.wantlist.toJSON();
 				console.log('has want',d.wantlist)
 			}

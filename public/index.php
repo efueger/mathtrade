@@ -50,7 +50,7 @@ $app->get('/rest/items/{id}', function ($id)  use($app){
     foreach ($post as $i) {
     	$ids[] = $i['id'];
     }
-    $sql = "SELECT w.*,i.name FROM wantlist w INNER JOIN items i ON type =1 AND w.target_id = i.item_id WHERE w.item_id IN (?)";
+    $sql = "SELECT w.*,i.name FROM wantlist w INNER JOIN items i ON type =1 AND w.target_id = i.item_id WHERE w.item_id IN (?) ORDER BY pos ASC";
     $want = $app['db']->fetchAll($sql,
     array($ids),
     array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
@@ -59,7 +59,8 @@ $app->get('/rest/items/{id}', function ($id)  use($app){
     foreach ($post as $key => &$p) {
     	foreach ($want as $j => $w) {
     		if ($w['item_id'] == $p['item_id']) {
-    			$p['want'][] = $w;
+    			$w['id'] = $w['target_id'];
+    			$p['wantlist'][] = $w;
     			unset($want[$j]);
     		}
     	}
@@ -77,7 +78,7 @@ $app->get('/rest/itemsbyuser/{user}', function ($user) use($app) {
     foreach ($post as $i) {
     	$ids[] = $i['id'];
     }
-    $sql = "SELECT w.*,i.name FROM wantlist w INNER JOIN items i ON type =1 AND w.target_id = i.item_id WHERE w.item_id IN (?)";
+    $sql = "SELECT w.*,i.name FROM wantlist w INNER JOIN items i ON type =1 AND w.target_id = i.item_id WHERE w.item_id IN (?) ORDER BY pos ASC";
     $want = $app['db']->fetchAll($sql,
     array($ids),
     array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
@@ -86,7 +87,8 @@ $app->get('/rest/itemsbyuser/{user}', function ($user) use($app) {
     foreach ($post as $key => &$p) {
     	foreach ($want as $j => $w) {
     		if ($w['item_id'] == $p['item_id']) {
-    			$p['want'][] = $w;
+    			$w['id'] = $w['target_id'];
+    			$p['wantlist'][] = $w;
     			unset($want[$j]);
     		}
     	}

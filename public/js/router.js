@@ -70,21 +70,21 @@ var Router = Backbone.Router.extend({
 	  			var _ = require('underscore');
 	  			
 	  			var m = new Items([]);
-	  			m.url = (id == undefined ? '/public/rest/itemsbyuser/mordamir' : '/public/rest/items/'+id)
+	  			m.url = (id == undefined ? '/public/rest/itemsbyuser/mordamir' : '/public/rest/items/'+id);
+
+	  			m.onlyMode = (id != undefined);
 	  			m.fetch({
 	  				success:function(collection,resp){
-	  					console.log(collection,'back')
-	  					collection.at(0).onlyMode = true;
+	  					
+	  					//collection.at(0).onlyMode = true;
 	  					_.each(resp,function(i){
-	  						if (i.want) {
+	  						if (!i.wantlist) i.wantlist=[];
 	  							var m = collection.findWhere({item_id:i.item_id});
-	  							m.wantlist = new Wantlist(i.want);
-	  							console.log(m);
-	  						}
+	  							m.wantlist = new Wantlist(i.wantlist);
+	  						
 	  					})
 
-
-	  					},
+	  				},
 	  				reset:true
 	  			});
 	  			//var m = new Items(mathItems);
@@ -99,7 +99,6 @@ var Router = Backbone.Router.extend({
 	  			wish.url = '/public/rest/useritems/1';
 	  			wish.fetch({reset: true});
 
-	  			console.log(m,'mmmmmm');
 	  			//m.wantlist = new Wantlist(mathItems.slice(0,5));
 	  			m.wantlist = new Wantlist([]);
 

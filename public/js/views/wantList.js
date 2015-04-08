@@ -24,11 +24,8 @@ var wantList =  HB.extend({
 
 	saveWant: function(evt) {
 		var id = $(evt.target).data('save-want');
-		console.log(id);
-		console.log(this.model.wantlist.toJSON());
-		console.log(this.model.wantlist.serialize());
 		$.post('/public/rest/wantlist/1',{
-			d:this.model.wantlist.serialize(),
+			d:this.model.at(0).wantlist.serialize(),
 			wid:id,
 		});
 
@@ -110,7 +107,8 @@ var wantList =  HB.extend({
 			$( ".want-items" ).sortable({
 				stop:function(evt,ui){
 					var neworder = $(this).sortable('toArray');
-					self.model.wantlist.setOrder(neworder);
+					self.model.at(0).wantlist.setOrder(neworder);
+					self.render();
 				}
 			});
 		});
@@ -130,14 +128,14 @@ var wantList =  HB.extend({
 		var id = $(evt.target).data('addtowant');
 		var m = this.wish.get(id);
 		this.wish.remove(m);
-		this.model.wantlist.addToEnd(m);
+		this.model.at(0).wantlist.addToEnd(m);
 		this.render();
 	},
 
 	removeFromWant: function(evt) {
 		var id = $(evt.target).data('remove-from-want');
-		var m = this.model.wantlist.get(id);
-		this.model.wantlist.remove(m);
+		var m = this.model.at(0).wantlist.get(id);
+		this.model.at(0).wantlist.remove(m);
 			
 		//If it's a wildcard then move it to the wildcards 
 		if (m.items != undefined) {
