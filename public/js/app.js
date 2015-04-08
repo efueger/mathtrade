@@ -30,6 +30,3 @@ require(['jquery','underscore','backbone','router'],function($,_,Backbone,Router
 	var router = new Router();
   Backbone.history.start();
 });
-
-
-// <script type="text/javascript" src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>

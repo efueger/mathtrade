@@ -9,7 +9,8 @@
     ],
     "require": {
         "silex/silex": "~1.2",
-        "twig/twig": "*"
+        "twig/twig": "*",
+        "doctrine/dbal": "~2.2"
 
     },
     "require-dev": {

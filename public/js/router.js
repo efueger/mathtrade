@@ -64,20 +64,49 @@ var Router = Backbone.Router.extend({
 	  	},
 
 	  	want: function(id) {
-	  		require(['jquery','views/wantList','models/mathItems','views/hb','models/wildcard','models/wildcards','jqueryui'
-	  			],function($,wantView,Items,HB,Wildcard,Wildcards){
-	  			var m = new Items(mathItems);
+	  		require(['jquery','views/wantList','models/mathItems','views/hb','models/wildcard','models/wildcards','models/wantList','jqueryui'
+	  			],function($,wantView,Items,HB,Wildcard,Wildcards,Wantlist){
 
-	  			m.at(0).set('user','edgard');
-	  			m.filterByUser('edgard');
-	  			if (id != undefined) {
-	  				m.onlyMode = true;
-	  			}
+	  			var _ = require('underscore');
+	  			
+	  			var m = new Items([]);
+	  			m.url = (id == undefined ? '/public/rest/itemsbyuser/mordamir' : '/public/rest/items/'+id);
 
-	  			var wish = new Items(mathItems.slice(0,5));
+	  			m.onlyMode = (id != undefined);
+	  			m.fetch({
+	  				success:function(collection,resp){
+	  					
+	  					//collection.at(0).onlyMode = true;
+	  					_.each(resp,function(i){
+	  						if (!i.wantlist) i.wantlist=[];
+	  							var m = collection.findWhere({item_id:i.item_id});
+	  							m.wantlist = new Wantlist(i.wantlist);
+	  						
+	  					})
 
-	  			m.wantlist = new Items([]);
-	  			var wildcards = new Wildcards([]);
+	  				},
+	  				reset:true
+	  			});
+	  			//var m = new Items(mathItems);
+	  			// m.at(0).set('user','edgard');
+	  			// m.filterByUser('edgard');
+	  			// if (id != undefined) {
+	  			// 	m.onlyMode = true;
+	  			// }
+
+	  			//var wish = new Items(mathItems.slice(0,10));
+	  			var wish = new Items([]);
+	  			wish.url = '/public/rest/useritems/1';
+	  			wish.fetch({reset: true});
+
+	  			//m.wantlist = new Wantlist(mathItems.slice(0,5));
+	  			m.wantlist = new Wantlist([]);
+
+	  			m.each(function(i){
+
+	  			});
+
+	  			var wildcards = new Wildcards([{name:'TEST'}]);
 
 
 

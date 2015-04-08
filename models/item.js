@@ -15,6 +15,8 @@ define(['backbone'],function(Backbone){
 
 				this.setMedia();
 			}
+			if (!this.attributes['target_id'])
+			this.attributes['target_id'] = this.attributes['id']
 			
 		},
 
@@ -43,13 +45,20 @@ define(['backbone'],function(Backbone){
 
 		toJSON : function(options) {
 			var d = _.clone(this.attributes);
-			d.id = this.cid;
+			if (d.id == undefined)d.id = this.cid;
 			if (d.is_pack) {
 				d.packItems = [];
 				_.each(this.packItems,function(m){
 					d.packItems.push(m.toJSON());
 				});
 			}
+			d.wantname = d.id;
+
+			if (this.wantlist) {
+				d.wantlist = this.wantlist.toJSON();
+				console.log('has want',d.wantlist)
+			}
+
 			return d;
 		}
 

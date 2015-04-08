@@ -8,6 +8,7 @@
     <!-- Bootstrap -->
     <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../bower_components/jquery-textcomplete/dist/jquery.textcomplete.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -130,21 +131,6 @@
 	    </div>
 	  </div>
 	</nav>
-	
-	<div class="row">
-		<div class="col-md-4">
-			
-			  <input type="text" class="form-control" data-math-filter='' placeholder="Teclea para filtrar los juegos" />
-			
-		</div>
-		<div class="col-md-4">
-
-		 <div class="btn-group" role="group" aria-label="...">
-		  <button type="button" class="btn btn-default">Excluir todos</button>
-		  <button type="button" class="btn btn-default">Me interesan todos</button>
-		</div>
-		</div>
-	</div>
 
 	<div id="items">
 		<div class="col-md-8" >
@@ -161,48 +147,79 @@
 				</div>
 				<div class="col-md-9">
 					<h4><a href="#want/{{id}}">{{name}}</a></h4>
-					<ul class="want-items">
-						{{#each ../../want}}
-						<li>{{name}}</li>
+					<ul class="want-items list-unstyled">	
+						{{#each ../wantlist}}
+						<li id="wantitem_{{id}}" class="item">
+						<span class="glyphicon glyphicon-option-vertical handle"></span>
+						<button type="button" data-remove-from-want='{{id}}'  class="btn btn-danger btn-xs tool">-</button>
+						{{name}}
+						</li>
 						{{/each}}
 					</ul>
+					{{#if ../../onlyMode}}
+					<button type="button" data-save-want='{{id}}'  class="btn btn-primary btn-sm tool">Save</button>
+					{{/if}}
 				</div>
 				{{/if}}
 	  		</div>
 	  		{{/each}}
+
+	  		Wantlist
+			<pre>
+			{{#if onlyMode}}
+			({{user}}) {{../current.id}}: {{#each ../items.0.wantlist}}{{id}} {{/each}} <br/>
+			{{else}}
+			{{#each items}}
+			({{../user}}) {{id}}: {{#each items.0.wantlist}}{{id}} {{/each}} <br/>
+			{{/each}}
+			{{/if}}
+			</pre>
+		</div>
+
 	  	</div>
-	  	{{#if onlyMode}}
+	  	{{#if onlyMode}}	
 	  	<div class="col-md-4" id="wishlist">
 	  		Comodines:<button type="button" data-createWildcard='' class="btn btn-primary btn-xs">Crear comodín</button>
-	  		<ul>
+	  		<ul class="list-unstyled">
 	  		{{#each wildcards}}
-	  			<li>
+	  			<li class="item">
 	  			{{#if name}}
-	  			<button type="button" data-addWildcardToWant='{{id}}'  class="btn btn-success btn-xs">+</button>
+	  			<button type="button" data-addWildcardToWant='{{id}}'  class="btn btn-success btn-xs tool">+</button>
+	  			<button type="button" data-delete-wild='{{id}}'  class="btn btn-danger btn-xs tool">-</button>
 	  			{{name}}
-	  			<ul class="wildcard-items">
+	  			<ul class="wildcard-items list-unstyled">
 	  				{{#each items}}
-	  				<li>{{name}}</li>
+	  				<li>
+	  				<span class="glyphicon glyphicon-option-vertical handle"></span>
+	  				<button type="button" data-remove-from-wild='{"wid":"{{../id}}","id":"{{id}}" }'  class="btn btn-danger btn-xs">-</button>
+	  				{{name}}
+	  				</li>
 	  				{{/each}}
-	  				<li class="wilcard-drop" data-wild-id='{{../id}}'>drop target</li>
+	  				<li class="wilcard-drop droptarget" data-wild-id='{{../id}}'></li>
 	  			</ul>
 	  			{{else}}
-	  			<input type="text" data-wild-id='{{id}}' name="name"/> <button type="button" data-saveWildcard='{{id}}'>Guardar</button>
+	  			<input type="text" data-wild-input-id='{{id}}' name="name"/> <button type="button" data-saveWildcard='{{id}}'>Guardar</button>
 	  			{{/if}}
 	  			</li>
 	  		{{/each}}
 	  		</ul>
 	  		Mis intereses:
-	  		<ul id="myinterests">
+	  		<ul id="myinterests" class="list-unstyled">
 	  		{{#each wish}}
 	  		<li data-id='{{id}}'>
+	  			<span class="glyphicon glyphicon-option-vertical handle"></span>
 	  			<button type="button" data-addToWant='{{id}}'  class="btn btn-success btn-xs">+</button>
 	  			{{name}}
 	  		</li>
 	  		{{/each}}
 	  		</ul>
 	  	</div>
-	  	{{/if}}
+	 	{{/if}}
+	</div>
+
+	<div class="row">
+		<div class="col-md-8">
+		
 	</div>
 
 </script>
@@ -277,75 +294,6 @@
 
 <script type="text/javascript">
 	var mathItems = JSON.parse('{{ items|raw }}');	
-	
-//require(['jquery','underscore','backbone'],function($,_,Backbone){
-//	console.log('buu')
-	/*
-	
-	var games = [
-		{
-			id:1,
-			name:"Caverna",
-			description:"Dos partidas en perfecto estado",
-			bgg_id:102794
-		},
-		{
-			id:2,
-			name:"Agricola",
-			description:"1 g"
-		}
-	];
-
-	var gs = new MC.models.items(games);
-	var mt = new MC.models.items([]);
-
-
-	
-
-
-	MT.init({
-		user: gs
-	});
-
-
-	
-
-
-	
-	
-
-
-	var mtView =  MC.views.HB.extend({
-		onInit:function(){
-			this.model.on('remove',this.render);
-			this.model.on('add',this.render);
-		},
-		events: {
-			'click [data-remove]':'remove'
-		},
-		remove:function(evt){
-			var id = $(evt.target).data('remove');
-			var m = this.model.get(id);
-			this.model.remove(m);
-			gs.add(m);
-		},
-		template:'mt-list-template'
-	});
-
-
-	
-
-	
-	
-
-
-	
-
-	*/
-//});
-//
-
-
 </script>
 </body>
 </html>

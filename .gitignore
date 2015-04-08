@@ -1,5 +1,8 @@
 /vendor
 /bin
 composer.phar
+/.vagrant
+tags
+/.idea
 node_modules
 bower_components
