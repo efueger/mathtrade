@@ -12,7 +12,6 @@ define(['backbone'],function(Backbone){
 		    var json = Backbone.Model.prototype.toJSON.call(this);
 		    if (!json.id) json.id = this.cid;
 		    json.items = this.items.toJSON();
-		    console.log(json);
 
 		    json.wantname = '%'+json.name;
 		    // manipulate the json here

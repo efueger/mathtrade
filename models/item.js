@@ -12,16 +12,13 @@ define(['backbone'],function(Backbone){
 				this.setupPack();
 			}
 			else {
-
 				this.setMedia();
 			}
 			if (!this.attributes['target_id'])
 			this.attributes['target_id'] = this.attributes['id']
-			
 		},
 
 		setupPack:function() {
-			//console.log(this.attributes);
 			this.attributes = {};
 			this.attributes['name'] = 'Pack ';
 			_.each(this.packItems,function(i){
