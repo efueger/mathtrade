@@ -168,8 +168,6 @@ var wantList =  HB.extend({
 			d.wish = this.wish.toJSON();
 			d.want = this.model.wantlist.toJSON();
 			d.wildcards = this.wildcards.toJSON();
-
-			console.log(d.items,'tojsonyes')
 		return d;
 	},
 	//skipchange:true

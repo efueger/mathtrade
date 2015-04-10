@@ -34,6 +34,33 @@ $app->get('/', function (Silex\Application $app) {
     ));
 });
 
+//Get all the info from a user
+$app->get('/{hash}', function ($hash)  use($app){
+	
+	//Get the user
+	$sql = "SELECT * FROM users WHERE hash = ?";
+	$user = $app['db']->fetchAll($sql,array($hash));
+	$user = $user[0];
+
+	//Items selected by user either 
+	$sql = "SELECT i.*,ui.type FROM user_items ui 
+			INNER JOIN items i ON ui.item_id = i.item_id 
+			WHERE ui.user_id = ?";
+	$items = $app['db']->fetchAll($sql,array($user['id']));
+
+	//Items on the pending list
+	$sql = "SELECT i.* FROM items i
+			LEFT JOIN user_items ui ON i.item_id = ui.item_id AND ui.user_id = ?
+			WHERE ui.id IS NULL";
+	$pending = $app['db']->fetchAll($sql,array($user['id']));
+
+	return $app['twig']->render('index.twig', array(
+        //'items' => file_get_contents('mtitems.data'),
+        'items' => str_replace('"','\\"',json_encode($pending,JSON_HEX_APOS)),
+        'useritems' => str_replace('"','\\"',json_encode($items,JSON_HEX_APOS))
+    ));
+});
+
 //Returns all the items
 $app->get('/rest/items', function (Silex\Application $app) {
 	$sql = "SELECT * FROM items";

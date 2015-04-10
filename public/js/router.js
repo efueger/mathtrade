@@ -24,7 +24,7 @@ MT.init({
 
 var Router = Backbone.Router.extend({
 	  routes: {
-	    "":                 "home",
+	    "":                 "list",//"home",
 	    "list":          	"list", 
 	    "want": 			"want", 
 	    "want/:id": 		"want", 
