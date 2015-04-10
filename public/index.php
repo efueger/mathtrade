@@ -7,6 +7,8 @@
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+const returnCodeOK = 200;
+const USER_NOT_FOUND = 520;
 require_once __DIR__.'/../vendor/autoload.php';
 $app = new Silex\Application();
 $app['debug'] = true;
@@ -65,7 +67,7 @@ $app->get('/{hash}', function ($hash)  use($app){
 $app->get('/rest/items', function (Silex\Application $app) {
 	$sql = "SELECT * FROM items";
     $post = $app['db']->fetchAll($sql);
-    return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+    return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
 $app->get('/rest/items/{id}', function ($id)  use($app){
@@ -93,7 +95,7 @@ $app->get('/rest/items/{id}', function ($id)  use($app){
     	}
     }
     
-    return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+    return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
 $app->get('/rest/itemsbyuser/{user}', function ($user) use($app) {
@@ -122,14 +124,14 @@ $app->get('/rest/itemsbyuser/{user}', function ($user) use($app) {
     }
 
 
-    return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+    return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
 
 $app->get('/rest/useritems/{user}', function ($user) use ($app) {
 	$sql = "SELECT i.* FROM user_items ui INNER JOIN items i ON ui.item_id = i.id WHERE user_id = ?";
     $post = $app['db']->fetchAll($sql,array((int)$user));
-    return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+    return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
 
@@ -141,13 +143,44 @@ $app->post('/rest/useritems/{user}', function ($user,Request $request) use ($app
     	'type'=>$request->get('type')
 
     	));
-    return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+    return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
 $app->get('/rest/userwantlist/{user}', function ($user)  use($app){
 	$sql = "SELECT * FROM wantlist WHERE user_id = ?";
     $post = $app['db']->fetchAll($sql,array($user));
-    return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+    return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
+});
+
+/**
+ * @param $userName
+ * @return string
+ */
+function generateHash($userName)
+{
+	return md5(time() . $userName . time());
+}
+
+
+$app->get('/gethash/{userName}', function ($userName,Request $request) use ($app) {
+
+
+	$sql = "SELECT distinct username FROM items WHERE username = ?";
+	$user = $app['db']->fetchAll($sql,array($userName));
+	$returnCode = returnCodeOK;
+	if(!(0 === count($user))) {
+		$hash= generateHash($userName);
+		$app['db']->insert('users',array(
+			'name'=>$userName,
+			'hash'=>$hash
+
+		));
+	} else {
+		$hash='fail';
+		$errorCode = USER_NOT_FOUND;
+	}
+
+	return new Response(json_encode($hash),200,array('Content-Type'=>'application/json'));
 });
 
 $app->post('/rest/wantlist/{id}', function ($id,Request $request) use ($app) {
@@ -172,7 +205,7 @@ $app->post('/rest/wantlist/{id}', function ($id,Request $request) use ($app) {
 	}
 
 	print_r($d);
-    return new Response(json_encode($d),200,array('Content-Type'=>'application/json'));
+    return new Response(json_encode($d), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
 $app->get('api/collection', function(Request $request) use ($app) {
@@ -183,7 +216,7 @@ $app->get('api/collection', function(Request $request) use ($app) {
 	}
 
 
-	return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
 $app->get('/mt', function (Silex\Application $app) {
@@ -295,7 +328,6 @@ $app->get('/mt', function (Silex\Application $app) {
 			    }
 			}
 		}
-		$max--;
 	}
 	while (!empty($pages[1]));
 //	unset($items[55][2]->description);
@@ -309,11 +341,6 @@ $app->get('/mt', function (Silex\Application $app) {
 	preg_match_all('/<tr>(.*?)<\/tr>/', $posts[1][1], $games);
 	print_r($games[1]);
 
-
-    // return $app['twig']->render('index.twig', array(
-    //     'name' => 'edgard',
-    // ));
-    //return "ed";
 });
 
 
