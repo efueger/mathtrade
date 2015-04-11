@@ -1,4 +1,4 @@
-define(['views/hb'],function(HB){
+define(['views/hb','models/item'],function(HB,Wildcard){
 
 var wantList =  HB.extend({
 	onInit:function(options){
@@ -15,6 +15,7 @@ var wantList =  HB.extend({
 		'click [data-saveWildcard]':'saveWildcard',
 		'click [data-addToWant]':'addToWant',
 		'click [data-save-want]':'saveWant',
+		'click [data-save-wild]':'saveWild',
 		'click [data-delete-wild]':'deleteWild',
 		'click [data-remove-from-want]':'removeFromWant',
 		'click [data-remove-from-wild]':'removeFromWild',
@@ -27,6 +28,17 @@ var wantList =  HB.extend({
 		$.post('/public/rest/wantlist/1',{
 			d:this.model.at(0).wantlist.serialize(),
 			wid:id,
+		});
+
+
+	},
+
+	saveWild: function(evt) {
+		var id = $(evt.target).data('save-wild');
+		var m = this.wildcards.get(id);
+		$.post('/public/rest/wildcarditems/'+hash,{
+			d:JSON.stringify(m.items.toJSON()),
+			wid:m.get('id'),
 		});
 
 
@@ -55,12 +67,21 @@ var wantList =  HB.extend({
 
 		var m = this.wildcards.get(id);
 		m.set('name',val);
+
+		$.post('/public/rest/wildcards/'+hash,{
+			name:m.get('name')
+		},function(r){
+			m.set({id:r.id,wantid:r.wantid});
+		},'json');
+
 		this.render();
 	},
 
 	deleteWild:function(evt) {
 		var id = $(evt.target).data('delete-wild');
 		var m = this.wildcards.get(id);
+
+		if (m == undefined) m = this.wildcards.get('w'+id);
 		//Get all items in this wild and add them back
 		m.items.each(function(i){
 			this.wish.add(i);
@@ -68,6 +89,11 @@ var wantList =  HB.extend({
 		this.wildcards.remove(m);
 		//this.wish.add(m);
 		this.render();
+		$.ajax({
+		    url: '/public/rest/wildcards/'+hash,
+		    type: 'DELETE',
+		    data:{id:m.get('id')}
+		});
 	}, 
 
 	onRender:function(){
@@ -108,6 +134,7 @@ var wantList =  HB.extend({
 				stop:function(evt,ui){
 					var neworder = $(this).sortable('toArray');
 					self.model.at(0).wantlist.setOrder(neworder);
+					console.log(model.at(0).wantlist);
 					self.render();
 				}
 			});
@@ -129,6 +156,7 @@ var wantList =  HB.extend({
 		var m = this.wish.get(id);
 		this.wish.remove(m);
 		this.model.at(0).wantlist.addToEnd(m);
+		console.log(this.model.at(0).wantlist);
 		this.render();
 	},
 
@@ -151,8 +179,11 @@ var wantList =  HB.extend({
 	addWildcardToWant:function(evt) {
 		var id = $(evt.target).data('addwildcardtowant');
 		var m = this.wildcards.get(id);
-		this.wildcards.remove(m);
-		this.model.wantlist.add(m);
+
+		if (m == undefined) m = this.wildcards.get('w'+id);
+		//this.wildcards.remove(m);
+		this.model.at(0).wantlist.addToEnd(m);
+		console.log(this.model.at(0).wantlist);
 		this.render();
 	},
 	dataForTpl:function(){
@@ -168,6 +199,7 @@ var wantList =  HB.extend({
 			d.wish = this.wish.toJSON();
 			d.want = this.model.wantlist.toJSON();
 			d.wildcards = this.wildcards.toJSON();
+			console.log(d,'this');
 		return d;
 	},
 	//skipchange:true

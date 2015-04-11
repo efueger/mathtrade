@@ -29,6 +29,44 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 ));
 
 
+function getUser($hash)
+{
+	global $app;
+	//Get the user
+	$sql = "SELECT * FROM users WHERE hash = ?";
+	$user = $app['db']->fetchAll($sql,array($hash));
+	$user = $user[0];
+	return $user;	
+}
+
+function getWantUser($user)
+{
+	global $app;
+	$sql = "SELECT * FROM items where username = ?";
+    $post = $app['db']->fetchAll($sql,array($user));
+
+    //Fetch want lists
+    $ids = array();
+    foreach ($post as $i) {
+    	$ids[] = $i['id'];
+    }
+    $sql = "SELECT w.*,i.name FROM wantlist w INNER JOIN items i ON type =1 AND w.target_id = i.item_id WHERE w.item_id IN (?) ORDER BY pos ASC";
+    $want = $app['db']->fetchAll($sql,
+    array($ids),
+    array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+
+    foreach ($post as $key => &$p) {
+    	foreach ($want as $j => $w) {
+    		if ($w['item_id'] == $p['item_id']) {
+    			$w['id'] = $w['target_id'];
+    			$p['wantlist'][] = $w;
+    			unset($want[$j]);
+    		}
+    	}
+    }
+    return $post;
+}
+
 // ... definitions
 $app->get('/', function (Silex\Application $app) {
 	 return $app['twig']->render('index.twig', array(
@@ -60,9 +98,37 @@ $app->get('/{hash}', function ($hash)  use($app){
 			WHERE ui.id IS NULL";
 	$pending = $app['db']->fetchAll($sql,array($user['id']));
 
+	$wants = getWantUser($user['id']);
+
+
+	$sql = "SELECT w.id as wid,w.name as wildname,i.* FROM wildcard w
+			LEFT JOIN wildcarditems wi ON w.id = wi.wildcard_id
+			LEFT JOIN items i ON wi.item_id = i.item_id
+			WHERE w.user_id = ? ORDER by pos ASC";
+	$dirty = $app['db']->fetchAll($sql,array($user['id']));
+
+	$wildcards = array();
+	foreach ($dirty as $w) {
+		if (!isset($wildcards[$w['wid']])){
+			$wildcards[$w['wid']] = array('id'=>$w['wid'],'name'=>$w['wildname'],'wantid'=>'%'.$w['wildname'],'items'=>array());
+		}
+		if (isset($w['item_id']))
+			$wildcards[$w['wid']]['items'][] = array(
+				'id'=>$w['item_id'],
+				'name'=>$w['name'],
+				
+			);
+	}
+	$wildcards = array_values($wildcards);
+	//print_r($wildcards);
+
+
 	return $app['twig']->render('index.twig', array(
         'items' => str_replace('"','\\"',json_encode($pending,JSON_HEX_APOS)),
-        'useritems' => str_replace('"','\\"',json_encode($items,JSON_HEX_APOS))
+        'useritems' => str_replace('"','\\"',json_encode($items,JSON_HEX_APOS)),
+        'wants' => str_replace('"','\\"',json_encode($wants,JSON_HEX_APOS)),
+        'wildcards' => str_replace('"','\\"',json_encode($wildcards,JSON_HEX_APOS)),
+        'hash' => $hash
     ));
 });
 
@@ -84,7 +150,11 @@ $app->get('/rest/items/{id}', function ($id)  use($app){
     foreach ($post as $i) {
     	$ids[] = $i['id'];
     }
-    $sql = "SELECT w.*,i.name FROM wantlist w INNER JOIN items i ON type =1 AND w.target_id = i.item_id WHERE w.item_id IN (?) ORDER BY pos ASC";
+    $sql = "SELECT w.*,i.name,wl.name as wlname 
+    		FROM wantlist w 
+    		LEFT JOIN items i ON type =1 AND w.target_id = i.item_id 
+			LEFT JOIN wildcard wl ON type=2 AND w.target_id = wl.id
+    		WHERE w.item_id IN (?) ORDER BY pos ASC";
     $want = $app['db']->fetchAll($sql,
     array($ids),
     array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
@@ -93,7 +163,12 @@ $app->get('/rest/items/{id}', function ($id)  use($app){
     foreach ($post as $key => &$p) {
     	foreach ($want as $j => $w) {
     		if ($w['item_id'] == $p['item_id']) {
-    			$w['id'] = $w['target_id'];
+    			$w['id'] = $w['type']==2?'w'.$w['target_id']:$w['target_id'];
+    			$w['wantid'] = $w['id'];
+    			if ($w['type']==2) {
+    				$w['name'] = $w['wlname'];
+    				$w['wantid'] = "%".$w['wlname'];
+    			}
     			$p['wantlist'][] = $w;
     			unset($want[$j]);
     		}
@@ -112,16 +187,27 @@ $app->get('/rest/itemsbyuser/{user}', function ($user) use($app) {
     foreach ($post as $i) {
     	$ids[] = $i['id'];
     }
-    $sql = "SELECT w.*,i.name FROM wantlist w INNER JOIN items i ON type =1 AND w.target_id = i.item_id WHERE w.item_id IN (?) ORDER BY pos ASC";
+
+    
+    $sql = "SELECT w.*,i.name,wl.name as wlname 
+    		FROM wantlist w 
+    		LEFT JOIN items i ON type =1 AND w.target_id = i.item_id 
+			LEFT JOIN wildcard wl ON type=2 AND w.target_id = wl.id
+    		WHERE w.item_id IN (?) ORDER BY pos ASC";
     $want = $app['db']->fetchAll($sql,
     array($ids),
     array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
     //echo $sql;
 
-    foreach ($post as $key => &$p) {
+     foreach ($post as $key => &$p) {
     	foreach ($want as $j => $w) {
     		if ($w['item_id'] == $p['item_id']) {
-    			$w['id'] = $w['target_id'];
+    			$w['id'] = $w['type']==2?'w'.$w['target_id']:$w['target_id'];
+    			$w['wantid'] = $w['id'];
+    			if ($w['type']==2) {
+    				$w['name'] = $w['wlname'];
+    				$w['wantid'] = "%".$w['wlname'];
+    			}
     			$p['wantlist'][] = $w;
     			unset($want[$j]);
     		}
@@ -140,16 +226,37 @@ $app->get('/rest/useritems/{user}', function ($user) use ($app) {
 });
 
 
-$app->post('/rest/useritems/{user}', function ($user,Request $request) use ($app) {
-	$sql = "SELECT * FROM user_items WHERE user_id = ?";
+$app->post('/rest/useritems/{hash}', function ($hash,Request $request) use ($app) {
+	$user = getUser($hash);
     $post = $app['db']->insert('user_items',array(
-    	'user_id'=>$user,
+    	'user_id'=>$user['id'],
     	'item_id'=>$request->get('id'),
     	'type'=>$request->get('type')
 
     	));
     return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
+
+
+$app->post('/rest/wildcards/{hash}', function ($hash,Request $request) use ($app) {
+	$user = getUser($hash);
+    $post = $app['db']->insert('wildcard',array(
+    	'user_id'=>$user['id'],
+    	'name'=>$request->get('name')
+    	));
+   		$w = $app['db']->lastInsertId(); 
+    return new Response(json_encode(array('id'=>$w,'wantid'=>'%'.$request->get('name'))),200,array('Content-Type'=>'application/json'));
+});
+
+$app->delete('/rest/wildcards/{hash}', function ($hash,Request $request) use ($app) {
+	$user = getUser($hash);
+    $post = $app['db']->delete('wildcard',array(
+    	'user_id'=>$user['id'],
+    	'id'=>$request->get('id')
+    	));
+    return new Response(json_encode($post),200,array('Content-Type'=>'application/json'));
+});
+
 
 $app->get('/rest/userwantlist/{user}', function ($user)  use($app){
 	$sql = "SELECT * FROM wantlist WHERE user_id = ?";
@@ -189,8 +296,6 @@ $app->post('/gethash/{userName}', function ($userName,Request $request) use ($ap
 });
 
 $app->post('/rest/wantlist/{id}', function ($id,Request $request) use ($app) {
-	
-	print_r($request->request);
 	$d = json_decode($request->get('d'));
 	$wantid = $request->get('wid');
 	echo "id $wantid";
@@ -211,6 +316,29 @@ $app->post('/rest/wantlist/{id}', function ($id,Request $request) use ($app) {
 
 	print_r($d);
     return new Response(json_encode($d), returnCodeOK,array('Content-Type'=>'application/json'));
+});
+
+$app->post('/rest/wildcarditems/{hash}', function ($hash,Request $request) use ($app) {
+	$user = getUser($hash);
+	$d = json_decode($request->get('d'));
+	$wildid = $request->get('wid');
+
+	//Remove old wild
+	if (is_numeric($wildid)) {
+		$app['db']->delete('wildcarditems',array('wildcard_id'=>$wildid));
+	}
+	print_r($d);
+	//Now prepare to insert the items
+	foreach ($d as $pos=>$i) {
+		$app['db']->insert('wildcarditems',array(
+			'item_id'=>$i->item_id,
+			'wildcard_id'=>$wildid,
+			'pos'=>$pos
+		));
+	}
+
+	print_r($d);
+    return new Response(json_encode($d),200,array('Content-Type'=>'application/json'));
 });
 
 $app->get('api/collection', function(Request $request) use ($app) {

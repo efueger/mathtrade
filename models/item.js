@@ -16,6 +16,10 @@ define(['backbone'],function(Backbone){
 			}
 			if (!this.attributes['target_id'])
 			this.attributes['target_id'] = this.attributes['id']
+			
+			if (this.attributes.type == 2) this.attributes.wantid = '%'+this.attributes.name;
+			else 
+				this.attributes['wantid'] = this.attributes['id'];
 		},
 
 		setupPack:function() {

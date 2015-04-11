@@ -1,4 +1,4 @@
-define(['views/hb','handlebars'],function(HB,Handlebars){
+define(['views/hb','handlebars','MT'],function(HB,Handlebars,MT){
 
 var mathList =  HB.extend({
 	onInit:function(){
@@ -46,11 +46,10 @@ var mathList =  HB.extend({
 	 * @param  {[type]} evt [description]
 	 */
 	want:function(evt) {
-		console.log('want');
 		var id = $(evt.target).data('want');
 		var m = this.model.get(id);
 		this.model.remove(m);
-		MT.want(m);
+		MT.addwant(m);
 	},
 
 	skipchange:true

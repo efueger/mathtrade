@@ -14,7 +14,7 @@ define(['backbone','models/item','underscore'],function(Backbone,Item,_){
 			this.filtered = this.filter(function(m){
 				return r.test(m.get('name'));
 			});
-			console.log(this.filtered);
+			//console.log(this.filtered);
 		},
 
 		make: function() {
