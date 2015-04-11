@@ -45,7 +45,7 @@ var Router = Backbone.Router.extend({
 
 	  	list: function() {
 	  		console.log('test');
-	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,Items,HB){
+	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,mathItems,HB){
 	  			//console.log(mathItems);
 	  			var m = new Items(mathItems);
 	  			console.log(m);

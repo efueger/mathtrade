@@ -35,6 +35,10 @@ $app->get('/', function (Silex\Application $app) {
         'items' => file_get_contents('mtitems.data')
     ));
 });
+$app->get('/landing', function (Silex\Application $app) {
+	return $app['twig']->render('landing.twig');
+
+});
 
 //Get all the info from a user
 $app->get('/{hash}', function ($hash)  use($app){
@@ -57,11 +61,12 @@ $app->get('/{hash}', function ($hash)  use($app){
 	$pending = $app['db']->fetchAll($sql,array($user['id']));
 
 	return $app['twig']->render('index.twig', array(
-        //'items' => file_get_contents('mtitems.data'),
         'items' => str_replace('"','\\"',json_encode($pending,JSON_HEX_APOS)),
         'useritems' => str_replace('"','\\"',json_encode($items,JSON_HEX_APOS))
     ));
 });
+
+
 
 //Returns all the items
 $app->get('/rest/items', function (Silex\Application $app) {
@@ -162,7 +167,7 @@ function generateHash($userName)
 }
 
 
-$app->get('/gethash/{userName}', function ($userName,Request $request) use ($app) {
+$app->post('/gethash/{userName}', function ($userName,Request $request) use ($app) {
 
 
 	$sql = "SELECT distinct username FROM items WHERE username = ?";
