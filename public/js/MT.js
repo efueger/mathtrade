@@ -1,4 +1,4 @@
-define(['models/items'],function(Items){
+define(['models/items','models/wildcards'],function(Items,Wildcards){
 
 	/**
 	 * Module to work with handlebars templates, handles the compilation and caches it 
@@ -11,6 +11,9 @@ define(['models/items'],function(Items){
 
 		mt.init = function(data){
 			mt.user = data.user;
+			mt.want = new Items(data.want);
+			mt.wildcards = new Wildcards(data.wildcards);
+
 			
 		}
 		/**
@@ -19,16 +22,19 @@ define(['models/items'],function(Items){
 		 */
 		mt.exclude = function(item){
 			excluded.add(item);
+			$.post('/public/rest/useritems/'+hash,{id:item.get('item_id'),type:2},function(resp){
+				console.log(resp);
+			});
 		}
 
 		/**
 		 * Excludes a game and adds it to the excluded game list
 		 * @param  {[type]} item [description]
 		 */
-		mt.want = function(item){
+		mt.addwant = function(item){
 			interested.add(item);
 
-			$.post('/public/rest/useritems/1',{id:1,type:1},function(resp){
+			$.post('/public/rest/useritems/'+hash,{id:item.get('item_id'),type:1},function(resp){
 				console.log(resp);
 			});
 

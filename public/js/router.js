@@ -16,7 +16,10 @@ var games = [
 
 var gs = new Items(games);
 MT.init({
-	user:gs
+	user:gs,
+	wants:wants,
+	items:mathItems,
+	wildcards:wildcards
 });
 
 
@@ -45,7 +48,7 @@ var Router = Backbone.Router.extend({
 
 	  	list: function() {
 	  		console.log('test');
-	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,Items,HB){
+	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,mathItems,HB){
 	  			//console.log(mathItems);
 	  			var m = new Items(mathItems);
 	  			console.log(m);
@@ -79,8 +82,8 @@ var Router = Backbone.Router.extend({
 	  					//collection.at(0).onlyMode = true;
 	  					_.each(resp,function(i){
 	  						if (!i.wantlist) i.wantlist=[];
-	  							var m = collection.findWhere({item_id:i.item_id});
-	  							m.wantlist = new Wantlist(i.wantlist);
+	  						var m = collection.findWhere({item_id:i.item_id});
+	  						m.wantlist = new Wantlist(i.wantlist);
 	  						
 	  					})
 
@@ -98,24 +101,24 @@ var Router = Backbone.Router.extend({
 	  			var wish = new Items([]);
 	  			wish.url = '/public/rest/useritems/1';
 	  			wish.fetch({reset: true});
-
-	  			//m.wantlist = new Wantlist(mathItems.slice(0,5));
 	  			m.wantlist = new Wantlist([]);
 
 	  			m.each(function(i){
 
 	  			});
 
-	  			var wildcards = new Wildcards([{name:'TEST'}]);
+	  			//var wildcards = new Wildcards([{name:'TEST'}]);
 
 
 
+	  			console.log(MT.wildcards);
 
+	  			m.wantlist.add(MT.wildcards.at(0));
 
 	  			$('#main').html(new wantView({
 	  				model:m,
 	  				wish:wish,
-	  				wildcards:wildcards,
+	  				wildcards:MT.wildcards,
 	  				skipchange:true
 
 	  			}).el);

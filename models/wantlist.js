@@ -2,6 +2,9 @@ define(['backbone','models/item','underscore','models/wildcard'],function(Backbo
 	return Backbone.Collection.extend({
 		model:Item,
 		comparator:'pos',
+		initialize:function(d){
+			console.log(d,'init');
+		},
 		addToEnd: function(m) {
 			m.set('pos',this.models.length-1,{silent:true});
 			this.add(m);
@@ -11,7 +14,9 @@ define(['backbone','models/item','underscore','models/wildcard'],function(Backbo
 			var o = 0;
 			_.each(order,function(i){
 				var p = i.split('_');
-				this.get(p[1]).set('pos',o,{silent:true});
+				var m =  this.get(p[1]);
+				if (m == undefined) m = this.get('w'+p[1]);
+				m.set('pos',o,{silent:true});
 				o++;
 			}.bind(this));
 			this.sort();
@@ -28,6 +33,11 @@ define(['backbone','models/item','underscore','models/wildcard'],function(Backbo
 					id:i.get('id') || i.cid,
 					t: i instanceof Wilcard ? 2:1
 				};
+				if (i.get('type')==2) {
+					o.t = 2;
+					o.id = i.get('target_id');
+				}
+
 				d.push(o);
 			});
 			return JSON.stringify(d);

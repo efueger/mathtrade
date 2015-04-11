@@ -57,7 +57,6 @@ define(['backbone','lib/MC/handlebars'],function(Backbone,Handlebars){
 		render: function() {
 			//If ther is a function to prepare the data use it otherwis its the model to json.
 			var data = this.dataForTpl?this.dataForTpl():this.model.toJSON();
-			console.log(data,'test');
 			//Render the template
 			this.$el.html(MC.Handlebars.html(this.template,data));
 

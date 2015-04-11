@@ -1,0 +1,32 @@
+<html>
+<head>
+    <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../bower_components/jquery-textcomplete/dist/jquery.textcomplete.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+<div>
+    <script type="text/javascript" data-main='js/app.js' src="../bower_components/requirejs/require.js"></script>
+    <script>
+
+    jQuery(document).ready(function() {
+            jQuery('#submit').click(function() { jQuery.post('gethash/ediar',function(data) {
+                        jQuery('#link').html('<p>Link para acceder a la wantlist </p><a href="'+data+'#want">WantList</a>');
+                    }
+            );
+        });
+    });
+    </script>
+</div>
+<h1>Landing!!</h1>
+<form >
+    <input type="text" name="userName"/>
+    <input type="button" value="Obtener Link" id="submit"/>
+</form>
+<div id="link">
+
+</div>
+
+
+</body>
+</html>
