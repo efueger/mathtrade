@@ -178,9 +178,11 @@ $app->get('/rest/items/{id}', function ($id)  use($app){
     return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
-$app->get('/rest/itemsbyuser/{user}', function ($user) use($app) {
+$app->get('/rest/itemsbyuser/{hash}', function ($hash) use($app) {
+	$user = getUser($hash);
+
 	$sql = "SELECT * FROM items where username = ?";
-    $post = $app['db']->fetchAll($sql,array($user));
+    $post = $app['db']->fetchAll($sql,array($user['name']));
 
     //Fetch want lists
     $ids = array();
@@ -219,9 +221,11 @@ $app->get('/rest/itemsbyuser/{user}', function ($user) use($app) {
 });
 
 
-$app->get('/rest/useritems/{user}', function ($user) use ($app) {
+$app->get('/rest/useritems/{hash}', function ($hash) use ($app) {
+	$user = getUser($hash);
+
 	$sql = "SELECT i.* FROM user_items ui INNER JOIN items i ON ui.item_id = i.id WHERE user_id = ?";
-    $post = $app['db']->fetchAll($sql,array((int)$user));
+    $post = $app['db']->fetchAll($sql,array((int)$user['id']));
     return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 

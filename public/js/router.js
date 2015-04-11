@@ -24,7 +24,6 @@ MT.init({
 
 
 
-
 var Router = Backbone.Router.extend({
 	  routes: {
 	    "":                 "list",//"home",
@@ -47,9 +46,8 @@ var Router = Backbone.Router.extend({
 	  	},
 
 	  	list: function() {
-	  		console.log('test');
-	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,mathItems,HB){
-	  			//console.log(mathItems);
+	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,Items,HB){
+	  			console.log(mathItems);
 	  			var m = new Items(mathItems);
 	  			console.log(m);
 	  			$('#main').html(new mathView({
@@ -73,7 +71,7 @@ var Router = Backbone.Router.extend({
 	  			var _ = require('underscore');
 	  			
 	  			var m = new Items([]);
-	  			m.url = (id == undefined ? '/public/rest/itemsbyuser/mordamir' : '/public/rest/items/'+id);
+	  			m.url = (id == undefined ? '/public/rest/itemsbyuser/'+hash : '/public/rest/items/'+id);
 
 	  			m.onlyMode = (id != undefined);
 	  			m.fetch({
@@ -99,7 +97,7 @@ var Router = Backbone.Router.extend({
 
 	  			//var wish = new Items(mathItems.slice(0,10));
 	  			var wish = new Items([]);
-	  			wish.url = '/public/rest/useritems/1';
+	  			wish.url = '/public/rest/useritems/'+hash;
 	  			wish.fetch({reset: true});
 	  			m.wantlist = new Wantlist([]);
 
