@@ -1,0 +1,18 @@
+.item {
+	padding:2px;
+}
+
+.item > .tool {
+	margin-right:5px;
+	min-width: 19px;
+}
+
+.droptarget {
+	display: none;
+	background-color: ccc;
+	border-radius: 5px;
+	padding: 4px;
+	margin: 2px;
+	border: 2px dashed #eee;
+	height: 25px;
+}
