@@ -10,9 +10,11 @@
     <script>
 
     jQuery(document).ready(function() {
-            jQuery('#submit').click(function() { 
+            jQuery('form').submit(function(e) {
+                e.preventDefault();
                 jQuery.post('gethash/'+$('#userName').val(),function(data) {
                         jQuery('#link').html('<p>Link para acceder a la wantlist </p><a href="'+data+'#want">WantList</a>');
+
                     }
             );
         });
@@ -22,7 +24,7 @@
 <h1>Landing!!</h1>
 <form >
     <input type="text" id="userName" name="userName"/>
-    <input type="button" value="Obtener Link" id="submit"/>
+    <input type="submit" value="Obtener Link" id="submit"/>
 </form>
 <div id="link">
 
