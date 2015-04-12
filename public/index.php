@@ -242,7 +242,7 @@ $app->get('/rest/useritems/{hash}', function ($hash) use ($app) {
 
 	$sql = "SELECT i.* FROM user_items ui 
 			INNER JOIN items i ON ui.item_id = i.id 
-			WHERE user_id = ?";
+			WHERE user_id = ? and type =1";
     $post = $app['db']->fetchAll($sql,array((int)$user['id']));
 
     //Now exclude the items of the wilcards
