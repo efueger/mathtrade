@@ -25,7 +25,7 @@ var wantList =  HB.extend({
 
 	saveWant: function(evt) {
 		var id = $(evt.target).data('save-want');
-		$.post('/public/rest/wantlist/1',{
+		$.post('/public/rest/wantlist/'+hash,{
 			d:this.model.at(0).wantlist.serialize(),
 			wid:id,
 		});
@@ -36,6 +36,7 @@ var wantList =  HB.extend({
 	saveWild: function(evt) {
 		var id = $(evt.target).data('save-wild');
 		var m = this.wildcards.get(id);
+		if (m == undefined)m = this.wildcards.get('w'+id);
 		$.post('/public/rest/wildcarditems/'+hash,{
 			d:JSON.stringify(m.items.toJSON()),
 			wid:m.get('id'),
@@ -119,6 +120,7 @@ var wantList =  HB.extend({
 			        //When dropped we need to add it to the wilcard and remove it from the wish
 			        var id = $(event.target).data('wild-id');
 			        var m = self.wildcards.get(id);
+			        if (m == undefined)m=self.wildcards.get('w'+id);
 			        var gid = ui.draggable.data('id');
 			        var game = self.wish.get(gid);
 			        m.items.add(game);
@@ -144,6 +146,7 @@ var wantList =  HB.extend({
 	removeFromWild: function(evt) {
 		var d = $(evt.target).data('remove-from-wild');
         var m = this.wildcards.get(d.wid);
+        if (m==undefined) m = this.wildcards.get('w'+d.wid);
         var game = m.items.get(d.id);
         m.items.remove(game);
         this.wish.add(game);
@@ -199,7 +202,6 @@ var wantList =  HB.extend({
 			d.wish = this.wish.toJSON();
 			d.want = this.model.wantlist.toJSON();
 			d.wildcards = this.wildcards.toJSON();
-			console.log(d,'this');
 		return d;
 	},
 	//skipchange:true

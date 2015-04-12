@@ -141,9 +141,25 @@ $app->get('/rest/items', function (Silex\Application $app) {
     return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
-$app->get('/rest/items/{id}', function ($id)  use($app){
+
+$app->get('/rest/itemstype/{type}/{hash}', function ($type,$hash)  use($app){
+	$user = getUser($hash);
+	$sql = "SELECT * FROM user_items ui
+			INNER JOIN items i ON ui.item_id = i.id AND user_id = ? 
+			WHERE type = ?";
+
+    $post = $app['db']->fetchAll($sql,array($user['id'],$type=='interested'?1:2));
+    return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
+});
+
+
+
+
+$app->get('/rest/items/{id}/{hash}', function ($id,$hash)  use($app){
 	$sql = "SELECT * FROM items WHERE id = ?";
     $post = $app['db']->fetchAll($sql,array($id));
+
+    $user = getUser($hash);
 
     //Fetch want lists
     $ids = array();
@@ -154,9 +170,9 @@ $app->get('/rest/items/{id}', function ($id)  use($app){
     		FROM wantlist w 
     		LEFT JOIN items i ON type =1 AND w.target_id = i.item_id 
 			LEFT JOIN wildcard wl ON type=2 AND w.target_id = wl.id
-    		WHERE w.item_id IN (?) ORDER BY pos ASC";
+    		WHERE w.item_id IN (?) AND w.user_id = ? ORDER BY pos ASC";
     $want = $app['db']->fetchAll($sql,
-    array($ids),
+    array($ids,$user['id']),
     array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
     //echo $sql;
 
@@ -195,9 +211,9 @@ $app->get('/rest/itemsbyuser/{hash}', function ($hash) use($app) {
     		FROM wantlist w 
     		LEFT JOIN items i ON type =1 AND w.target_id = i.item_id 
 			LEFT JOIN wildcard wl ON type=2 AND w.target_id = wl.id
-    		WHERE w.item_id IN (?) ORDER BY pos ASC";
+    		WHERE w.item_id IN (?) and w.user_id = ? ORDER BY pos ASC";
     $want = $app['db']->fetchAll($sql,
-    array($ids),
+    array($ids,$user['id']),
     array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
     //echo $sql;
 
@@ -224,14 +240,44 @@ $app->get('/rest/itemsbyuser/{hash}', function ($hash) use($app) {
 $app->get('/rest/useritems/{hash}', function ($hash) use ($app) {
 	$user = getUser($hash);
 
-	$sql = "SELECT i.* FROM user_items ui INNER JOIN items i ON ui.item_id = i.id WHERE user_id = ?";
+	$sql = "SELECT i.* FROM user_items ui 
+			INNER JOIN items i ON ui.item_id = i.id 
+			WHERE user_id = ?";
     $post = $app['db']->fetchAll($sql,array((int)$user['id']));
+
+    //Now exclude the items of the wilcards
+    $sql = "SELECT wi.item_id FROM wildcarditems wi 
+    		INNER JOIN wildcard w on wi.wildcard_id = w.id 
+    		WHERE w.user_id = ?";
+    $excl = $app['db']->fetchAll($sql,array((int)$user['id']));
+    $exclude = array();
+    foreach ($excl as $a) {
+    	$exclude[] = $a['item_id'];
+    }
+
+    foreach ($post as $k => $i) {
+    	if (in_array($i['id'],$exclude) ) {
+    		unset($post[$k]);	
+    	}
+    }
+    $post = array_values($post);
+
+
+
     return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
 
 $app->post('/rest/useritems/{hash}', function ($hash,Request $request) use ($app) {
 	$user = getUser($hash);
+
+	//Delete item if its in a list
+	$app['db']->delete('user_items',array(
+		'user_id'=>$user['id'],
+		'item_id'=>$request->get('id'),
+		'type'=> $request->get('type') == 1 ? 2: 1
+	));
+
     $post = $app['db']->insert('user_items',array(
     	'user_id'=>$user['id'],
     	'item_id'=>$request->get('id'),
@@ -299,11 +345,12 @@ $app->post('/gethash/{userName}', function ($userName,Request $request) use ($ap
 	return new Response(json_encode($hash),200,array('Content-Type'=>'application/json'));
 });
 
-$app->post('/rest/wantlist/{id}', function ($id,Request $request) use ($app) {
+$app->post('/rest/wantlist/{hash}', function ($hash,Request $request) use ($app) {
+	$user = getUser($hash);
+
 	$d = json_decode($request->get('d'));
 	$wantid = $request->get('wid');
-	echo "id $wantid";
-	if (is_numeric($id)) {
+	if (is_numeric($wantid)) {
 		$app['db']->delete('wantlist',array('item_id'=>$wantid));
 	}
 
@@ -311,7 +358,7 @@ $app->post('/rest/wantlist/{id}', function ($id,Request $request) use ($app) {
 	foreach ($d as $pos=>$i) {
 		$app['db']->insert('wantlist',array(
 			'item_id'=>$wantid,
-			'user_id'=>1,
+			'user_id'=>$user['id'],
 			'target_id'=>$i->id,
 			'type'=>$i->t,
 			'pos'=>$pos

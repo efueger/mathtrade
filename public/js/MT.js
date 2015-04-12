@@ -23,7 +23,6 @@ define(['models/items','models/wildcards'],function(Items,Wildcards){
 		mt.exclude = function(item){
 			excluded.add(item);
 			$.post('/public/rest/useritems/'+hash,{id:item.get('item_id'),type:2},function(resp){
-				console.log(resp);
 			});
 		}
 

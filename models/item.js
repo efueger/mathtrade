@@ -57,9 +57,7 @@ define(['backbone'],function(Backbone){
 
 			if (this.wantlist) {
 				d.wantlist = this.wantlist.toJSON();
-				console.log('has want',d.wantlist)
 			}
-
 			return d;
 		}
 

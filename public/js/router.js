@@ -27,7 +27,8 @@ MT.init({
 var Router = Backbone.Router.extend({
 	  routes: {
 	    "":                 "list",//"home",
-	    "list":          	"list", 
+	    "list":          	"list",
+	    "list/:type": 		"list", 
 	    "want": 			"want", 
 	    "want/:id": 		"want", 
 	    "addgame":          "addgame",  
@@ -45,11 +46,45 @@ var Router = Backbone.Router.extend({
 			});	
 	  	},
 
-	  	list: function() {
+	  	list: function(type) {
 	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,Items,HB){
-	  			console.log(mathItems);
 	  			var m = new Items(mathItems);
-	  			console.log(m);
+	  			if (type != undefined) {
+		  			m = new Items([]);
+		  			m.url = '/public/rest/itemstype/'+type+'/'+hash;
+		  			m.fetch({
+		  				success:function(collection,resp){
+		  				},
+		  				reset:true
+		  			});
+		  		}	
+	  			
+	  			$('#main').html(new mathView({
+	  				model:m,
+	  				nestedViews:{
+	  					'#items':new HB({
+	  						model:m,
+	  						template:'fullmt-list-template'
+	  					})
+	  				},
+	  				skipchange:true
+
+	  			}).el);
+	  		});
+	  	},
+
+	  	interested: function() {
+	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,Items,HB){
+	  			//var m = new Items(mathItems);
+
+	  			var m = new Items([]);
+	  			m.url = '/public/rest/items/interested/'+hash;
+	  			m.fetch({
+	  				success:function(collection,resp){
+	  				},
+	  				reset:true
+	  			});
+
 	  			$('#main').html(new mathView({
 	  				model:m,
 	  				nestedViews:{
@@ -71,7 +106,7 @@ var Router = Backbone.Router.extend({
 	  			var _ = require('underscore');
 	  			
 	  			var m = new Items([]);
-	  			m.url = (id == undefined ? '/public/rest/itemsbyuser/'+hash : '/public/rest/items/'+id);
+	  			m.url = (id == undefined ? '/public/rest/itemsbyuser/'+hash : '/public/rest/items/'+id+'/'+hash);
 
 	  			m.onlyMode = (id != undefined);
 	  			m.fetch({
@@ -109,7 +144,7 @@ var Router = Backbone.Router.extend({
 
 
 
-	  			console.log(MT.wildcards);
+	  			//console.log(MT.wildcards);
 
 	  			m.wantlist.add(MT.wildcards.at(0));
 

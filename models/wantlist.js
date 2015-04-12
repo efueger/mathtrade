@@ -2,9 +2,7 @@ define(['backbone','models/item','underscore','models/wildcard'],function(Backbo
 	return Backbone.Collection.extend({
 		model:Item,
 		comparator:'pos',
-		initialize:function(d){
-			console.log(d,'init');
-		},
+		
 		addToEnd: function(m) {
 			m.set('pos',this.models.length-1,{silent:true});
 			this.add(m);
