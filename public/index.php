@@ -69,7 +69,7 @@ function getWantUser($user)
 
 // ... definitions
 
-$app->get('/', function (Silex\Application $app) {
+$app->get('/landing', function (Silex\Application $app) {
 	$items =file_get_contents('mtitems.data');
 	// $its = json_decode(str_replace("\\\"", '"', $items));
 
@@ -105,14 +105,14 @@ $app->get('/', function (Silex\Application $app) {
 	// die();
 
 	 return $app['twig']->render('index.twig', array(
-        'items' => $items
-	'useritems' => array(),
+        'items' => $items,
+		'useritems' => array(),
         'wants' => array(),
         'wildcards' => array(),
-        'hash' => $hash
+        //'hash' => $hash
     ));
 });
-$app->get('/landing', function (Silex\Application $app) {
+$app->get('/', function (Silex\Application $app) {
 	return $app['twig']->render('landing.twig');
 });
 

@@ -14,7 +14,7 @@
     </style>
 </head>
 <body>
-<div>
+
     <script type="text/javascript" data-main='js/app.js' src="../../bower_components/jquery/dist/jquery.min"></script>
     <script>
 
@@ -22,32 +22,36 @@
             jQuery('form').submit(function(e) {
                 e.preventDefault();
                 jQuery.post('gethash/'+$('#userName').val(),function(data) {
-                        jQuery('#link').html('<p>Link para acceder a la wantlist </p><a href="'+data+'#want">WantList</a>');
+                        jQuery('#form').remove();
+                        jQuery('#link').html('<p>Link para acceder a la wantlist </p><a href="'+data+'#want" class="btn btn-success">WantList</a>');
 
                     }
             );
         });
     });
     </script>
-</div>
-<div class="centered">
 
-  <div id="form">
-      <h1>Herramienta Gestión de mathtrades</h1>
-    <form >
-        <p>
-            Introduce tu nombre de usuario en laBSK para obtener link de gestión de tu wantlist
-        </p>
-        <input type="text" id="userName" name="userName"/>
-        <input type="submit" value="Obtener Link" id="submit"/>
+<div class="container">
+    <div class="jumbotron">
+      <h1>Mathtrade Helper</h1>
+       <form id="form">
+            <p>
+                Introduce tu nombre de usuario en laBSK para obtener link de gestión de tu wantlist
+            </p>
+            <input type="text" id="userName" class="" name="userName"/>
+            <input type="submit" value="Obtener Link" class="btn btn-primary btn-sm" id="submit"/>
+           
+        </form>
         <div id="link">
 
         </div>
-    </form>
-
-  </div>
+    </div>
+    <div class="col-md-6">
+            hola
+    </div>
+    <div class="col-md-6">
+            hola
+    </div>
 </div>
-
-
 </body>
 </html>
