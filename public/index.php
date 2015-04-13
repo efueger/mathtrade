@@ -69,8 +69,42 @@ function getWantUser($user)
 
 // ... definitions
 $app->get('/', function (Silex\Application $app) {
+	$items =file_get_contents('mtitems.data');
+	// $its = json_decode(str_replace("\\\"", '"', $items));
+
+	// $its = array_slice($its, 9,1);
+
+	// foreach ($its as $i) {	
+	// 	print_r($i);
+		
+	// 	if (is_array($i)) {
+	// 		$sql = "SELECT * FROM items WHERE  name LIKE '%".addslashes($i[0]->name)."%' AND name LIKE '%".addslashes($i[1]->name)."%'";
+	// 		echo $sql;
+	// 		$user = $app['db']->fetchAll($sql);
+	// 		echo "<pre>";
+	// print_r($user);
+	// echo "</pre>";
+	// 		//continue;
+	// 		die();
+
+	// 	}
+	// 	$sql = "SELECT * FROM items WHERE  name LIKE '".addslashes($i->name)."%' ";
+	// 	$user = $app['db']->fetchAll($sql);
+	// 	if($user) {
+
+	// 		$app['db']->update('items',array('bgg_img'=>$i->bgg_img),array('id'=>$user[0]['id']));
+	// 	}
+
+	// }
+
+	// echo "<pre>";
+	// print_r($user);
+	// echo "</pre>";
+
+	// die();
+
 	 return $app['twig']->render('index.twig', array(
-        'items' => file_get_contents('mtitems.data')
+        'items' => $items
     ));
 });
 $app->get('/landing', function (Silex\Application $app) {

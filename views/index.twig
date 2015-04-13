@@ -298,9 +298,11 @@
 
 <script type="text/javascript">
 	var mathItems = JSON.parse('{{ items|raw }}');	
+	{% if wants %}
 	var wants = JSON.parse('{{ wants|raw }}');	
 	var wildcards = JSON.parse('{{ wildcards|raw }}');	
 	var hash = '{{hash}}';
+	{% endif %}
 </script>
 </body>
 </html>
