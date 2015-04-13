@@ -68,6 +68,7 @@ function getWantUser($user)
 }
 
 // ... definitions
+
 $app->get('/', function (Silex\Application $app) {
 	$items =file_get_contents('mtitems.data');
 	// $its = json_decode(str_replace("\\\"", '"', $items));
@@ -105,11 +106,14 @@ $app->get('/', function (Silex\Application $app) {
 
 	 return $app['twig']->render('index.twig', array(
         'items' => $items
+	'useritems' => array(),
+        'wants' => array(),
+        'wildcards' => array(),
+        'hash' => $hash
     ));
 });
 $app->get('/landing', function (Silex\Application $app) {
 	return $app['twig']->render('landing.twig');
-
 });
 
 //Get all the info from a user
@@ -122,7 +126,7 @@ $app->get('/{hash}', function ($hash)  use($app){
 
 	//Items selected by user either 
 	$sql = "SELECT i.*,ui.type FROM user_items ui 
-			INNER JOIN items i ON ui.item_id = i.item_id 
+			INNER JOIN items i ON ui.item_id = i.item_id
 			WHERE ui.user_id = ?";
 	$items = $app['db']->fetchAll($sql,array($user['id']));
 
@@ -437,7 +441,7 @@ $app->get('api/collection', function(Request $request) use ($app) {
 	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
-$app->get('/mt', function (Silex\Application $app) {
+$app->get('/mt/get', function (Silex\Application $app) {
 	$items = array();
 	do {
 
