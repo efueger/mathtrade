@@ -69,6 +69,7 @@ function getWantUser($user)
 
 // ... definitions
 
+
 $app->get('/landing', function (Silex\Application $app) {
 	$items =file_get_contents('mtitems.data');
 	// $its = json_decode(str_replace("\\\"", '"', $items));
@@ -112,6 +113,7 @@ $app->get('/landing', function (Silex\Application $app) {
         //'hash' => $hash
     ));
 });
+
 $app->get('/', function (Silex\Application $app) {
 	return $app['twig']->render('landing.twig');
 });
