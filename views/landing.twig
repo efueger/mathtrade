@@ -3,6 +3,15 @@
     <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../bower_components/jquery-textcomplete/dist/jquery.textcomplete.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <style>
+        .centered {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-top: -50px;
+            margin-left: -100px;
+        }
+    </style>
 </head>
 <body>
 <div>
@@ -10,22 +19,33 @@
     <script>
 
     jQuery(document).ready(function() {
-            jQuery('#submit').click(function() { 
+            jQuery('form').submit(function(e) {
+                e.preventDefault();
                 jQuery.post('gethash/'+$('#userName').val(),function(data) {
                         jQuery('#link').html('<p>Link para acceder a la wantlist </p><a href="'+data+'#want">WantList</a>');
+
                     }
             );
         });
     });
     </script>
 </div>
-<h1>Landing!!</h1>
-<form >
-    <input type="text" id="userName" name="userName"/>
-    <input type="button" value="Obtener Link" id="submit"/>
-</form>
-<div id="link">
+<div class="centered">
 
+  <div id="form">
+      <h1>Herramienta Gestión de mathtrades</h1>
+    <form >
+        <p>
+            Introduce tu nombre de usuario en laBSK para obtener link de gestión de tu wantlist
+        </p>
+        <input type="text" id="userName" name="userName"/>
+        <input type="submit" value="Obtener Link" id="submit"/>
+        <div id="link">
+
+        </div>
+    </form>
+
+  </div>
 </div>
 
 
