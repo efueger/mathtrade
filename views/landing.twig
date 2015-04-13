@@ -22,8 +22,12 @@
             jQuery('form').submit(function(e) {
                 e.preventDefault();
                 jQuery.post('gethash/'+$('#userName').val(),function(data) {
+                            if(data !== 'fail') {
                         jQuery('#link').html('<p>Link para acceder a la wantlist </p><a href="'+data+'#want">WantList</a>');
 
+                            } else {
+                                jQuery('#link').html('Usuario No participante en la mathtrade');
+                            }
                     }
             );
         });
