@@ -70,7 +70,11 @@ function getWantUser($user)
 // ... definitions
 $app->get('/', function (Silex\Application $app) {
 	 return $app['twig']->render('index.twig', array(
-        'items' => file_get_contents('mtitems.data')
+        'items' => file_get_contents('mtitems.data'),
+	'useritems' => array(),
+        'wants' => array(),
+        'wildcards' => array(),
+        'hash' => $hash
     ));
 });
 $app->get('/landing', function (Silex\Application $app) {
@@ -403,7 +407,7 @@ $app->get('api/collection', function(Request $request) use ($app) {
 	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
-$app->get('/mt', function (Silex\Application $app) {
+$app->get('/mt/get', function (Silex\Application $app) {
 	$items = array();
 	do {
 
