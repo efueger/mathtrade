@@ -28,8 +28,8 @@ define(['views/hb','handlebars','MT'],function(HB,Handlebars,MT){
 			var m = this.model.get(id);
 			this.model.remove(m);
 			$(evt.target).closest('.row').remove();
-			if (this.model.filtered)
-				this.model.filtered.remove(m);
+			// if (this.model.filtered)
+			// 	this.model.filtered.remove(m);
 			for (var i in this.model.filtered) {
 				if (this.model.filtered[i].cid == id) {
 					this.model.filtered.splice(i,1);
