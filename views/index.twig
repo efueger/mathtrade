@@ -194,7 +194,7 @@
 	  			<button type="button" data-save-wild='{{id}}'  class="btn btn-danger btn-xs tool">Save</button>
 	  			<ul class="wildcard-items list-unstyled">
 	  				{{#each items}}
-	  				<li>
+	  				<li id="wldtm_{{../id}}_{{id}}">
 	  				<span class="glyphicon glyphicon-option-vertical handle"></span>
 	  				<button type="button" data-remove-from-wild='{"wid":"{{../id}}","id":"{{id}}" }'  class="btn btn-danger btn-xs">-</button>
 	  				{{name}}

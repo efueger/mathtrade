@@ -155,6 +155,7 @@ $app->get('/{hash}', function ($hash)  use($app){
 		if (isset($w['item_id']))
 			$wildcards[$w['wid']]['items'][] = array(
 				'id'=>$w['item_id'],
+				'item_id'=>$w['item_id'],
 				'name'=>$w['name'],
 				
 			);
@@ -418,17 +419,15 @@ $app->post('/rest/wildcarditems/{hash}', function ($hash,Request $request) use (
 	if (is_numeric($wildid)) {
 		$app['db']->delete('wildcarditems',array('wildcard_id'=>$wildid));
 	}
-	print_r($d);
 	//Now prepare to insert the items
 	foreach ($d as $pos=>$i) {
 		$app['db']->insert('wildcarditems',array(
 			'item_id'=>$i->item_id,
 			'wildcard_id'=>$wildid,
-			'pos'=>$pos
+			'pos'=>$i->pos
 		));
 	}
 
-	print_r($d);
     return new Response(json_encode($d),200,array('Content-Type'=>'application/json'));
 });
 

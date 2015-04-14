@@ -126,11 +126,16 @@ var wantList =  HB.extend({
 			        m.items.add(game);
 			        self.wish.remove(game);
 			        self.render();
-			    }
+			    },
+			    tolerance: "touch"
 			});
 
 			$( ".wildcard-items" ).sortable({
-				handle:'.handle'
+				handle:'.handle',
+				stop:function(evt,ui){
+					var neworder = $(this).sortable('toArray');
+					MT.wildcards.setOrder(neworder);
+				}
 			});
 			$( ".want-items" ).sortable({
 				stop:function(evt,ui){
