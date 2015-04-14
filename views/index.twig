@@ -123,9 +123,10 @@
 	    <div class="navbar-header">
 	      
 	      <ul class="nav nav-pills" role="tablist">
-			  <li role="presentation" ><a href="#list">Lista de juegos</a></li>
-			  <li role="presentation" class="active"><a href="#want">Wantlist</a></li>
-			
+			  <li role="presentation" class="active"><a href="#">Juegos</a></li>
+			  <li role="presentation" {{#if interested}} class="active"{{/if}}><a href="#list/interested">Me interesan</a></li>
+			  <li role="presentation" {{#if excluded}} class="active"{{/if}} ><a href="#list/excluded">Excluidos</a></li>
+			  <li {{#if want}} class="active"{{/if}}><a class="" href="#want">Hacer Wantlist</a></li>
 			</ul>
 	    </div>
 	  </div>
@@ -235,9 +236,9 @@
 	      
 	      <ul class="nav nav-pills" role="tablist">
 			  <li role="presentation" class="active"><a href="#">Juegos <span class="badge">{{count this}}</span></a></li>
-			  <li role="presentation"><a href="#list/interested">Me interesan</a></li>
-			  <li role="presentation"><a href="#list/excluded">Excluidos</a></li>
-			  <li class="active"><a class="" href="#want">Hacer Wantlist</a></li>
+			  <li role="presentation" {{#if interested}} class="active"{{/if}}><a href="#list/interested">Me interesan</a></li>
+			  <li role="presentation" {{#if excluded}} class="active"{{/if}} ><a href="#list/excluded">Excluidos</a></li>
+			  <li {{#if want}} class="active"{{/if}}><a class="" href="#want">Hacer Wantlist</a></li>
 			</ul>
 	    </div>
 	  </div>
