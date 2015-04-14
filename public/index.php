@@ -400,7 +400,7 @@ $app->post('/rest/wantlist/{hash}', function ($hash,Request $request) use ($app)
 		$app['db']->insert('wantlist',array(
 			'item_id'=>$wantid,
 			'user_id'=>$user['id'],
-			'target_id'=>$i->id,
+			'target_id'=>str_replace('w', '', $i->id),
 			'type'=>$i->t,
 			'pos'=>$pos
 		));
