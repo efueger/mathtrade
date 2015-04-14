@@ -100,7 +100,7 @@ var Router = Backbone.Router.extend({
 	  	},
 
 	  	want: function(id) {
-	  		require(['jquery','views/wantList','models/mathItems','views/hb','models/wildcard','models/wildcards','models/wantList','jqueryui'
+	  		require(['jquery','views/wantlist','models/mathItems','views/hb','models/wildcard','models/wildcards','models/wantList','jqueryui'
 	  			],function($,wantView,Items,HB,Wildcard,Wildcards,Wantlist){
 
 	  			var _ = require('underscore');
