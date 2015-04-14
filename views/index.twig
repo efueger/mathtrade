@@ -146,7 +146,10 @@
 					<img class="" src="{{bgg_img}}" />
 				</div>
 				<div class="col-md-9">
-					<h4><a href="#want/{{id}}">{{name}}</a></h4>
+					<h4 data-drop-clone='{{id}}'><a href="#want/{{id}}">{{name}}</a> {{#if ../wantlist}}
+					<span title="Clone" class="glyphicon glyphicon-transfer" style="font-size:20px" data-clone='{{id}}'></span>
+					{{/if}}</h4>
+					{{#if ../../onlyMode}}
 					<ul class="want-items list-unstyled">	
 						{{#each ../wantlist}}
 						<li id="wantitem_{{id}}" class="item">
@@ -156,8 +159,16 @@
 						</li>
 						{{/each}}
 					</ul>
-					{{#if ../../onlyMode}}
 					<button type="button" data-save-want='{{id}}'  class="btn btn-primary btn-sm tool">Save</button>
+					{{else}}
+					<ul class="want-items">	
+						{{#each ../wantlist}}
+						<li class="">
+						{{name}}
+						</li>
+						{{/each}}
+					</ul>
+					
 					{{/if}}
 				</div>
 				{{/if}}

@@ -114,6 +114,35 @@ var wantList =  HB.extend({
 
 			});
 
+
+			$('[data-clone]').draggable({
+				revert: true,
+			});
+
+			$( "[data-drop-clone]" ).droppable({
+			    drop: function( event, ui ) {
+			        console.log('droped',event,ui);
+			        //When dropped we need to add it to the wilcard and remove it from the wish
+			        
+			        var id = $(event.target).data('drop-clone');
+			        var mtarget = self.model.get(id);
+			        // if (m == undefined)m=self.wildcards.get('w'+id);
+			        var gid = ui.draggable.data('clone');
+			        var source = self.model.get(gid);
+			        	
+			        mtarget.wantlist.add(source.wantlist.models);
+
+			        $.post('/public/rest/wantlist/'+hash,{
+						d:mtarget.wantlist.serialize(),
+						wid:id,
+					});
+
+			        self.render();
+
+			    },
+			    tolerance: "touch"
+			});
+
 			$( ".wilcard-drop" ).droppable({
 			    drop: function( event, ui ) {
 			        console.log('droped',event,ui);
