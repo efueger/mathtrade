@@ -72,38 +72,38 @@ function getWantUser($user)
 
 $app->get('/landing', function (Silex\Application $app) {
 	$items =file_get_contents('mtitems.data');
-	// $its = json_decode(str_replace("\\\"", '"', $items));
+	$its = json_decode(str_replace("\\\"", '"', $items));
 
-	// $its = array_slice($its, 9,1);
+	//$its = array_slice($its, 9,1);
 
-	// foreach ($its as $i) {	
-	// 	print_r($i);
+	/*foreach ($its as $i) {	
+		//print_r($i);
 		
-	// 	if (is_array($i)) {
+		if (is_array($i)) {
 	// 		$sql = "SELECT * FROM items WHERE  name LIKE '%".addslashes($i[0]->name)."%' AND name LIKE '%".addslashes($i[1]->name)."%'";
 	// 		echo $sql;
 	// 		$user = $app['db']->fetchAll($sql);
 	// 		echo "<pre>";
-	// print_r($user);
+	// //print_r($user);
 	// echo "</pre>";
-	// 		//continue;
-	// 		die();
+			continue;
+			//die();
 
-	// 	}
-	// 	$sql = "SELECT * FROM items WHERE  name LIKE '".addslashes($i->name)."%' ";
-	// 	$user = $app['db']->fetchAll($sql);
-	// 	if($user) {
+		}
+		$sql = "SELECT * FROM items WHERE  name LIKE '".addslashes($i->name)."%' ";
+		$user = $app['db']->fetchAll($sql);
+		if($user) {
 
-	// 		$app['db']->update('items',array('bgg_img'=>$i->bgg_img),array('id'=>$user[0]['id']));
-	// 	}
+			$app['db']->update('items',array('bgg_img'=>$i->bgg_img),array('id'=>$user[0]['id']));
+		}
 
-	// }
+	}
 
-	// echo "<pre>";
-	// print_r($user);
-	// echo "</pre>";
+	echo "<pre>";
+	print_r($user);
+	echo "</pre>";
 
-	// die();
+	die();*/
 
 	 return $app['twig']->render('index.twig', array(
         'items' => $items,
@@ -121,6 +121,7 @@ $app->get('/', function (Silex\Application $app) {
 //Get all the info from a user
 $app->get('/{hash}', function ($hash)  use($app){
 	
+	$wants = array();
 	//Get the user
 	$sql = "SELECT * FROM users WHERE hash = ?";
 	$user = $app['db']->fetchAll($sql,array($hash));
