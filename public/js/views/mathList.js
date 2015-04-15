@@ -28,6 +28,14 @@ define(['views/hb','handlebars','MT'],function(HB,Handlebars,MT){
 			var m = this.model.get(id);
 			this.model.remove(m);
 			$(evt.target).closest('.row').remove();
+
+			for(var i in window.mathItems) {
+				if (window.mathItems[i].item_id == id) {
+					window.mathItems.splice(i,1);
+					break;
+				}
+			}
+
 			// if (this.model.filtered)
 			// 	this.model.filtered.remove(m);
 			for (var i in this.model.filtered) {
