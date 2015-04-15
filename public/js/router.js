@@ -13,7 +13,7 @@ var games = [
 		description:"1 g"
 	}
 ];
-
+var wants = wants || [];
 var gs = new Items(games);
 MT.init({
 	user:gs,
