@@ -10,6 +10,7 @@ define(['views/hb','handlebars','MT'],function(HB,Handlebars,MT){
 		events:{
 			'keyup [data-math-filter]':'filter',
 			'click [data-exclude]':'exclude',
+			'click [data-exclude-until]':'excludeUntil',
 			'click [data-want]':'want',
 
 		},
@@ -50,6 +51,26 @@ define(['views/hb','handlebars','MT'],function(HB,Handlebars,MT){
 			}
 
 			//this.nestedViews['#items'].render();
+		},
+
+
+		excludeUntil:function(evt) {
+			var id = $(evt.target).data('exclude-until');
+			var bulk = [];
+			
+			for (var i in this.model.models) {
+				var exid = this.model.models[i].get('id');
+				bulk.push(this.model.models[i])
+				if (exid == id) {
+					break;
+				}
+			}
+			this.model.remove(bulk);
+			$(evt.target).closest('.row').prevAll().remove();
+			$(evt.target).closest('.row').remove();
+			MT.excludeBulk(bulk);
+			window.scrollTo(0,0);
+
 		},
 
 

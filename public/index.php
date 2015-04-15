@@ -313,19 +313,43 @@ $app->get('/rest/useritems/{hash}', function ($hash) use ($app) {
 $app->post('/rest/useritems/{hash}', function ($hash,Request $request) use ($app) {
 	$user = getUser($hash);
 
-	//Delete item if its in a list
-	$app['db']->delete('user_items',array(
-		'user_id'=>$user['id'],
-		'item_id'=>$request->get('id'),
-		'type'=> $request->get('type') == 1 ? 2: 1
-	));
+	if ($request->get('bulk')) {
+		$bulk = json_decode($request->get('bulk'));
 
-    $post = $app['db']->insert('user_items',array(
-    	'user_id'=>$user['id'],
-    	'item_id'=>$request->get('id'),
-    	'type'=>$request->get('type')
+		//$app['db']->executeQuery('SELECT FROM articles WHERE item_id IN (?) user_id = ? ',
+		$app['db']->executeQuery('DELETE FROM user_items WHERE item_id IN (?) AND user_id = '.$user['id'].' ',
+		    array($bulk),
+		    array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+		);
 
-    	));
+
+		$sql = "INSERT INTO user_items (user_id,item_id,type) VALUES ";
+		$first = true;
+		foreach ($bulk as $id) {
+			if($first)$first=false;
+			else $sql.=',';
+			$sql.= '('.$user['id'].','.$id.',2)';
+		}
+
+		$app['db']->executeQuery($sql);
+		
+	}
+	else {
+
+		//Delete item if its in a list
+		$app['db']->delete('user_items',array(
+			'user_id'=>$user['id'],
+			'item_id'=>$request->get('id'),
+			'type'=> $request->get('type') == 1 ? 2: 1
+		));
+
+	    $post = $app['db']->insert('user_items',array(
+	    	'user_id'=>$user['id'],
+	    	'item_id'=>$request->get('id'),
+	    	'type'=>$request->get('type')
+
+	    ));
+	}
     return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 

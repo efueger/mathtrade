@@ -26,6 +26,13 @@ define(['models/items','models/wildcards'],function(Items,Wildcards){
 			});
 		}
 
+		mt.excludeBulk = function(bulk){
+			excluded.add(bulk);
+			var ids = JSON.stringify(_.map(bulk,function(i){return i.get('item_id')}));
+			$.post('/public/rest/useritems/'+hash,{bulk:ids,type:2},function(resp){
+			});
+		}
+
 		/**
 		 * Excludes a game and adds it to the excluded game list
 		 * @param  {[type]} item [description]
