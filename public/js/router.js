@@ -32,7 +32,8 @@ var Router = Backbone.Router.extend({
 	    "want": 			"want", 
 	    "want/:id": 		"want", 
 	    "addgame":          "addgame",  
-	    "edit/:id": 		"addgame"   
+	    "edit/:id": 		"addgame",
+	    "results":  		"results" 
 	  },
 
 		home: function() {
@@ -154,6 +155,34 @@ var Router = Backbone.Router.extend({
 	  				wildcards:MT.wildcards,
 	  				skipchange:true
 
+	  			}).el);
+	  		});
+	  	},
+
+
+	  	results: function() {
+	  		require(['jquery','views/resultlist','models/mathItems','views/hb',
+	  			],function($,resultList,Items,HB){
+
+	  			var _ = require('underscore');
+	  			
+	  			var m = new Items([]);
+	  			m.url = '/public/rest/results/'+hash;
+
+	  			m.fetch({
+	  				success:function(collection,resp){
+	  					
+	  					
+
+	  				},
+	  				reset:true
+	  			});
+	  		
+	  			
+
+	  			$('#main').html(new resultList({
+	  				model:m,
+	  				skipchange:true
 	  			}).el);
 	  		});
 	  	},

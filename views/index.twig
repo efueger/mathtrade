@@ -127,6 +127,7 @@
 			  <li role="presentation" {{#if interested}} class="active"{{/if}}><a href="#list/interested">Me interesan</a></li>
 			  <li role="presentation" {{#if excluded}} class="active"{{/if}} ><a href="#list/excluded">Excluidos</a></li>
 			  <li {{#if want}} class="active"{{/if}}><a class="" href="#want">Hacer Wantlist</a></li>
+			  <li><a class="" href="#results">Resultados</a></li>
 			</ul>
 	    </div>
 	  </div>
@@ -243,6 +244,59 @@
 	</div>
 
 </script>
+
+<script id="results-template" type="text/x-handelbars-template">
+	<nav class="navbar navbar-default">
+	  <div class="container-fluid">
+	    <div class="navbar-header">
+	      
+	      <ul class="nav nav-pills" role="tablist">
+			  <li role="presentation" class="active"><a href="#">Juegos</a></li>
+			  <li role="presentation" {{#if interested}} class="active"{{/if}}><a href="#list/interested">Me interesan</a></li>
+			  <li role="presentation" {{#if excluded}} class="active"{{/if}} ><a href="#list/excluded">Excluidos</a></li>
+			  <li {{#if want}} class="active"{{/if}}><a class="" href="#want">Hacer Wantlist</a></li>
+			  <li {{#if want}} class="active"{{/if}}><a class="" href="#results">Resultados</a></li>
+			</ul>
+	    </div>
+	  </div>
+	</nav>
+
+	<div id="items">
+		<div class="col-md-8" >
+			{{#each items}}
+			<div class="row" style="margin-top:10px;">
+				{{#if is_pack}}
+					<h4>{{name}}</h4>
+					{{#each packItems}}
+					<img class="" src="{{bgg_img}}" />
+					{{/each}}
+				{{else}}
+				<h4 data-id="{{item_id}}">{{name}}</h4>
+				<div class="col-md-3">
+					<img class="" src="{{bgg_img}}" />
+				</div>
+				<div class="col-md-9" style="position:relative; min-height:175px;">
+					{{#if received}}
+						<div data-reveal='' style="position:absolute;height:100%;width:100%;background-color:#ccc;"><h2>Haz Click para ver el resultado</h2></div>
+						{{#if received}}
+						<img src="{{received.bgg_img}}" />
+						{{received.name}} de <b>{{received.username}}</b>
+						{{/if}}
+					{{else}}
+						<h2>Sin cambios otra vez será</h2>
+					{{/if}}
+					
+				</div>
+				{{/if}}
+	  		</div>
+	  		{{/each}}
+
+	  		
+		</div>
+
+	 </div>
+</script>
+
 
 <script id="math-items-template" type="text/x-handelbars-template">
 	<nav class="navbar navbar-default">
