@@ -1,7 +1,6 @@
 ﻿TradeMaximizer Version 1.3a
 Options: ALLOW-DUMMIES REQUIRE-COLONS REQUIRE-USERNAMES LINEAR-PRIORITIES
 
-
 ERRORS:
 **** Item 479 has multiple want lists--ignoring all but first.  (Sometimes the result of an accidental line break in the middle of a want list.)
 **** Unknown item %BB for user (ODEON) (1 occurrence)
@@ -16,9 +15,7 @@ ERRORS:
 **** Unknown item 445 (44 occurrences)
 **** Unknown item 446 (40 occurrences)
 
-
 TRADE LOOPS (353 total trades):
-
 
 (FRESCOLOGY) 3              receives (MACKLAU) 76
 (MACKLAU) 76                receives (LETÁLIDO) 953
@@ -173,7 +170,6 @@ TRADE LOOPS (353 total trades):
 (MYMENDA) 1214              receives (LAGACETADELOSTABLEROS) 415
 (LAGACETADELOSTABLEROS) 415 receives (FRESCOLOGY) 3
 
-
 (WATERZERO) 13              receives (FERRE) 1172
 (FERRE) 1172                receives (EROSGN) 652
 (EROSGN) 652                receives (RACARRACA) 894
@@ -281,7 +277,6 @@ TRADE LOOPS (353 total trades):
 (RYUSHI) 797                receives (KARJEDON) 52
 (KARJEDON) 52               receives (WATERZERO) 13
 
-
 (KARINSKY) 23               receives (VICHU) 498
 (VICHU) 498                 receives (FRATERURBS) 137
 (FRATERURBS) 137            receives (FANTASIDE) 1153
@@ -341,17 +336,14 @@ TRADE LOOPS (353 total trades):
 (JUGGER) 246                receives (HUNTHOR DE BRETHIL) 556
 (HUNTHOR DE BRETHIL) 556    receives (KARINSKY) 23
 
-
 (KVELD) 66                  receives (IKARUS) 1134
 (IKARUS) 1134               receives (KVELD) 66
-
 
 (MACKLAU) 84                receives (CHARLESMAY) 1069
 (CHARLESMAY) 1069           receives (KURO) 598
 (KURO) 598                  receives (KRONOS) 782
 (KRONOS) 782                receives (MYMENDA) 1209
 (MYMENDA) 1209              receives (MACKLAU) 84
-
 
 (MACKLAU) 92                receives (R.L.UKIC) 786
 (R.L.UKIC) 786              receives (IKARUS) 1131
@@ -375,7 +367,6 @@ TRADE LOOPS (353 total trades):
 (LOSTRIKIS) 1166            receives (MABUSE) 971
 (MABUSE) 971                receives (MACKLAU) 92
 
-
 (MACKLAU) 99                receives (ALBEITAR) 906
 (ALBEITAR) 906              receives (FOROFO27) 389
 (FOROFO27) 389              receives (FANTASIDE) 1155
@@ -384,13 +375,10 @@ TRADE LOOPS (353 total trades):
 (BOWIE) 1353                receives (FARWEBS) 576
 (FARWEBS) 576               receives (MACKLAU) 99
 
-
 (SERGITINOCO) 766           receives (IMISUT) 1361
 (IMISUT) 1361               receives (SERGITINOCO) 766
 
-
 ITEM SUMMARY (353 total trades):
-
 
 (AGENTE86) 621                          does not trade
 (AGENTE86) 622                          does not trade
@@ -1783,9 +1771,9 @@ ITEM SUMMARY (353 total trades):
 (ZUBERA) 761                            does not trade
 (ZUBERA) 762                            does not trade
 
-
 Num trades  = 353 of 1390 items (25,4%)
 Total cost  = 4208 (avg 11,92)
 Num groups  = 8
 Group sizes = 152 106 58 21 7 5 2 2
 Sum squares = 38227
+
