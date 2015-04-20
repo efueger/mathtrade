@@ -17,16 +17,30 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/../views',
 ));
 
-$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
-    'db.options' => array(
-        'driver'    => 'pdo_mysql',
-        'host'      => 'core.mordamir.com',
-        'dbname'    => 'mathtrade',
-        'user'      => 'mathtrade',
-        'password'  => 'getthejobdone',
-        'charset'   => 'utf8',
-    )
-));
+if ($_SERVER['SERVER_NAME'] == 'mt.dev') {
+	$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
+	    'db.options' => array(
+	        'driver'    => 'pdo_mysql',
+	        'host'      => 'localhost',
+	        'dbname'    => 'mathtrade',
+	        'user'      => 'root',
+	        'password'  => '',
+	        'charset'   => 'utf8',
+	    )
+	));
+}
+else {
+	$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
+	    'db.options' => array(
+	        'driver'    => 'pdo_mysql',
+	        'host'      => 'core.mordamir.com',
+	        'dbname'    => 'mathtrade',
+	        'user'      => 'mathtrade',
+	        'password'  => 'getthejobdone',
+	        'charset'   => 'utf8',
+	    )
+	));
+}
 
 
 function getUser($hash)
@@ -174,7 +188,51 @@ $app->get('/{hash}', function ($hash)  use($app){
     ));
 });
 
+/**
+ * Import the results from the file
+ */
+$app->get('/import/results',function (Silex\Application $app) {
+	$results = file_get_contents('mathresults.txt');
 
+	$lines = explode("\n", $results);
+
+
+	$app['db']->executeQuery('TRUNCATE table results');
+
+	$start = false;
+	foreach ($lines as $i=>$l) {
+		
+		if (!$start) {
+
+			if (!preg_match('/TRADE LOOPS/', $l)) {
+				continue;
+			}
+			else {
+				$start = true;
+				continue;
+			}
+		}
+		//Has started
+		if ($start) {
+			preg_match("/\s([0-9]+).* ([0-9]+)$/",$l,$matches);
+			if (count($matches)==3) {
+				$app['db']->insert('results',array(
+			    	'item_id'=>$matches[1],
+			    	'item_rcvd'=>$matches[2],
+			    ));
+				
+			}
+
+			if (preg_match('/ITEM SUMMARY/',$l)) {
+				break;
+			}
+		}
+	}
+
+	//Get to the point
+	
+	echo $results;
+});
 
 //Returns all the items
 $app->get('/rest/items', function (Silex\Application $app) {
@@ -270,6 +328,42 @@ $app->get('/rest/itemsbyuser/{hash}', function ($hash) use($app) {
     			}
     			$p['wantlist'][] = $w;
     			unset($want[$j]);
+    		}
+    	}
+    }
+
+
+    return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
+});
+
+
+$app->get('/rest/results/{hash}', function ($hash) use($app) {
+	$user = getUser($hash);
+
+	$sql = "SELECT * FROM items where username = ?";
+    $post = $app['db']->fetchAll($sql,array($user['name']));
+
+    //Fetch want lists
+    $ids = array();
+    foreach ($post as $i) {
+    	$ids[] = $i['id'];
+    }
+
+    
+    $sql = "SELECT i2.item_id,i2.name,i2.bgg_img,i2.username,r.item_id as myitem  
+    		FROM results r 
+			LEFT JOIN items i2  ON  r.item_rcvd = i2.id
+    		WHERE r.item_id IN (?)";
+    $results = $app['db']->fetchAll($sql,
+    array($ids),
+    array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+    //echo $sql;
+
+     foreach ($post as $key => &$p) {
+    	foreach ($results as $j => $w) {
+    		if ($w['myitem'] == $p['item_id']) {
+    			$p['received'] = $w;
+    			unset($results[$j]);
     		}
     	}
     }
