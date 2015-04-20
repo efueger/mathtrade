@@ -196,7 +196,6 @@ $app->get('/import/results',function (Silex\Application $app) {
 
 	$lines = explode("\n", $results);
 
-
 	$app['db']->executeQuery('TRUNCATE table results');
 
 	$start = false;
@@ -214,7 +213,8 @@ $app->get('/import/results',function (Silex\Application $app) {
 		}
 		//Has started
 		if ($start) {
-			preg_match("/\s([0-9]+).* ([0-9]+)$/",$l,$matches);
+
+			preg_match("/\s([0-9]+).*\s([0-9]+)/",$l,$matches);			
 			if (count($matches)==3) {
 				$app['db']->insert('results',array(
 			    	'item_id'=>$matches[1],
