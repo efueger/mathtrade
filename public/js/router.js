@@ -1,20 +1,6 @@
 define(['backbone','models/items','MT','handlebars'],function(Backbone,Items,MT,Handlebars) {
 
-var games = [
-	{
-		id:1,
-		name:"Caverna",
-		description:"Dos partidas en perfecto estado",
-		bgg_id:102794
-	},
-	{
-		id:2,
-		name:"Agricola",
-		description:"1 g"
-	}
-];
-
-var gs = new Items(games);
+var gs = new Items(mathItems);
 MT.init({
 	user:gs,
 	wants:wants,
@@ -22,34 +8,28 @@ MT.init({
 	wildcards:wildcards
 });
 
-
-
 var Router = Backbone.Router.extend({
-	  routes: {
-	    "":                 "list",//"home",
-	    "list":          	"list",
-	    "list/:type": 		"list", 
-	    "want": 			"want", 
-	    "want/:id": 		"want", 
-	    "addgame":          "addgame",  
-	    "edit/:id": 		"addgame",
-	    "results":  		"results" 
-	  },
+		routes: {
+			"":                 "list",
+			"list":          	"list",
+			"list/:type": 		"list", 
+			"want": 			"want", 
+			"want/:id": 		"want", 
+			"addgame":          "addgame",  
+			"edit/:id": 		"addgame",
+			"results":  		"results" 
+		},
 
 		home: function() {
 			require(['jquery','views/gamesView','models/items'],function($,gamesView,Items) {
-				
 				$('#main').html('<div class="row"><div id="my-games" class="col-md-6"></div><div id="mathtrade" class="col-md-6">hola</div></div>');
-
 		  		$('#my-games').html(new gamesView({model:gs}).el);
-				//$('#mathtrade').html(new mtView({model:mt}).el);
-				//this.currentView.remove();
 			});	
 	  	},
 
 	  	list: function(type) {
 	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,Items,HB){
-	  			var m = new Items(mathItems);
+	  			var m = MT.user;
 	  			if (type != undefined) {
 		  			m = new Items([]);
 		  			m.url = '/public/rest/itemstype/'+type+'/'+hash;
@@ -60,32 +40,6 @@ var Router = Backbone.Router.extend({
 		  			});
 		  		}	
 	  			
-	  			$('#main').html(new mathView({
-	  				model:m,
-	  				nestedViews:{
-	  					'#items':new HB({
-	  						model:m,
-	  						template:'fullmt-list-template'
-	  					})
-	  				},
-	  				skipchange:true
-
-	  			}).el);
-	  		});
-	  	},
-
-	  	interested: function() {
-	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,Items,HB){
-	  			//var m = new Items(mathItems);
-
-	  			var m = new Items([]);
-	  			m.url = '/public/rest/items/interested/'+hash;
-	  			m.fetch({
-	  				success:function(collection,resp){
-	  				},
-	  				reset:true
-	  			});
-
 	  			$('#main').html(new mathView({
 	  				model:m,
 	  				nestedViews:{
@@ -112,41 +66,19 @@ var Router = Backbone.Router.extend({
 	  			m.onlyMode = (id != undefined);
 	  			m.fetch({
 	  				success:function(collection,resp){
-	  					
-	  					//collection.at(0).onlyMode = true;
 	  					_.each(resp,function(i){
 	  						if (!i.wantlist) i.wantlist=[];
 	  						var m = collection.findWhere({item_id:i.item_id});
 	  						m.wantlist = new Wantlist(i.wantlist);
-	  						
 	  					})
-
 	  				},
 	  				reset:true
 	  			});
-	  			//var m = new Items(mathItems);
-	  			// m.at(0).set('user','edgard');
-	  			// m.filterByUser('edgard');
-	  			// if (id != undefined) {
-	  			// 	m.onlyMode = true;
-	  			// }
 
-	  			//var wish = new Items(mathItems.slice(0,10));
 	  			var wish = new Items([]);
 	  			wish.url = '/public/rest/useritems/'+hash;
 	  			wish.fetch({reset: true});
 	  			m.wantlist = new Wantlist([]);
-
-	  			m.each(function(i){
-
-	  			});
-
-	  			//var wildcards = new Wildcards([{name:'TEST'}]);
-
-
-
-	  			//console.log(MT.wildcards);
-
 	  			m.wantlist.add(MT.wildcards.at(0));
 
 	  			$('#main').html(new wantView({
@@ -171,9 +103,6 @@ var Router = Backbone.Router.extend({
 
 	  			m.fetch({
 	  				success:function(collection,resp){
-	  					
-	  					
-
 	  				},
 	  				reset:true
 	  			});
@@ -195,9 +124,6 @@ var Router = Backbone.Router.extend({
 				else {
 					var newgame = MT.user.get(id);
 				}
-
-
-
 				this.currentView = new AddGame({
 					model : newgame,
 					implements:[MC.interfaces.typeChange({silent:true})],
@@ -223,7 +149,5 @@ var Router = Backbone.Router.extend({
 	  	}
 
 	});
-	//MC.router = new Workspace();
-
 	return Router;
 });

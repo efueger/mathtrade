@@ -13,9 +13,22 @@ require.config({
   },
 });
 
-require(['jquery','underscore','backbone','router'],function($,_,Backbone,Router){
+require(['models/mathitems','views/hb'],function(Items,View){
 
+    var m = new Items([]);
+      m.url = '/public/bggimport/get';
+      m.fetch({
+        success:function(collection,resp){
+          console.log(m);
+          v.render();
+        },
+        reset:true
+      });
+    var v = new View({
+       template:'fullmt-list-template',
+       model:m,
 
-	var router = new Router();
-  Backbone.history.start();
-});
+    });
+        
+    $('#items').html(v.el);
+  });

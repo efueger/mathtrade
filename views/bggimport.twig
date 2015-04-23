@@ -1,0 +1,55 @@
+{% extends "layouts/logged.twig" %}
+
+{% block scripts %}
+<script type="text/javascript" data-main='js/bgg.js' src="../bower_components/requirejs/require.js"></script>
+{% endblock %}
+
+{% block content %}
+    <h2>Importar juegos de la bgg</h2>
+    <p>
+        A través de esta sección puedes incorporar los juegos que tengas marcados como para cambiar en la BGG directamente a la herramienta de la Mathtrade. Cuando estés listo pulsa en botón importar para obtener los juegos. Antes de incorporarlos tendrás la ocasión de verificar que todo es correcto.
+    </p>
+    <button class="btn btn-success">Importar</button>
+    <br />
+    <br />
+
+   <div id="items">
+
+   </div>
+	
+   {% verbatim %}
+   <script id="fullmt-list-template" type="text/x-handelbars-template">
+		<div class="col-md-9" >
+			{{#each this}}
+			<div class="row" style="margin-top:10px;">
+				{{#if is_pack}}
+					<h4>{{name}}</h4>
+					{{#each packItems}}
+					<img class="" src="{{bgg_img}}" />
+					{{/each}}
+				{{else}}
+				<div class="col-md-3">
+					<img class="" src="{{bgg_img}}" />
+				</div>
+				<div class="col-md-9">
+					<h4>{{name}}</h4>
+					<p>
+						{{description}}
+					</p>
+					<div class="btn-group" role="group" aria-label="...">
+					  <button type="button" data-exclude='{{id}}' class="btn btn-danger btn-sm">Excluir</button>
+					  <button type="button" data-exclude-until='{{id}}' class="btn btn-warning btn-sm">Excluir hasta aquí</button>
+					  <button type="button" data-want='{{id}}'class="btn btn-success btn-sm">Me interesa</button>
+					</div>
+				</div>
+				{{/if}}
+				
+	  		</div>
+	  		{{/each}}
+	  	</div>
+	</script>
+	{% endverbatim %}
+
+{% endblock %}
+
+
