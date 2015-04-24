@@ -205,19 +205,27 @@ $app->get('/bggimport',function (Silex\Application $app) {
 $app->get('/bggimport/get',function (Silex\Application $app) {
 	$user = logged();
 	if (!is_array($user)) return $user;
-
-	// $xml = simplexml_load_file('http://boardgamegeek.com/xmlapi2/collection?username=emassot&trade=1');
-	// $json = json_encode($xml);
+	$xml = simplexml_load_file('http://boardgamegeek.com/xmlapi2/collection?username='.$user['bgg_user'].'&trade=1');
+	$json = json_encode($xml);
+	$array = json_decode($json,true);
+	if (!$array['item']) {
+		$xml = simplexml_load_file('http://boardgamegeek.com/xmlapi2/collection?username='.$user['bgg_user'].'&trade=1');
+		$json = json_encode($xml);
+		$array = json_decode($json,true);
+	}
 	// file_put_contents('bgg.txt', $json);
 
-	$array = json_decode(file_get_contents('bgg.txt'),TRUE);
+	//$array = json_decode(file_get_contents('bgg.txt'),TRUE);
 	$games = array();
 
 	foreach ($array['item'] as $g) {
+		//print_r($g);
 		$ng = array();
 		$ng['name'] = $g['name'];
 		$ng['bgg_img'] = $g['thumbnail'];
 		$ng['description'] = $g['conditiontext'];
+		$ng['bgg_id'] = $g['@attributes']['objectid'];
+		$ng['collid'] = $g['@attributes']['collid'];
 		$games[] = $ng;
 	}
 
@@ -226,6 +234,37 @@ $app->get('/bggimport/get',function (Silex\Application $app) {
 	// print_r($games);
 	// print_r($array);
 	// echo "</pre>";
+
+	return new Response(json_encode($games),200,array('Content-Type'=>'application/json'));
+});
+
+
+//Allows adding games 
+$app->post('/bggimport/add',function (Silex\Application $app) {
+	$user = logged();
+	if (!is_array($user)) return $user;
+
+	$games = $app['request']->request->get('data');
+
+	$games = json_decode($games,true);
+
+	foreach ($games as $g) {
+		$already = $app['db']->fetchAll('SELECT id FROM newitems WHERE account_id = ? AND collid = ?',array($user['id'],$g['collid']));
+
+		if ( count($already) >0) continue;
+
+		$app['db']->insert('newitems',array(
+	    	'account_id'=>$user['id'],
+	    	'name'=>$g['name'],
+	    	'description'=>$g['description'],
+	    	'bgg_id'=>$g['bgg_id'],
+	    	'bgg_img'=>$g['bgg_img'],
+	    	'collid'=>$g['collid'],
+
+	    ));
+	}
+	
+
 
 	return new Response(json_encode($games),200,array('Content-Type'=>'application/json'));
 });

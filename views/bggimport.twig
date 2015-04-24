@@ -9,7 +9,8 @@
     <p>
         A través de esta sección puedes incorporar los juegos que tengas marcados como para cambiar en la BGG directamente a la herramienta de la Mathtrade. Cuando estés listo pulsa en botón importar para obtener los juegos. Antes de incorporarlos tendrás la ocasión de verificar que todo es correcto.
     </p>
-    <button class="btn btn-success">Importar</button>
+    <button data-import-bgg='' class="btn btn-success">Importar</button>
+    <button data-add-bgg='' class="btn btn-warning" style="display:none;">Agregar a mis juegos</button>
     <br />
     <br />
 
@@ -37,9 +38,7 @@
 						{{description}}
 					</p>
 					<div class="btn-group" role="group" aria-label="...">
-					  <button type="button" data-exclude='{{id}}' class="btn btn-danger btn-sm">Excluir</button>
-					  <button type="button" data-exclude-until='{{id}}' class="btn btn-warning btn-sm">Excluir hasta aquí</button>
-					  <button type="button" data-want='{{id}}'class="btn btn-success btn-sm">Me interesa</button>
+					  <button type="button" data-exclude='{{id}}' class="btn btn-danger btn-sm">No importar</button>
 					</div>
 				</div>
 				{{/if}}
