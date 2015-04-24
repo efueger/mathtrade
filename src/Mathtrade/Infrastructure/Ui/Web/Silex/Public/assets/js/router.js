@@ -1,4 +1,4 @@
-define(['backbone','models/items','MT','handlebars'],function(Backbone,Items,MT,Handlebars) {
+define(['../../../../../../../../../bower_components/backbone/backbone','models/items','MT','handlebars'],function(Backbone,Items,MT,Handlebars) {
 
 var gs = new Items(mathItems);
 MT.init({

@@ -9,7 +9,7 @@ Vagrant.configure(2) do |config|
     config.vm.define "mc" do |mc|
         mc.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/precise/current/precise-server-cloudimg-i386-vagrant-disk1.box"
         mc.vm.box = "mc"
-        mc.vm.synced_folder ".", "/var/www", type: "nfs"
+        mc.vm.synced_folder ".", "/home/vagrant/web", type: "nfs"
         mc.vm.hostname = "mathtrade.local"
         mc.vm.network "private_network", ip: "172.21.88.2"
         mc.vm.provider :virtualbox do |vb|

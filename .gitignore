@@ -5,4 +5,4 @@ composer.phar
 tags
 /.idea
 node_modules
-bower_components
+src/Mathtrade/Infrastructure/Ui/Web/Silex/Public/components
