@@ -201,6 +201,12 @@ $app->post('/register', function (Silex\Application $app) {
 	return $app->redirect('/public/signin?error=3');
 });
 
+$app->get('/logout',function (Silex\Application $app) {
+	$app['session']->clear();
+	return $app->redirect('/public/');
+});
+
+
 /**
  * Home of the app
  */
