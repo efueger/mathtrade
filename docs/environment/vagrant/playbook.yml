@@ -6,12 +6,19 @@
     - apt: name={{ item }} state=present update_cache=yes
       with_items:
       - php5
+      - mysql-client
       - apache2
       - php5-mysql
+      - mysql-server
+      - python-mysqldb
     - copy: src=templates/apache/default dest=/etc/apache2/sites-available/default mode=0755
     - file: path=/var/www state=absent
     - file: path=/var/www src=/home/vagrant/web/src/Mathtrade/Infrastructure/Ui/Web/Silex/Public force=yes state=link
     - apache2_module: name=rewrite state=present
     - service: name=apache2 enabled=yes
     - service: name=apache2 state=restarted
+    - service: name=mysql enabled=yes
+    - service: name=mysql state=restarted
+    - mysql_db: name=mathtrade state=present
+    - mysql_user: name=ediar password=noSql priv=*.*:ALL state=present host=%
 

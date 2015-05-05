@@ -8,11 +8,10 @@ require.config({
     handlebars: '../../components/handlebars/handlebars.min',
     plupload: '../../components/plupload/js/plupload.full.min',
     textcomplete: '../../components/jquery-textcomplete/dist/jquery.textcomplete.min'
-  },
+  }
 });
 
 require(['jquery','underscore','backbone','router'],function($,_,Backbone,Router){
-
 
 	var router = new Router();
   Backbone.history.start();
