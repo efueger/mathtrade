@@ -1,90 +1,47 @@
-<html>
-<head>
-    <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../bower_components/jquery-textcomplete/dist/jquery.textcomplete.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-    <script type="text/javascript" src="../../bower_components/jquery/dist/jquery.min"></script>
-    <script type="text/javascript" src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-</head>
-<body>
-    {% include 'elements/loggedbar.twig' %}
-    <div class="container">
-        <div class="well">
-            <div class="btn-group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                Action <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
-                <li class="divider"></li>
-                <li><a href="#">Separated link</a></li>
-              </ul>
-            </div>
-          <h1>Mathtrade Helper</h1>
-            <p>
-                Registrate en la aplicación a ser posible usando el mismo nombre de usuario que en LaBSK aunque no es imprescindible.
-            </p>
-            <div class="row">
-                <div class="col-md-6">
-                    <h2>Identifícate</h2>
-                    <p>
-                        Utiliza tu nombre de usuario o email para identificarte en la herramienta.
-                    </p>
-                    <form method="POST" class="form-horizontal col-md-8">
-                        <div class="form-group">
-                            <label for="user">Nombre de usuario</label>
-                            <input type="text" class="form-control" name="user"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="pwd">Contraseña</label>
-                            <input type="password" class="form-control" name="pwd"/>
-                        </div>
-                        <input type="submit" value="Login" class="btn btn-primary btn-sm" id="login"/>
-                       
-                    </form>
-                </div>
-                <div class="col-md-6">
-                    <h2>Regístrate</h2>
-                    <p>
-                Registrate en la aplicación a ser posible usando el mismo nombre de usuario que en LaBSK aunque no es imprescindible.
-                    </p>
-                    <form method="POST" class="form-horizontal col-md-8">
-                        <div class="form-group">
-                            <label for="user">Nombre de usuario</label>
-                            <input type="text" class="form-control" name="user"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="text" class="form-control" name="email"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="pwd">Contraseña</label>
-                            <input type="password" class="form-control" name="pwd"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="pwd_repeat">Repetir Contraseña</label>
-                            <input type="password" class="form-control" name="pwd_repeat"/>
-                        </div>
-                        <input type="submit" value="Registrarse" class="btn btn-primary btn-sm" id="resgister"/>
-                       
-                    </form>
-                </div>
-            </div>
-           
-            <div id="link">
+{% extends "layouts/logged.twig" %}
 
-            </div>
-        </div>
+{% block scripts %}
+<script type="text/javascript" data-main='js/home.js' src="../bower_components/requirejs/require.js"></script>
+{% endblock %}
+
+{% block content %}
+    <h2>Mis juegos</h2>
+    <div id="main"></div>
+    
+
+
+
+
+{% verbatim %}
+<script id="games-template" type="text/x-handelbars-template">
+
+    {{#each this}}
+    <div class="row" style="margin-top:10px;">
+        {{#if is_pack}}
+            <h4>{{name}}</h4>
+            {{#each packItems}}
+            <img class="" src="{{bgg_img}}" />
+            {{/each}}
+        {{else}}
         
-        <div class="col-md-12 well">
-            Autores:
-                <ul class="list-unstyled">
-                    <li><a target="_blank" href="http://twitter.com/ediar">@ediar</a></li>
-                    <li><a target="_blank" href="http://twitter.com/muevecubos">@muevecubos</a></li>
-                </ul>    
+        <div class="col-md-2">
+            <img class="" src="{{bgg_img}}" />
         </div>
+        <div class="col-md-10" style="position:relative; min-height:175px;">
+            <h4 data-id="{{item_id}}">{{name}}</h4>
+            <p>{{description}}</p>
+            
+        </div>
+        {{/if}}
     </div>
-</body>
-</html>
+    {{/each}}
+
+</script>
+{% endverbatim %}
+
+
+
+<script type="text/javascript">
+    var games = JSON.parse('{{ games|raw }}');  
+</script>
+{% endblock %}

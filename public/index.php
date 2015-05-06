@@ -215,8 +215,12 @@ $app->get('/home',function (Silex\Application $app) {
 	if (!is_array($user)) return $user;
 
 
+	$games = $app['db']->fetchAll('SELECT * FROM newitems WHERE account_id = ?',array($user['id']));
+
+
 	return $app['twig']->render('home.twig',array(
 		'user' => $user,
+		'games'=> str_replace('"','\\"',json_encode($games,JSON_HEX_APOS)),
 	));
 });
 
