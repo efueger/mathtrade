@@ -17,8 +17,9 @@
     - apache2_module: name=rewrite state=present
     - service: name=apache2 enabled=yes
     - service: name=apache2 state=restarted
-    - service: name=mysql enabled=yes
-    - service: name=mysql state=restarted
+    - copy: src=templates/mysql/my.cnf dest=/etc/mysql/my.cnf mode=0600
     - mysql_db: name=mathtrade state=present
     - mysql_user: name=ediar password=noSql priv=*.*:ALL state=present host=%
+    - service: name=mysql enabled=yes
+    - service: name=mysql state=restarted
 

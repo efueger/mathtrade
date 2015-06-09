@@ -1,22 +1,20 @@
 require.config({
 	//baseUrl: "../bower_components/",
   paths: {
-  	bower: '../../bower_components',
-    jquery: '../../bower_components/jquery/dist/jquery.min',
-    jqueryui: '../../bower_components/jquery-ui/jquery-ui.min',
-    underscore: '../../bower_components/underscore/underscore-min',
-    backbone: '../../bower_components/backbone/backbone',
-    handlebars: '../../bower_components/handlebars/handlebars.min',
-    plupload: '../../bower_components/plupload/js/plupload.full.min',
-    textcomplete: '../../bower_components/jquery-textcomplete/dist/jquery.textcomplete.min',
-    models:'../../models'
+    jquery: '../../components/jquery/dist/jquery.min',
+    jqueryui: '../../components/jquery-ui/jquery-ui.min',
+    underscore: '../../components/underscore/underscore-min',
+    backbone: '../../components/backbone/backbone',
+    handlebars: '../../components/handlebars/handlebars.min',
+    plupload: '../../components/plupload/js/plupload.full.min',
+    textcomplete: '../../components/jquery-textcomplete/dist/jquery.textcomplete.min'
   },
 });
 
 require(['models/mathitems','views/hb','jquery'],function(Items,HB,$){
 
   var m = new Items([]);
-    m.url = '/public/bggimport/get';
+    m.url = '/bggimport/get';
     
   var View = HB.extend({
     events:{
@@ -48,8 +46,8 @@ require(['models/mathitems','views/hb','jquery'],function(Items,HB,$){
     });
 
     $(document).on('click','[data-add-bgg]',function(){
-       $.post('/public/bggimport/add',{data:JSON.stringify(m.toJSON())},function(){
-          window.location.href='/public/home';
+       $.post('/bggimport/add',{data:JSON.stringify(m.toJSON())},function(){
+          window.location.href='/home';
        });
     });
   });

@@ -1,5 +1,4 @@
 require.config({
-
   paths: {
     jquery: '../../components/jquery/dist/jquery.min',
     jqueryui: '../../components/jquery-ui/jquery-ui.min',
