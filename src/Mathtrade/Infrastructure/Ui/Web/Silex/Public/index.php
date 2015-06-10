@@ -30,6 +30,18 @@ if ($_SERVER['SERVER_NAME'] == '172.21.88.2') {
 	    )
 	));
 }
+else if ($_SERVER['SERVER_NAME'] == 'mt.dev') {
+	$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
+	    'db.options' => array(
+	        'driver'    => 'pdo_mysql',
+	        'host'      => 'localhost',
+	        'dbname'    => 'mathtrade',
+	        'user'      => 'root',
+	        'password'  => '',
+	        'charset'   => 'utf8',
+	    )
+	));
+}
 else {
 	$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
 	    'db.options' => array(
