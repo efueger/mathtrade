@@ -22,14 +22,15 @@ define(['models/items','models/wildcards'],function(Items,Wildcards){
 		 */
 		mt.exclude = function(item){
 			excluded.add(item);
-			$.post('/public/rest/useritems/'+hash,{id:item.get('item_id'),type:2},function(resp){
+			$.post('/rest/useritems/'+hash,{id:item.get('item_id'),type:2},function(resp){
 			});
 		}
 
 		mt.excludeBulk = function(bulk){
 			excluded.add(bulk);
 			var ids = JSON.stringify(_.map(bulk,function(i){return i.get('item_id')}));
-			$.post('/public/rest/useritems/'+hash,{bulk:ids,type:2},function(resp){
+
+			$.post('/rest/useritems/'+hash,{bulk:ids,type:2},function(resp){
 			});
 		}
 
@@ -40,7 +41,7 @@ define(['models/items','models/wildcards'],function(Items,Wildcards){
 		mt.addwant = function(item){
 			interested.add(item);
 
-			$.post('/public/rest/useritems/'+hash,{id:item.get('item_id'),type:1},function(resp){
+			$.post('/rest/useritems/'+hash,{id:item.get('item_id'),type:1},function(resp){
 				console.log(resp);
 			});
 

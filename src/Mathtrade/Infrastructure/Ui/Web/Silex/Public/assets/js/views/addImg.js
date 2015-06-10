@@ -20,12 +20,12 @@ define(['views/hb','lib/MC/upload'],function(HB,MC){
 		                if ($.isNumeric(info.originalId)) {
 		                	var m = model.get('additional_images')[info.originalId];
 		                	m.img = obj.file;
-		                	m.full_img ='/public/uploads/'+obj.file;
+		                	m.full_img ='/uploads/'+obj.file;
 		                }
 		                else {
 			               	model.get('additional_images').push({
 			               		img:obj.file,
-			               		full_img:'/public/uploads/'+obj.file
+			               		full_img:'/uploads/'+obj.file
 			               	});
 		                }
 		               	model.trigger('img_added');

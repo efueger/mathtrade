@@ -25,7 +25,7 @@ var wantList =  HB.extend({
 
 	saveWant: function(evt) {
 		var id = $(evt.target).data('save-want');
-		$.post('/public/rest/wantlist/'+hash,{
+		$.post('/rest/wantlist/'+hash,{
 			d:this.model.at(0).wantlist.serialize(),
 			wid:id,
 		});
@@ -37,7 +37,7 @@ var wantList =  HB.extend({
 		var id = $(evt.target).data('save-wild');
 		var m = this.wildcards.get(id);
 		if (m == undefined)m = this.wildcards.get('w'+id);
-		$.post('/public/rest/wildcarditems/'+hash,{
+		$.post('/rest/wildcarditems/'+hash,{
 			d:JSON.stringify(m.items.toJSON()),
 			wid:m.get('id'),
 		});
@@ -69,7 +69,7 @@ var wantList =  HB.extend({
 		var m = this.wildcards.get(id);
 		m.set('name',val);
 
-		$.post('/public/rest/wildcards/'+hash,{
+		$.post('/rest/wildcards/'+hash,{
 			name:m.get('name')
 		},function(r){
 			m.set({id:r.id,wantid:r.wantid});
@@ -91,7 +91,7 @@ var wantList =  HB.extend({
 		//this.wish.add(m);
 		this.render();
 		$.ajax({
-		    url: '/public/rest/wildcards/'+hash,
+		    url: '/rest/wildcards/'+hash,
 		    type: 'DELETE',
 		    data:{id:m.get('id')}
 		});
@@ -132,7 +132,7 @@ var wantList =  HB.extend({
 			        	
 			        mtarget.wantlist.add(source.wantlist.models);
 
-			        $.post('/public/rest/wantlist/'+hash,{
+			        $.post('/rest/wantlist/'+hash,{
 						d:mtarget.wantlist.serialize(),
 						wid:id,
 					});

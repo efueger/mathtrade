@@ -1,4 +1,4 @@
-define(['lib/MC','handlebars','HBhelpers'],function(MC,Handlebars){
+define(['lib/MC','../../../../components/handlebars/handlebars','HBhelpers'],function(MC,Handlebars){
 	Handlebars.registerHelper('count', function(array, url) {
 	  return new Handlebars.SafeString(array.length);
 	});

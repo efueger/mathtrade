@@ -32,7 +32,7 @@ var Router = Backbone.Router.extend({
 	  			var m = MT.user;
 	  			if (type != undefined) {
 		  			m = new Items([]);
-		  			m.url = '/public/rest/itemstype/'+type+'/'+hash;
+		  			m.url = '/rest/itemstype/'+type+'/'+hash;
 		  			m.fetch({
 		  				success:function(collection,resp){
 		  				},
@@ -61,7 +61,7 @@ var Router = Backbone.Router.extend({
 	  			var _ = require('underscore');
 	  			
 	  			var m = new Items([]);
-	  			m.url = (id == undefined ? '/public/rest/itemsbyuser/'+hash : '/public/rest/items/'+id+'/'+hash);
+	  			m.url = (id == undefined ? '/rest/itemsbyuser/'+hash : '/rest/items/'+id+'/'+hash);
 
 	  			m.onlyMode = (id != undefined);
 	  			m.fetch({
@@ -76,7 +76,7 @@ var Router = Backbone.Router.extend({
 	  			});
 
 	  			var wish = new Items([]);
-	  			wish.url = '/public/rest/useritems/'+hash;
+	  			wish.url = '/rest/useritems/'+hash;
 	  			wish.fetch({reset: true});
 	  			m.wantlist = new Wantlist([]);
 	  			m.wantlist.add(MT.wildcards.at(0));
@@ -99,7 +99,7 @@ var Router = Backbone.Router.extend({
 	  			var _ = require('underscore');
 	  			
 	  			var m = new Items([]);
-	  			m.url = '/public/rest/results/'+hash;
+	  			m.url = '/rest/results/'+hash;
 
 	  			m.fetch({
 	  				success:function(collection,resp){

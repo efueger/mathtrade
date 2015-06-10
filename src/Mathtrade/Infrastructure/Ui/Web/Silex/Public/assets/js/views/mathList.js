@@ -1,4 +1,4 @@
-define(['views/hb','handlebars','MT'],function(HB,Handlebars,MT){
+define(['views/hb','../../../components/handlebars/handlebars','MT'],function(HB,Handlebars,MT){
 
 	var mathList =  HB.extend({
 		onInit:function(){
