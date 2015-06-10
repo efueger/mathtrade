@@ -157,6 +157,33 @@ $app->match('/signin', function (Silex\Application $app) {
 })->method('GET|POST');
 
 
+//The user registers in the MTH
+$app->post('/register', function (Silex\Application $app) {
+	//Get post params..
+	$r = $app['request']->request->all();
+	if (count($r)>0) {
+		$sql = "SELECT * FROM accounts WHERE username = ? OR email = ?";
+		$user = $app['db']->fetchAll($sql,array($r['user'],$r['email']));
+		if (count($user) > 0) {
+			return $app->redirect('/public/signin?error=2');
+		}
+		
+		//Not used go ahead
+		$app['db']->insert('accounts',array(
+			'username'		=>$r['user'],
+	    	'password'		=>md5($r['pwd'].SALT),
+	    	'email'			=>$r['email'],
+	    	'created'		=>date('Y-m-d H:i:s')
+		));
+		return $app->redirect('/signin?success=1');
+	}
+	return $app->redirect('/signin?error=3');
+});
+$app->get('/logout',function (Silex\Application $app) {
+	$app['session']->clear();
+	return $app->redirect('/');
+});
+
 /**
  * Home of the app
  */
