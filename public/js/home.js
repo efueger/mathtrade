@@ -27,6 +27,12 @@ require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mat
       events:{
         'click [data-exclude]':'exclude',
         'click [data-want]':'want',
+        'click [data-toggle-mt]':'toggleMt',
+      },
+
+      toggleMt:function(evt){
+        var id = $(evt.target).data('toggle-mt');
+        var m = this.model.get(id);
       }
 
     });
