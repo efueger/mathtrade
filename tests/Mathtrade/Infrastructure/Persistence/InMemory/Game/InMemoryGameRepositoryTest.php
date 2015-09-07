@@ -1,8 +1,8 @@
 <?php
 
-namespace Mathtrade\Infrastructure\Persistence\InMemory\Game;
+namespace Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Game;
 
-use Mathtrade\Domain\Model\Game;
+use Edysanchez\Mathtrade\Domain\Model\Game;
 
 class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -47,8 +47,6 @@ class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
         $game=new Game(self::A_GAME_NAME, self::A_GAME_DESCRIPTION);
 
         $this->repo->persist($game);
-
-
 
         /** @var  Game */
         $game= $this->repo->find($game->id());

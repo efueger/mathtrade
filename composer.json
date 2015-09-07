@@ -24,8 +24,11 @@
     "config": {
         "bin-dir": "bin/"
     },
-    "autoload": {
-        "psr-4": {"": "src"}
+    "autoload-dev": {
+        "psr-4": {
+          "Edysanchez\\Test\\": "tests/",
+          "Edysanchez\\": "src/"
+        }
     }
 
 }

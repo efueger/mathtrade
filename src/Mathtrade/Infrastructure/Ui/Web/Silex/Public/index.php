@@ -5,6 +5,7 @@ use Symfony\Component\HttpFoundation\Response;
 const returnCodeOK = 200;
 const USER_NOT_FOUND = 520;
 const SALT = '9ywmLatNHWuJJMH7k7LX';
+
 require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
 $app = new Silex\Application();
 $app['debug'] = true;

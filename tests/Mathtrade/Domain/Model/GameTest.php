@@ -1,6 +1,6 @@
 <?php
 
-namespace Mathtrade\Domain\Model;
+namespace Edysanchez\Mathtrade\Domain\Model;
 
 class GameTest extends \PHPUnit_Framework_TestCase
 {

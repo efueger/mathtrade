@@ -1,9 +1,9 @@
 <?php
 
-namespace Mathtrade\Infrastructure\Persistence\InMemory\Game;
+namespace Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Game;
 
-use Mathtrade\Domain\Model\Game;
-use Mathtrade\Domain\Model\GameRepository;
+use Edysanchez\Mathtrade\Domain\Model\Game;
+use Edysanchez\Mathtrade\Domain\Model\GameRepository;
 
 class InMemoryGameRepository implements GameRepository
 {
