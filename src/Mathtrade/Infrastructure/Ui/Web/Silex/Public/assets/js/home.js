@@ -13,8 +13,13 @@ require.config({
   },
 });
 
+var userItems;
+
 require(['jquery','views/mathList','models/mathItems','views/hb','MT'],function($,mathView,Items,HB,MT){
-      
+    
+    userItems = new Items(games);  
+
+
     var Router = Backbone.Router.extend({
       routes: {
         "":             "list",
@@ -23,7 +28,8 @@ require(['jquery','views/mathList','models/mathItems','views/hb','MT'],function(
       },
 
       list: function(type) {
-        var m = new Items(games);
+        
+        var m = userItems;
     
         var gamesView =  HB.extend({
           onInit:function(){
@@ -61,8 +67,10 @@ require(['jquery','views/mathList','models/mathItems','views/hb','MT'],function(
           else {
             var newgame = MT.user.get(id);
           }
+
           this.currentView = new AddGame({
             model : newgame,
+            userItems : userItems,    //Reference to the userItems where the item will be added
             implements:[MC.interfaces.typeChange({silent:true})],
             nestedViews: {
                 '#additional-images': new addImg({

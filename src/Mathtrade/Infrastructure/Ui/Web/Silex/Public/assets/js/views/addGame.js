@@ -2,7 +2,8 @@ define(['views/hb','lib/MC','MT','textcomplete'],function(HB,MC,MT){
 
 
 	var addgame =  HB.extend({
-		onInit:function(){
+		onInit:function(options){
+			this.userItems = options.userItems;
 		},
 		events: {
 			'submit':'addgame'
@@ -14,7 +15,9 @@ define(['views/hb','lib/MC','MT','textcomplete'],function(HB,MC,MT){
 				this.model.attributes['id']=this.model.cid;
 				//MT.user.add(this.model);
 				
-				$.post('/rest/items/',this.model.toJSON());
+				$.post('/rest/items/',this.model.toJSON(),function(r){
+					this.userItems.add(r);
+				}.bind(this),'json');
 
 			}
 			else {

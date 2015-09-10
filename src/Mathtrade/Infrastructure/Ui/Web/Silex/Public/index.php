@@ -165,7 +165,7 @@ $app->post('/register', function (Silex\Application $app) {
 		$sql = "SELECT * FROM accounts WHERE username = ? OR email = ?";
 		$user = $app['db']->fetchAll($sql,array($r['user'],$r['email']));
 		if (count($user) > 0) {
-			return $app->redirect('/public/signin?error=2');
+			return $app->redirect('/signin?error=2');
 		}
 		
 		//Not used go ahead
@@ -608,14 +608,17 @@ $app->post('/rest/items/', function (Request $request) use ($app) {
 	unset($r['wantname']);
 
  	$user = $app['session']->get('user');
- 	print_r($user);
+ 	//print_r($user);
 	$r['account_id'] = $user['id'];
-	print_r($r);
+	//print_r($r);
 
 	$post = $app['db']->insert('newitems',$r);
 
+	$sql = "SELECT * FROM newitems WHERE id = ? ";
+	$post = $app['db']->fetchAll($sql,array($app['db']->lastInsertId()));
+
 	//print_r($request->all());
-	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
+	return new Response(json_encode($post[0]), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
 
