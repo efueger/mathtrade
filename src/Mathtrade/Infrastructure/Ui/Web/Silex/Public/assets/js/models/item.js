@@ -20,6 +20,12 @@ define(['backbone'],function(Backbone){
 			if (this.attributes.type == 2) this.attributes.wantid = '%'+this.attributes.name;
 			else 
 				this.attributes['wantid'] = this.attributes['id'];
+
+
+			if (this.attributes['inMT'] != undefined) {
+				console.log(this.attributes);
+				this.attributes['inMT'] = this.attributes['inMT']=='0'?0:1;
+			}
 		},
 
 		setupPack:function() {

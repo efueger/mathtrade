@@ -1,0 +1,19 @@
+{% extends "layouts/logged.twig" %}
+
+{% block scripts %}
+
+{% endblock %}
+
+{% block content %}
+    <h2>Mathtrade items</h2>
+    <div id="main"></div>
+    
+   {% for game in games %}
+        <li>{{ game.name }} {{game.description}} {{game.username}}</li>
+    {% endfor %}
+
+
+
+
+
+{% endblock %}

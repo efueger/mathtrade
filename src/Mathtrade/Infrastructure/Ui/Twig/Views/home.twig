@@ -1,7 +1,7 @@
 {% extends "layouts/logged.twig" %}
 
 {% block scripts %}
-<script type="text/javascript" data-main='js/home.js' src="../bower_components/requirejs/require.js"></script>
+<script type="text/javascript" data-main='assets/js/home.js' src="components/requirejs/require.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -27,7 +27,7 @@
         <div class="col-md-10" style="position:relative; min-height:175px;">
             <h4 data-id="{{item_id}}">{{name}}</h4>
             <p>{{description}}</p>
-            <button data-toggle-mt="{{id}}" class="btn">Añadir a la MT</button>
+            <button data-toggle-mt="{{id}}" class="btn">{{#if inMT}}Quitar de la MT{{else}}Añadir a la MT{{/if}}</button>
         </div>
         {{/if}}
     </div>

@@ -191,7 +191,7 @@ $app->get('/home',function (Silex\Application $app) {
 	$user = logged();
 	if (!is_array($user)) return $user;
 	
-	$games = $app['db']->fetchAll('SELECT * FROM newitems WHERE account_id = ?',array($user['id']));
+	$games = $app['db']->fetchAll('SELECT i.*, !isnull(im.id) as inMT FROM newitems i LEFT JOIN items_mt im ON i.id = im.item_id WHERE account_id = ?',array($user['id']));
 	return $app['twig']->render('home.twig',array(
 		'user' => $user,
 		'games'=> str_replace('"','\\"',json_encode($games,JSON_HEX_APOS)),
@@ -276,6 +276,25 @@ $app->post('/bggimport/add',function (Silex\Application $app) {
 
 	return new Response(json_encode($games),200,array('Content-Type'=>'application/json'));
 });
+
+/**
+ * Home of the app
+ */
+$app->get('/mathtrade',function (Silex\Application $app) {
+	$user = logged();
+	if (!is_array($user)) return $user;
+
+	$sql = "SELECT i.*,a.username FROM items_mt mt 
+			LEFT JOIN newitems i ON mt.item_id = i.id 
+			LEFT JOIN accounts a ON i.account_id= a.id";
+	$games = $app['db']->fetchAll($sql);
+
+	return $app['twig']->render('mathtrade.twig',array(
+		'user' => $user,
+		'games' => $games
+	));
+});
+
 
 
 /**
@@ -385,6 +404,27 @@ $app->get('/import/results',function (Silex\Application $app) {
 $app->get('/rest/items', function (Silex\Application $app) {
 	$sql = "SELECT * FROM items";
 	$post = $app['db']->fetchAll($sql);
+	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
+});
+
+
+//Returns all the items
+$app->post('/rest/addtomt', function (Request $request) use ($app) {
+
+	$d = array(
+		'item_id'=>$request->get('id'),
+		'mt_id'=>1,
+	);
+
+	$sql = "SELECT * FROM items_mt where item_id = ? AND mt_id = ?";
+	$post = $app['db']->fetchAll($sql,array_values($d));
+
+	if ($post) {
+		$app['db']->delete('items_mt',$d);
+	}
+	else {
+		$post = $app['db']->insert('items_mt',$d);
+	}
 	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
