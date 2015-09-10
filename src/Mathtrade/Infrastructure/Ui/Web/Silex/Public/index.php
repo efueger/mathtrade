@@ -594,6 +594,33 @@ $app->get('/rest/useritems/{hash}', function ($hash) use ($app) {
 
 
 
+
+/**
+ * Implements the REST to add an item to our collection
+ */
+$app->post('/rest/items/', function (Request $request) use ($app) {
+	$r = $request->request->all();
+
+	$r['bgg_img']= $r['full_img'];
+	unset($r['full_img']);
+	unset($r['img']);
+	unset($r['id']);
+	unset($r['wantname']);
+
+ 	$user = $app['session']->get('user');
+ 	print_r($user);
+	$r['account_id'] = $user['id'];
+	print_r($r);
+
+	$post = $app['db']->insert('newitems',$r);
+
+	//print_r($request->all());
+	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
+});
+
+
+
+
 $app->post('/rest/useritems/{hash}', function ($hash,Request $request) use ($app) {
 	$user = getUser($hash);
 

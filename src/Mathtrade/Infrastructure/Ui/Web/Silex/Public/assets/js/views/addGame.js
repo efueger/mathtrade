@@ -12,12 +12,15 @@ define(['views/hb','lib/MC','MT','textcomplete'],function(HB,MC,MT){
 			console.log('adding',this.model.toJSON());
 			if(!this.model.attributes['id']){
 				this.model.attributes['id']=this.model.cid;
-				MT.user.add(this.model);
+				//MT.user.add(this.model);
+				
+				$.post('/rest/items/',this.model.toJSON());
+
 			}
 			else {
 				//We just modified the game
 			}
-			window.location.href = '#';
+			//window.location.href = '#';
 
 		},
 		onRender:function(){
