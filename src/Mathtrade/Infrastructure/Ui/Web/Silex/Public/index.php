@@ -158,6 +158,33 @@ $app->match('/signin', function (Silex\Application $app) {
 })->method('GET|POST');
 
 
+//The user registers in the MTH
+$app->post('/register', function (Silex\Application $app) {
+	//Get post params..
+	$r = $app['request']->request->all();
+	if (count($r)>0) {
+		$sql = "SELECT * FROM accounts WHERE username = ? OR email = ?";
+		$user = $app['db']->fetchAll($sql,array($r['user'],$r['email']));
+		if (count($user) > 0) {
+			return $app->redirect('/signin?error=2');
+		}
+		
+		//Not used go ahead
+		$app['db']->insert('accounts',array(
+			'username'		=>$r['user'],
+	    	'password'		=>md5($r['pwd'].SALT),
+	    	'email'			=>$r['email'],
+	    	'created'		=>date('Y-m-d H:i:s')
+		));
+		return $app->redirect('/signin?success=1');
+	}
+	return $app->redirect('/signin?error=3');
+});
+$app->get('/logout',function (Silex\Application $app) {
+	$app['session']->clear();
+	return $app->redirect('/');
+});
+
 /**
  * Home of the app
  */
@@ -165,7 +192,7 @@ $app->get('/home',function (Silex\Application $app) {
 	$user = logged();
 	if (!is_array($user)) return $user;
 	
-	$games = $app['db']->fetchAll('SELECT * FROM newitems WHERE account_id = ?',array($user['id']));
+	$games = $app['db']->fetchAll('SELECT i.*, !isnull(im.id) as inMT FROM newitems i LEFT JOIN items_mt im ON i.id = im.item_id WHERE account_id = ?',array($user['id']));
 	return $app['twig']->render('home.twig',array(
 		'user' => $user,
 		'games'=> str_replace('"','\\"',json_encode($games,JSON_HEX_APOS)),
@@ -250,6 +277,25 @@ $app->post('/bggimport/add',function (Silex\Application $app) {
 
 	return new Response(json_encode($games),200,array('Content-Type'=>'application/json'));
 });
+
+/**
+ * Home of the app
+ */
+$app->get('/mathtrade',function (Silex\Application $app) {
+	$user = logged();
+	if (!is_array($user)) return $user;
+
+	$sql = "SELECT i.*,a.username FROM items_mt mt 
+			LEFT JOIN newitems i ON mt.item_id = i.id 
+			LEFT JOIN accounts a ON i.account_id= a.id";
+	$games = $app['db']->fetchAll($sql);
+
+	return $app['twig']->render('mathtrade.twig',array(
+		'user' => $user,
+		'games' => $games
+	));
+});
+
 
 
 /**
@@ -359,6 +405,27 @@ $app->get('/import/results',function (Silex\Application $app) {
 $app->get('/rest/items', function (Silex\Application $app) {
 	$sql = "SELECT * FROM items";
 	$post = $app['db']->fetchAll($sql);
+	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
+});
+
+
+//Returns all the items
+$app->post('/rest/addtomt', function (Request $request) use ($app) {
+
+	$d = array(
+		'item_id'=>$request->get('id'),
+		'mt_id'=>1,
+	);
+
+	$sql = "SELECT * FROM items_mt where item_id = ? AND mt_id = ?";
+	$post = $app['db']->fetchAll($sql,array_values($d));
+
+	if ($post) {
+		$app['db']->delete('items_mt',$d);
+	}
+	else {
+		$post = $app['db']->insert('items_mt',$d);
+	}
 	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
@@ -524,6 +591,36 @@ $app->get('/rest/useritems/{hash}', function ($hash) use ($app) {
 	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
+
+
+
+
+
+/**
+ * Implements the REST to add an item to our collection
+ */
+$app->post('/rest/items/', function (Request $request) use ($app) {
+	$r = $request->request->all();
+
+	$r['bgg_img']= $r['full_img'];
+	unset($r['full_img']);
+	unset($r['img']);
+	unset($r['id']);
+	unset($r['wantname']);
+
+ 	$user = $app['session']->get('user');
+ 	//print_r($user);
+	$r['account_id'] = $user['id'];
+	//print_r($r);
+
+	$post = $app['db']->insert('newitems',$r);
+
+	$sql = "SELECT * FROM newitems WHERE id = ? ";
+	$post = $app['db']->fetchAll($sql,array($app['db']->lastInsertId()));
+
+	//print_r($request->all());
+	return new Response(json_encode($post[0]), returnCodeOK,array('Content-Type'=>'application/json'));
+});
 
 
 
