@@ -15,16 +15,10 @@ class GetAllItemsUseCaseTest extends \PHPUnit_Framework_TestCase
      * @var InMemoryItemRepository
      */
     private $inMemoryItemRepository;
-
-    /**
-     * @var GetAllItemsRequest
-     */
-    private $getAllItemsRequest;
-
+    
     protected function setUp()
     {
         $this->inMemoryItemRepository = new InMemoryItemRepository();
-        $this->getAllItemsRequest = new GetAllItemsRequest();
 
     }
 
