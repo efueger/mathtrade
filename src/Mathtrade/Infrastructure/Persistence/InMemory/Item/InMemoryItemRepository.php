@@ -13,7 +13,7 @@ class InMemoryItemRepository implements ItemRepository
 
     public function __construct()
     {
-        $this->repository = [];
+        $this->repository = array();
     }
 
     /**

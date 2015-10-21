@@ -22,7 +22,17 @@ class GetAllItemsUseCase
     public function execute()
     {
         $response = new GetAllItemsResponse();
-        $response->items = $this->itemsRepository->findAll();
+        $items = $this->itemsRepository->findAll();
+
+        foreach($items as $item) {
+            $newItem = array(
+                'id' => $item->id(),
+                'img' => $item->img(),
+                'name' => $item->name(),
+                'user_name' => $item->userName()
+            );
+            $response->items[] = $newItem;
+        }
         return $response;
     }
 }

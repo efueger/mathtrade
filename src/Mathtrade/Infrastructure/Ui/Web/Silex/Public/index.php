@@ -1,12 +1,21 @@
 <?php
+
+use Edysanchez\Mathtrade\Application\Service\GetAllItems\GetAllItemsUseCase;
+use Edysanchez\Mathtrade\Domain\Model\Item\Item;
+use Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Item\InMemoryItemRepository;
+use Silex\Provider\DoctrineServiceProvider;
+use Symfony\Component\Debug\Debug;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
 
 const returnCodeOK = 200;
 const USER_NOT_FOUND = 520;
 const SALT = '9ywmLatNHWuJJMH7k7LX';
 
 require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
+
+Debug::enable();
 $app = new Silex\Application();
 $app['debug'] = true;
 
@@ -19,43 +28,30 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 $app->register(new Silex\Provider\SessionServiceProvider());
 
 
-if ($_SERVER['SERVER_NAME'] == '172.21.88.2') {
-	$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
-	    'db.options' => array(
-	        'driver'    => 'pdo_mysql',
-	        'host'      => 'localhost',
-	        'dbname'    => 'mathtrade',
-	        'user'      => 'ediar',
-	        'password'  => 'noSql',
-	        'charset'   => 'utf8',
-	    )
-	));
-}
-else if ($_SERVER['SERVER_NAME'] == 'mt.dev') {
-	$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
-	    'db.options' => array(
-	        'driver'    => 'pdo_mysql',
-	        'host'      => 'localhost',
-	        'dbname'    => 'mathtrade',
-	        'user'      => 'root',
-	        'password'  => '',
-	        'charset'   => 'utf8',
-	    )
-	));
-}
-else {
-	$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
-	    'db.options' => array(
-	        'driver'    => 'pdo_mysql',
-	        'host'      => 'core.mordamir.com',
-	        'dbname'    => 'mathtrade',
-	        'user'      => 'mathtrade',
-	        'password'  => 'getthejobdone',
-	        'charset'   => 'utf8',
-	    )
-	));
-}
+$app['item_repository'] = $app->share(function () {
+	$inMemoryItemRepository = new InMemoryItemRepository();
+	$item = new Item(1);
+	$item->setName('game1');
+	$item->setUserName('user1');
+	$inMemoryItemRepository->add($item);
+	$item = new Item(2);
+	$item->setName('game2');
+	$item->setUserName('user2');
+	$inMemoryItemRepository->add($item);
+    return $inMemoryItemRepository;
+});
 
+$app['get_all_items'] = $app->share(function() use($app) {
+	return new GetAllItemsUseCase($app['item_repository']);
+});
+
+configureDB($app);
+
+$app->get('/all_items', function () use($app) {
+    $getAll = $app['get_all_items']->execute();
+    return new Response(json_encode($getAll));
+
+});
 
 function getUser($hash)
 {
@@ -994,5 +990,47 @@ class CsvIterator
         return $rows;
     }
 }
+
+/**
+ * @param $app
+ */
+function configureDB($app)
+{
+    if ($_SERVER['SERVER_NAME'] == '172.21.88.2') {
+        $app->register(new DoctrineServiceProvider(), array(
+            'db.options' => array(
+                'driver' => 'pdo_mysql',
+                'host' => 'localhost',
+                'dbname' => 'mathtrade',
+                'user' => 'ediar',
+                'password' => 'noSql',
+                'charset' => 'utf8',
+            )
+        ));
+    } else if ($_SERVER['SERVER_NAME'] == 'mt.dev') {
+        $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
+            'db.options' => array(
+                'driver' => 'pdo_mysql',
+                'host' => 'localhost',
+                'dbname' => 'mathtrade',
+                'user' => 'root',
+                'password' => '',
+                'charset' => 'utf8',
+            )
+        ));
+    } else {
+        $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
+            'db.options' => array(
+                'driver' => 'pdo_mysql',
+                'host' => 'core.mordamir.com',
+                'dbname' => 'mathtrade',
+                'user' => 'mathtrade',
+                'password' => 'getthejobdone',
+                'charset' => 'utf8',
+            )
+        ));
+    }
+}
+
 
 $app->run();
