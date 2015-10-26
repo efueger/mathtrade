@@ -119,7 +119,7 @@ $app->get('/landing', function (Silex\Application $app) {
 
 	die();*/
 
-	 return $app['twig']->render('index.twig', array(
+	 return $app['twig']->render('simple.twig', array(
         'items' => $items,
 		'useritems' => array(),
         'wants' => array(),
@@ -490,7 +490,7 @@ $app->post('/gethash/{userName}', function ($userName,Request $request) use ($ap
 	$sql = "SELECT distinct username FROM items WHERE username = ?";
 	$user = $app['db']->fetchAll($sql,array($userName));
 	$returnCode = returnCodeOK;
-	if(!(0 === count($user))) {
+	if(true || !(0 === count($user))) {
 		$hash= generateHash($userName);
 		$app['db']->insert('users',array(
 			'name'=>$userName,
@@ -565,7 +565,7 @@ $app->get('/mt/get', function (Silex\Application $app) {
 	$items = array();
 	do {
 
-		$url = isset($pages[1])?$pages[1]:'http://labsk.net/index.php?topic=151319.0';
+		$url = isset($pages[1])?$pages[1]:'http://labsk.net/index.php?topic=162291.0';
 		file_put_contents('test.html', file_get_contents($url));
 		$html = file_get_contents('test.html');
 		$string = preg_replace('/\n/', '', $html);
@@ -628,7 +628,8 @@ $app->get('/mt/get', function (Silex\Application $app) {
 				    			foreach ($game->childNodes->item(0)->childNodes as $i => $grgame) {
 				    				if ($grgame->nodeName == 'a' ) {
 				    					$Group[$i]->bgg_url =$grgame->getAttribute('href');
-					    				$Group[$i]->bgg_img =$grgame->childNodes->item(0)->getAttribute('src');
+					    				if ($Group[$i]->bgg_img =$grgame->childNodes->item(0))
+									$Group[$i]->bgg_img =$grgame->childNodes->item(0)->getAttribute('src');
 
 				    				}
 				    			}

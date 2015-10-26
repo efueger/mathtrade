@@ -19,7 +19,7 @@ MT.init({
 	user:gs,
 	wants:wants,
 	items:mathItems,
-	wildcards:wildcards
+//	wildcards:wildcards
 });
 
 
