@@ -19,15 +19,23 @@ require(['jquery','views/mathList','models/mathItems','views/hb','MT'],function(
     
     userItems = new Items(games);  
 
+    var gs = new Items();
+    MT.init({
+      user:gs,
+    });
 
     var Router = Backbone.Router.extend({
       routes: {
-        "":             "list",
+        "":             "mygames",
+        "mathtrade":    "mathtrade",
+        "list/:type":   "mathtrade", 
         "addgame":      "addgame",  
+        "want":         "want", 
+        "want/:id":         "want",  
         "edit/:id":     "addgame",
       },
 
-      list: function(type) {
+      mygames: function(type) {
         
         var m = userItems;
     
@@ -58,6 +66,85 @@ require(['jquery','views/mathList','models/mathItems','views/hb','MT'],function(
 
         }).el);
       },
+
+
+      /**
+       * Display the items currently in the mathtrade without my excluded
+       */
+      mathtrade: function(type) {
+        require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,mathItems,HB){
+          var m = MT.user;
+          m = new mathItems([]);
+
+          //Get the items we have not decided yet
+          if (type == undefined) {
+            m.url = '/rest/pendingitems/';
+          }  
+          //Now either the items we are interested or have excluded in case we change opinion 
+          else{
+            m.url = '/rest/itemstype/'+type+'/';
+          }
+         
+          m.fetch({
+            success:function(collection,resp){
+            },
+            reset:true
+          });
+        
+          
+          $('#main').html(new mathView({
+            model:m,
+            nestedViews:{
+              '#items':new HB({
+                model:m,
+                template:'fullmt-list-template'
+              })
+            },
+            skipchange:true
+
+          }).el);
+        });
+
+      },
+
+      want: function(id) {
+        require(['jquery','views/wantlist','models/mathItems','views/hb','models/wildcard','models/wildcards','models/wantlist','jqueryui'
+          ],function($,wantView,mathItems,HB,Wildcard,Wildcards,Wantlist){
+
+          var _ = require('underscore');
+          
+          var m = new mathItems([]);
+          m.url = (id == undefined ? '/rest/itemsbyuser/' : '/rest/items/'+id+'/');
+
+          m.onlyMode = (id != undefined);
+          m.fetch({
+            success:function(collection,resp){
+              _.each(resp,function(i){
+                if (!i.wantlist) i.wantlist=[];
+                var m = collection.findWhere({item_id:i.item_id});
+                m.wantlist = new Wantlist(i.wantlist);
+              })
+            },
+            reset:true
+          });
+
+          var wish = new mathItems([]);
+          wish.url = '/rest/useritems/';
+          wish.fetch({reset: true});
+          m.wantlist = new Wantlist([]);
+          m.wantlist.add(MT.wildcards.at(0));
+
+          $('#main').html(new wantView({
+            model:m,
+            wish:wish,
+            wildcards:MT.wildcards,
+            skipchange:true
+
+          }).el);
+        });
+      },
+
+
 
       addgame: function(id) {
         require(['jquery','models/item','views/addGame','views/addImg','lib/MC/interfaces'],function($,Item,AddGame,addImg,interfaces){

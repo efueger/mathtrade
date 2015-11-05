@@ -5,13 +5,12 @@
 {% endblock %}
 
 {% block content %}
-    <h2>Mis juegos</h2>
-    <div id="main"></div>
+<div id="main"></div>
     
 
 {% verbatim %}
 <script id="games-template" type="text/x-handelbars-template">
-
+     <h2>Mis juegos</h2>
     {{#each this}}
     <div class="row" style="margin-top:10px;">
         {{#if is_pack}}
@@ -64,6 +63,200 @@
         </div>
         <div id="additional-images"></div>
     </div>
+</script>
+
+<script id="math-items-template" type="text/x-handelbars-template">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          
+          <ul class="nav nav-pills" role="tablist">
+              <li role="presentation" class="active"><a href="#mathtrade">Juegos <span class="badge">{{count this}}</span></a></li>
+              <li role="presentation" {{#if interested}} class="active"{{/if}}><a href="#list/interested">Me interesan</a></li>
+              <li role="presentation" {{#if excluded}} class="active"{{/if}} ><a href="#list/excluded">Excluidos</a></li>
+              <li {{#if want}} class="active"{{/if}}><a class="" href="#want">Hacer Wantlist</a></li>
+              <li><a class="" href="#results">Resultados</a></li>
+            </ul>
+        </div>
+      </div>
+    </nav>
+    
+    <div class="row">
+        <div class="col-md-4">
+            
+              <input type="text" class="form-control" data-math-filter='' placeholder="Teclea para filtrar los juegos" />
+            
+        </div>
+        <div class="col-md-4">
+
+         <div class="btn-group" role="group" aria-label="...">
+          <button type="button" class="btn btn-default">Excluir todos</button>
+          <button type="button" class="btn btn-default">Me interesan todos</button>
+        </div>
+        </div>
+    </div>
+
+    <div id="items">
+    </div>
+</script>
+
+<script id="fullmt-list-template" type="text/x-handelbars-template">
+    <div class="col-md-9" >
+        {{#each this}}
+        <div class="row" style="margin-top:10px;">
+            {{#if is_pack}}
+                <h4>{{name}}</h4>
+                {{#each packItems}}
+                <img class="" src="{{bgg_img}}" />
+                {{/each}}
+            {{else}}
+            <div class="col-md-3">
+                <img class="" src="{{bgg_img}}" />
+            </div>
+            <div class="col-md-9">
+                <h4>{{name}}</h4>
+                <p>
+                    {{description}}
+                </p>
+                <div class="btn-group" role="group" aria-label="...">
+                  <button type="button" data-exclude='{{id}}' class="btn btn-danger btn-sm">Excluir</button>
+                  <button type="button" data-exclude-until='{{id}}' class="btn btn-warning btn-sm">Excluir hasta aquí</button>
+                  <button type="button" data-want='{{id}}'class="btn btn-success btn-sm">Me interesa</button>
+                </div>
+            </div>
+            {{/if}}
+            
+        </div>
+        {{/each}}
+    </div>
+</script>
+
+<script id="want-items-template" type="text/x-handelbars-template">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          
+          <ul class="nav nav-pills" role="tablist">
+              <li role="presentation" class="active"><a href="#">Juegos</a></li>
+              <li role="presentation" {{#if interested}} class="active"{{/if}}><a href="#list/interested">Me interesan</a></li>
+              <li role="presentation" {{#if excluded}} class="active"{{/if}} ><a href="#list/excluded">Excluidos</a></li>
+              <li {{#if want}} class="active"{{/if}}><a class="" href="#want">Hacer Wantlist</a></li>
+              <li><a class="" href="#results">Resultados</a></li>
+            </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div id="items">
+        <div class="col-md-8" >
+            {{#each items}}
+            <div class="row" style="margin-top:10px;">
+                {{#if is_pack}}
+                    <h4>{{name}}</h4>
+                    {{#each packItems}}
+                    <img class="" src="{{bgg_img}}" />
+                    {{/each}}
+                {{else}}
+                <div class="col-md-2">
+                    <img class="" src="{{bgg_img}}" />
+                </div>
+                <div class="col-md-9">
+                    {{#if ../../onlyMode}}
+                    <h4 ><a href="#want/{{id}}">{{name}}</a></h4>
+                    {{else}}
+                    <h4 data-drop-clone='{{id}}'><a href="#want/{{id}}">{{name}}</a> {{#if ../wantlist}}
+                    <span title="Clone" class="glyphicon glyphicon-transfer" style="font-size:20px" data-clone='{{id}}'></span>
+                    {{/if}}</h4>
+                    {{/if}}
+                    {{#if ../../onlyMode}}
+                    <ul class="want-items list-unstyled">   
+                        {{#each ../wantlist}}
+                        <li id="wantitem_{{id}}" class="item">
+                        <span class="glyphicon glyphicon-option-vertical handle"></span>
+                        <button type="button" data-remove-from-want='{{id}}'  class="btn btn-danger btn-xs tool">-</button>
+                        {{name}}
+                        </li>
+                        {{/each}}
+                    </ul>
+                    <button type="button" data-save-want='{{id}}'  class="btn btn-primary btn-sm tool">Save</button>
+                    {{else}}
+                    <ul class="want-items"> 
+                        {{#each ../wantlist}}
+                        <li class="">
+                        {{name}}
+                        </li>
+                        {{/each}}
+                    </ul>
+                    
+                    {{/if}}
+                </div>
+                {{/if}}
+            </div>
+            {{/each}}
+
+            Wantlist
+            <pre>
+            {{#if onlyMode}}
+            ({{user}}) {{../current.id}}: {{#each ../items.0.wantlist}}{{wantid}} {{/each}} <br/>
+            {{else}}
+            {{#each wildcards}}
+            ({{../user}}) {{wantname}} : {{#each items}}{{id}} {{/each}}<br/>
+            {{/each}}
+            <br />
+            {{#each items}}
+            ({{../user}}) {{id}}: {{#each wantlist}}{{wantid}} {{/each}} <br/>
+            {{/each}}
+            {{/if}}
+            </pre>
+        </div>
+
+        </div>
+        {{#if onlyMode}}    
+        <div class="col-md-4" id="wishlist">
+            Comodines:<button type="button" data-createWildcard='' class="btn btn-primary btn-xs">Crear comodín</button>
+            <ul class="list-unstyled">
+            {{#each wildcards}}
+                <li class="item">
+                {{#if name}}
+                <button type="button" data-addWildcardToWant='{{id}}'  class="btn btn-success btn-xs tool">+</button>
+                <button type="button" data-delete-wild='{{id}}'  class="btn btn-danger btn-xs tool">-</button>
+                {{name}}
+                <button type="button" data-save-wild='{{id}}'  class="btn btn-danger btn-xs tool">Save</button>
+                <ul class="wildcard-items list-unstyled">
+                    {{#each items}}
+                    <li id="wldtm_{{../id}}_{{id}}">
+                    <span class="glyphicon glyphicon-option-vertical handle"></span>
+                    <button type="button" data-remove-from-wild='{"wid":"{{../id}}","id":"{{id}}" }'  class="btn btn-danger btn-xs">-</button>
+                    {{name}}
+                    </li>
+                    {{/each}}
+                    <li class="wilcard-drop droptarget" data-wild-id='{{../id}}'></li>
+                </ul>
+                {{else}}
+                <input type="text" data-wild-input-id='{{id}}' name="name"/> <button type="button" data-saveWildcard='{{id}}'>Guardar</button>
+                {{/if}}
+                </li>
+            {{/each}}
+            </ul>
+            Mis intereses:
+            <ul id="myinterests" class="list-unstyled">
+            {{#each wish}}
+            <li data-id='{{id}}'>
+                <span class="glyphicon glyphicon-option-vertical handle"></span>
+                <button type="button" data-addToWant='{{id}}'  class="btn btn-success btn-xs">+</button>
+                {{name}}
+            </li>
+            {{/each}}
+            </ul>
+        </div>
+        {{/if}}
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+        
+    </div>
+
 </script>
 
 {% endverbatim %}

@@ -28,17 +28,17 @@ var Router = Backbone.Router.extend({
 	  	},
 
 	  	list: function(type) {
-	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,Items,HB){
+	  		require(['jquery','views/mathList','models/mathItems','views/hb'],function($,mathView,mathItems,HB){
 	  			var m = MT.user;
-	  			if (type != undefined) {
-		  			m = new Items([]);
+	  			//if (type != undefined) {
+		  			m = new mathItems([]);
 		  			m.url = '/rest/itemstype/'+type+'/'+hash;
 		  			m.fetch({
 		  				success:function(collection,resp){
 		  				},
 		  				reset:true
 		  			});
-		  		}	
+		  		//}	
 	  			
 	  			$('#main').html(new mathView({
 	  				model:m,
