@@ -32,27 +32,11 @@ class Item
     }
 
     /**
-     * @param mixed $userName
-     */
-    public function setUserName($userName)
-    {
-        $this->userName = $userName;
-    }
-
-    /**
      * @return mixed
      */
     public function img()
     {
         return $this->img;
-    }
-
-    /**
-     * @param mixed $img
-     */
-    public function setImg($img)
-    {
-        $this->img = $img;
     }
 
     /**
@@ -63,11 +47,4 @@ class Item
         return $this->name;
     }
 
-    /**
-     * @param mixed $name
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
 }
