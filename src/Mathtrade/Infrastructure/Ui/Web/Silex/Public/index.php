@@ -1,10 +1,9 @@
 <?php
 
 use Edysanchez\Mathtrade\Application\Service\GetAllItems\GetAllItemsUseCase;
-use Edysanchez\Mathtrade\Domain\Model\Item\Item;
-use Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Item\InMemoryItemRepository;
-use Silex\Provider\DoctrineServiceProvider;
+use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\Item\ItemRepository;
 use Symfony\Component\Debug\Debug;
+use Silex\Provider\DoctrineServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -27,25 +26,18 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 //Register Sessions
 $app->register(new Silex\Provider\SessionServiceProvider());
 
+configureDB($app);
 
 $app['item_repository'] = $app->share(function () {
-	$inMemoryItemRepository = new InMemoryItemRepository();
-	$item = new Item(1);
-	$item->setName('game1');
-	$item->setUserName('user1');
-	$inMemoryItemRepository->add($item);
-	$item = new Item(2);
-	$item->setName('game2');
-	$item->setUserName('user2');
-	$inMemoryItemRepository->add($item);
-    return $inMemoryItemRepository;
+	$repo = new ItemRepository();
+
+    return $repo;
 });
 
 $app['get_all_items'] = $app->share(function() use($app) {
 	return new GetAllItemsUseCase($app['item_repository']);
 });
 
-configureDB($app);
 
 $app->get('/all_items', function () use($app) {
     $getAll = $app['get_all_items']->execute();
@@ -60,7 +52,7 @@ function getUser($hash)
 	$sql = "SELECT * FROM users WHERE hash = ?";
 	$user = $app['db']->fetchAll($sql,array($hash));
 	$user = $user[0];
-	return $user;	
+	return $user;
 }
 
 function getWantUser($user)

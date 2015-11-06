@@ -3,6 +3,7 @@
 namespace Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Game;
 
 use Edysanchez\Mathtrade\Domain\Model\Game;
+use Edysanchez\Mathtrade\Domain\Model\GameRepository;
 
 class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,7 +33,7 @@ class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
     public function testFindGameInRepositoryShouldReturnGme()
     {
         /** @var  Game */
-        $game=new Game(self::A_GAME_NAME, self::A_GAME_DESCRIPTION);
+        $game=new Game(self::A_GAME_ID, self::A_GAME_NAME, self::A_GAME_DESCRIPTION);
 
         $this->repo->persist($game);
         /** @var Game */
@@ -44,7 +45,7 @@ class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
     public function testUpdateGameInRepositoryShouldChange()
     {
         /** @var  Game */
-        $game=new Game(self::A_GAME_NAME, self::A_GAME_DESCRIPTION);
+        $game=new Game(self::A_GAME_ID,self::A_GAME_NAME, self::A_GAME_DESCRIPTION);
 
         $this->repo->persist($game);
 

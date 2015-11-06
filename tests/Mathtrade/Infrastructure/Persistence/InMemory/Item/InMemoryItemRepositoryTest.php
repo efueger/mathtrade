@@ -9,6 +9,10 @@ use Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Item\InMemoryItemRe
 class InMemoryItemRepositoryTest extends \PHPUnit_Framework_TestCase
 {
     const AN_ID = 1;
+    const A_NAME = 'name';
+    const AN_IMAGE = 'bgg_img';
+    const AN_USER_NAME = 'userName';
+    const ANOTHER_ID = 2;
 
     /**
      * @var ItemRepository
@@ -36,10 +40,12 @@ class InMemoryItemRepositoryTest extends \PHPUnit_Framework_TestCase
     public function itShouldReturnAllItems()
     {
         $id = self::AN_ID;
-        $item = new Item($id);
+        $item = new Item($id, self::A_NAME, self::AN_IMAGE, self::AN_USER_NAME);
+        $this->repository->add($item);
+        $item = new Item(self::ANOTHER_ID, self::A_NAME, self::AN_IMAGE, self::AN_USER_NAME);
         $this->repository->add($item);
 
-        $this->assertEquals(1,count($this->repository->findAll()));
+        $this->assertEquals(2,count($this->repository->findAll()));
 
     }
 
@@ -49,7 +55,7 @@ class InMemoryItemRepositoryTest extends \PHPUnit_Framework_TestCase
     public function itShouldReturnAnExistingItem()
     {
         $id = self::AN_ID;
-        $item = new Item($id);
+        $item = new Item($id, self::A_NAME, self::AN_IMAGE, self::AN_USER_NAME);
         $this->repository->add($item);
 
         $this->assertNotNull($this->repository->findById($id));

@@ -3,7 +3,6 @@
 namespace EdySanchez\Mathtrade\Test\Application\Service;
 
 
-use Edysanchez\Mathtrade\Application\Service\GetAllItems\GetAllItemsRequest;
 use Edysanchez\Mathtrade\Application\Service\GetAllItems\GetAllItemsUseCase;
 use Edysanchez\Mathtrade\Domain\Model\Item\Item;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Item\InMemoryItemRepository;
@@ -37,8 +36,8 @@ class GetAllItemsUseCaseTest extends \PHPUnit_Framework_TestCase
      */
     public function whenHavingItemsShouldReturnAllTheItems()
     {
-        $this->inMemoryItemRepository->add(new Item(44));
-        $this->inMemoryItemRepository->add(new Item(45));
+        $this->inMemoryItemRepository->add(new Item(44, "item1",null ,"user1"));
+        $this->inMemoryItemRepository->add(new Item(45, "item2",null ,"user2"));
         $useCase = new GetAllItemsUseCase($this->inMemoryItemRepository);
         $response = $useCase->execute();
         $this->assertEquals(2,count($response->items));

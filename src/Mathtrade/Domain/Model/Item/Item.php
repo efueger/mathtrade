@@ -10,9 +10,12 @@ class Item
     private $img;
     private $userName;
 
-    public function __construct($id)
+    public function __construct($id, $name, $img, $userName)
     {
         $this->id = $id;
+        $this->name = $name;
+        $this->img = $img;
+        $this->userName=$userName;
     }
 
     public function id()

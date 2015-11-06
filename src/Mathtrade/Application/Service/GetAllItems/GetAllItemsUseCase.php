@@ -6,6 +6,9 @@ use Edysanchez\Mathtrade\Domain\Model\Item\ItemRepository;
 
 class GetAllItemsUseCase
 {
+    /**
+     * @var ItemRepository
+     */
     private $itemsRepository;
 
     /**
@@ -23,7 +26,6 @@ class GetAllItemsUseCase
     {
         $response = new GetAllItemsResponse();
         $items = $this->itemsRepository->findAll();
-
         foreach($items as $item) {
             $newItem = array(
                 'id' => $item->id(),
@@ -31,6 +33,7 @@ class GetAllItemsUseCase
                 'name' => $item->name(),
                 'user_name' => $item->userName()
             );
+
             $response->items[] = $newItem;
         }
         return $response;

@@ -16,6 +16,18 @@ interface ItemRepository
     public function add(Item $item);
 
     /**
+     * @param Item $game
+     */
+    public function save(Item $game);
+
+    /**
+     * @param $id
+     * @return Item
+     */
+    public function find($id);
+
+
+    /**
      * @return Item[]
      */
     public function findAll();

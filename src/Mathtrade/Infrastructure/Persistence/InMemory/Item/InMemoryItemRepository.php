@@ -46,4 +46,20 @@ class InMemoryItemRepository implements ItemRepository
         return $this->repository;
     }
 
+    /**
+     * @param Item $item
+     */
+    public function save(Item $item)
+    {
+        throw new \BadMethodCallException();
+    }
+
+    /**
+     * @param $id
+     * @return Item
+     */
+    public function find($id)
+    {
+        throw new \BadMethodCallException();
+    }
 }
