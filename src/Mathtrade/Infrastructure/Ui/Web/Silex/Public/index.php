@@ -1,20 +1,17 @@
 <?php
-
 use Edysanchez\Mathtrade\Application\Service\GetAllItems\GetAllItemsUseCase;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\Item\ItemRepository;
-use Symfony\Component\Debug\Debug;
 use Silex\Provider\DoctrineServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-
 const returnCodeOK = 200;
 const USER_NOT_FOUND = 520;
 const SALT = '9ywmLatNHWuJJMH7k7LX';
-
 require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
 
-Debug::enable();
+define('CONTROLLERS',__DIR__.'/../../../../../Domain/Controllers/');
+
 $app = new Silex\Application();
 $app['debug'] = true;
 
@@ -428,6 +425,12 @@ $app->get('/rest/itemstype/{type}/{hash}', function ($type,$hash)  use($app){
 	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
+//Delegate the rest urls to the rest controller
+$app->mount('/rest', include CONTROLLERS.'rest.php');
+
+
+
+
 
 
 
@@ -470,7 +473,7 @@ $app->get('/rest/items/{id}/{hash}', function ($id,$hash)  use($app){
 	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
 
-$app->get('/rest/itemsbyuser/{hash}', function ($hash) use($app) {
+/*$app->get('/rest/itemsbyuser/{hash}', function ($hash) use($app) {
 	$user = getUser($hash);
 
 	$sql = "SELECT * FROM items where username = ?";
@@ -511,7 +514,7 @@ $app->get('/rest/itemsbyuser/{hash}', function ($hash) use($app) {
 
 	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
 });
-
+*/
 
 $app->get('/rest/results/{hash}', function ($hash) use($app) {
 	$user = getUser($hash);
@@ -549,35 +552,35 @@ $app->get('/rest/results/{hash}', function ($hash) use($app) {
 });
 
 
-$app->get('/rest/useritems/{hash}', function ($hash) use ($app) {
-	$user = getUser($hash);
+// $app->get('/rest/useritems/{hash}', function ($hash) use ($app) {
+// 	$user = getUser($hash);
 
-	$sql = "SELECT i.* FROM user_items ui
-            INNER JOIN items i ON ui.item_id = i.id
-            WHERE user_id = ? and type =1";
-	$post = $app['db']->fetchAll($sql,array((int)$user['id']));
+// 	$sql = "SELECT i.* FROM user_items ui
+//             INNER JOIN items i ON ui.item_id = i.id
+//             WHERE user_id = ? and type =1";
+// 	$post = $app['db']->fetchAll($sql,array((int)$user['id']));
 
-	//Now exclude the items of the wilcards
-	$sql = "SELECT wi.item_id FROM wildcarditems wi
-            INNER JOIN wildcard w on wi.wildcard_id = w.id
-            WHERE w.user_id = ?";
-	$excl = $app['db']->fetchAll($sql,array((int)$user['id']));
-	$exclude = array();
-	foreach ($excl as $a) {
-		$exclude[] = $a['item_id'];
-	}
+// 	//Now exclude the items of the wilcards
+// 	$sql = "SELECT wi.item_id FROM wildcarditems wi
+//             INNER JOIN wildcard w on wi.wildcard_id = w.id
+//             WHERE w.user_id = ?";
+// 	$excl = $app['db']->fetchAll($sql,array((int)$user['id']));
+// 	$exclude = array();
+// 	foreach ($excl as $a) {
+// 		$exclude[] = $a['item_id'];
+// 	}
 
-	foreach ($post as $k => $i) {
-		if (in_array($i['id'],$exclude) ) {
-			unset($post[$k]);
-		}
-	}
-	$post = array_values($post);
+// 	foreach ($post as $k => $i) {
+// 		if (in_array($i['id'],$exclude) ) {
+// 			unset($post[$k]);
+// 		}
+// 	}
+// 	$post = array_values($post);
 
 
 
-	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
-});
+// 	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
+// });
 
 
 
@@ -612,14 +615,15 @@ $app->post('/rest/items/', function (Request $request) use ($app) {
 
 
 
-
-$app->post('/rest/useritems/{hash}', function ($hash,Request $request) use ($app) {
-	$user = getUser($hash);
+/**
+ * Allows the user to exclude or want an item from the MT
+ */
+$app->post('/rest/useritems/', function (Request $request) use ($app) {
+	$user = $app['session']->get('user');
 
 	if ($request->get('bulk')) {
 		$bulk = json_decode($request->get('bulk'));
 
-		//$app['db']->executeQuery('SELECT FROM articles WHERE item_id IN (?) user_id = ? ',
 		$app['db']->executeQuery('DELETE FROM user_items WHERE item_id IN (?) AND user_id = '.$user['id'].' ',
 			array($bulk),
 			array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
@@ -638,7 +642,6 @@ $app->post('/rest/useritems/{hash}', function ($hash,Request $request) use ($app
 
 	}
 	else {
-
 		//Delete item if its in a list
 		$app['db']->delete('user_items',array(
 			'user_id'=>$user['id'],

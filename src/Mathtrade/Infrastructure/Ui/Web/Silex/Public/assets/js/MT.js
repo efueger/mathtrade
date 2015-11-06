@@ -1,8 +1,8 @@
 define(['models/items','models/wildcards'],function(Items,Wildcards){
 
 	/**
-	 * Module to work with handlebars templates, handles the compilation and caches it 
-	 * so further requests can use the compiled code
+	 * MathTrade module handles all the information that a user needs encapsulating them and
+	 * making them available for all the parts of the site
 	 */
 	MT = (function(){
 		var mt = {},
@@ -22,7 +22,7 @@ define(['models/items','models/wildcards'],function(Items,Wildcards){
 		 */
 		mt.exclude = function(item){
 			excluded.add(item);
-			$.post('/rest/useritems/'+hash,{id:item.get('item_id'),type:2},function(resp){
+			$.post('/rest/useritems/',{id:item.get('id'),type:2},function(resp){
 			});
 		}
 
@@ -35,13 +35,13 @@ define(['models/items','models/wildcards'],function(Items,Wildcards){
 		}
 
 		/**
-		 * Excludes a game and adds it to the excluded game list
+		 * Adds a game to the list of interested
 		 * @param  {[type]} item [description]
 		 */
 		mt.addwant = function(item){
 			interested.add(item);
 
-			$.post('/rest/useritems/'+hash,{id:item.get('item_id'),type:1},function(resp){
+			$.post('/rest/useritems/',{id:item.get('id'),type:1},function(resp){
 				console.log(resp);
 			});
 
