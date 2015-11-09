@@ -19,7 +19,8 @@
         "fabpot/php-cs-fixer": "0.5.7",
         "phpmd/phpmd": "2.0.0",
         "squizlabs/php_codesniffer": "1.5.*",
-        "phpunit/phpunit": "4.2.*"
+        "phpunit/phpunit": "4.2.*",
+        "satooshi/php-coveralls": "dev-master"
     },
     "config": {
         "bin-dir": "bin/"

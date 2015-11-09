@@ -1,6 +1,7 @@
 # mathtrade
 Tool for helping the user to generate games lists ,wantlists and show mathtrade results
 [![Build Status](https://travis-ci.org/edysanchez/mathtrade.svg?branch=master)](http://travis-ci.org/edysanchez/mathtrade)
+[![Coverage Status](https://coveralls.io/repos/edysanchez/mathtrade/badge.svg?branch=master&service=github)](https://coveralls.io/github/edysanchez/mathtrade?branch=master)
 
 #Current Features
 ##Wantlist
