@@ -10,7 +10,7 @@ const USER_NOT_FOUND = 520;
 const SALT = '9ywmLatNHWuJJMH7k7LX';
 require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
 
-define('CONTROLLERS',__DIR__.'/../../../../../Domain/Controllers/');
+define('CONTROLLERS',__DIR__.'/');
 
 $app = new Silex\Application();
 $app['debug'] = true;
@@ -426,7 +426,7 @@ $app->get('/rest/itemstype/{type}/{hash}', function ($type,$hash)  use($app){
 });
 
 //Delegate the rest urls to the rest controller
-$app->mount('/rest', include CONTROLLERS.'rest.php');
+$app->mount('/rest', include CONTROLLERS . 'rest.php');
 
 
 
