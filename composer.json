@@ -10,7 +10,8 @@
     "require": {
         "silex/silex": "~1.2",
         "twig/twig": "*",
-        "doctrine/dbal": "~2.2"
+        "doctrine/dbal": "~2.2",
+        "deralex/yaml-config-service-provider": "1.0.x-dev"
 
     },
     "require-dev": {

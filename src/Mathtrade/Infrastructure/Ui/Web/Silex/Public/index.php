@@ -15,6 +15,9 @@ define('CONTROLLERS',__DIR__.'/');
 $app = new Silex\Application();
 $app['debug'] = true;
 
+$app->register(new DerAlex\Silex\YamlConfigServiceProvider(__DIR__ . '/config/settings.yml'));
+
+
 //Register TWig
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/../../../Twig/views',
@@ -993,14 +996,7 @@ function configureDB($app)
 {
     if ($_SERVER['SERVER_NAME'] == '172.21.88.2') {
         $app->register(new DoctrineServiceProvider(), array(
-            'db.options' => array(
-                'driver' => 'pdo_mysql',
-                'host' => 'localhost',
-                'dbname' => 'mathtrade',
-                'user' => 'ediar',
-                'password' => 'noSql',
-                'charset' => 'utf8',
-            )
+            'db.options' => $app['config']['database']
         ));
     } else if ($_SERVER['SERVER_NAME'] == 'mt.dev') {
         $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
