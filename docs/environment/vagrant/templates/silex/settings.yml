@@ -1,0 +1,7 @@
+database:
+  driver: pdo_mysql
+  host: localhost
+  dbname: mathtrade
+  user: ediar
+  password: noSql
+  charset: utf8
