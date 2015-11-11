@@ -1,52 +1,19 @@
 <?php
-use Edysanchez\Mathtrade\Application\Service\GetAllItems\GetAllItemsUseCase;
-use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\Item\ItemRepository;
-use Silex\Provider\DoctrineServiceProvider;
+
+
+require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 const returnCodeOK = 200;
 const USER_NOT_FOUND = 520;
 const SALT = '9ywmLatNHWuJJMH7k7LX';
-require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
+
 
 define('CONTROLLERS', __DIR__ . '/');
 
-$app = new Silex\Application();
-$app['debug'] = true;
-
-$app->register(new DerAlex\Silex\YamlConfigServiceProvider(__DIR__ . '/config/settings.yml'));
-
-
-//Register TWig
-$app->register(new Silex\Provider\TwigServiceProvider(), array(
-    'twig.path' => __DIR__ . '/../../../Twig/views',
-));
-
-//Register Sessions
-$app->register(new Silex\Provider\SessionServiceProvider());
-
-$app->register(new DoctrineServiceProvider(), array(
-    'db.options' => $app['config']['database']
-));
-
-
-$app['item_repository'] = $app->share(function () {
-    $repo = new ItemRepository();
-
-    return $repo;
-});
-
-$app['get_all_items'] = $app->share(function () use ($app) {
-    return new GetAllItemsUseCase($app['item_repository']);
-});
-
-
-$app->get('/all_items', function () use ($app) {
-    $getAll = $app['get_all_items']->execute();
-    return new Response(json_encode($getAll));
-
-});
+$app =  \Edysanchez\Mathtrade\Infrastructure\Ui\Web\Silex\Application::bootstrap();
 
 function getUser($hash)
 {
