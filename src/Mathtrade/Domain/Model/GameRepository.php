@@ -1,18 +1,27 @@
 <?php
 
-namespace Mathtrade\Domain\Model;
+namespace Edysanchez\Mathtrade\Domain\Model;
 
 
 interface GameRepository {
     /**
      * @param Game $game
-     * @return mixed
      */
-    public function persist($game);
+    public function add($game);
+
+    /**
+     * @param Game $game
+     */
+    public function save($game);
 
     /**
      * @param $id
-     * @return mixed
+     * @return Game
      */
     public function find($id);
+
+    /**
+     * @return Game
+     */
+    public function findAll();
 }

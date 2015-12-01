@@ -12,6 +12,7 @@ Vagrant.configure(2) do |config|
         mc.vm.synced_folder ".", "/home/vagrant/web", type: "nfs"
         mc.vm.hostname = "mathtrade.local"
         mc.vm.network "private_network", ip: "172.21.88.2"
+        mc.vm.network :forwarded_port, guest: 22, host:3333
         mc.vm.provider :virtualbox do |vb|
             vb.memory = 1024
         end

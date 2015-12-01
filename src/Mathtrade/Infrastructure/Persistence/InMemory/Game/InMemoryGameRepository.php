@@ -1,9 +1,10 @@
 <?php
 
-namespace Mathtrade\Infrastructure\Persistence\InMemory\Game;
+namespace Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Game;
 
-use Mathtrade\Domain\Model\Game;
-use Mathtrade\Domain\Model\GameRepository;
+use Edysanchez\Mathtrade\Domain\Model\Game;
+use Edysanchez\Mathtrade\Domain\Model\GameRepository;
+use Symfony\Component\DependencyInjection\Exception\BadMethodCallException;
 
 class InMemoryGameRepository implements GameRepository
 {
@@ -43,5 +44,30 @@ class InMemoryGameRepository implements GameRepository
             }
         }
         return null;
+    }
+
+    /**
+     * @param Game $game
+     */
+    public function add($game)
+    {
+        throw new BadMethodCallException();
+    }
+
+    /**
+     * @param Game $game
+     */
+    public function save($game)
+    {
+        throw new BadMethodCallException();
+    }
+
+
+    /**
+     * @return Game
+     */
+    public function findAll()
+    {
+        throw new \BadMethodCallException();
     }
 }

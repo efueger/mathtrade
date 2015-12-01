@@ -1,17 +1,16 @@
 <?php
 
-namespace Mathtrade\Domain\Model;
+namespace Edysanchez\Mathtrade\Domain\Model;
 
 class Game
 {
     protected $id;
     protected $name;
-    protected $description;
 
-    public function __construct($name, $description)
+    public function __construct($id,$name)
     {
+        $this->id = $id;
         $this->name = $name;
-        $this->description = $description;
     }
 
     public function setName($name)
@@ -22,16 +21,6 @@ class Game
     public function name()
     {
         return $this->name;
-    }
-
-    public function setDescription($description)
-    {
-        $this->description = $description;
-    }
-
-    public function description()
-    {
-        return $this->description;
     }
 
     public function id()
