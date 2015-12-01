@@ -46,7 +46,8 @@ define(['views/hb','lib/MC','MT','textcomplete'],function(HB,MC,MT){
 			        replace: function (data) {
 			        	//Additionally set the name	
 			        	model.set({name:data.name,bgg_id:data.bgg_id,img:data.img},{silent:true});
-			        	$('#img').html('<img src="http://muevecubos.com'+MC.path(data.id,data.img)+'" />')
+			        	//$('#img').html('<img src="http://muevecubos.com'+MC.path(data.id,data.img)+'" />')
+			        	$('#img').html('<img src="'+data.img+'" />')
 			        	$('#name').val(data.name);
 			        	model.setMedia();
 			        	model.trigger('img_added');

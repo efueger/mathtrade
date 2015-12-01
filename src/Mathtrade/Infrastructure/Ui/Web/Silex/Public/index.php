@@ -234,6 +234,7 @@ $app->get('/bggimport/get',function (Silex\Application $app) {
 		$ng = array();
 		$ng['name'] = $g['name'];
 		$ng['bgg_img'] = $g['thumbnail'];
+		if (isset($g['conditiontext']))
 		$ng['description'] = $g['conditiontext'];
 		$ng['bgg_id'] = $g['@attributes']['objectid'];
 		$ng['collid'] = $g['@attributes']['collid'];
@@ -346,6 +347,11 @@ $app->get('/{hash}', function ($hash)  use($app){
 	}
 	$wildcards = array_values($wildcards);
 	//print_r($wildcards);
+
+	//Last Call
+	//Items that users wanted to trade for our games that didn't switch
+	$sql = "SELECT item_id FROM results;";
+	//$traded
 
 
 	return $app['twig']->render('index.twig', array(
