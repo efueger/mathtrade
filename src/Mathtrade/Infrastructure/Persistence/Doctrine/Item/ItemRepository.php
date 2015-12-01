@@ -18,8 +18,8 @@ class ItemRepository implements Model\Item\ItemRepository
     {
         $connectionParams = array(
             'dbname' => 'mathtrade',
-            'user' => 'ediar',
-            'password' => 'noSql',
+            'user' => 'root',
+            'password' => '',
             'host' => 'localhost',
             'driver' => 'pdo_mysql',
         );

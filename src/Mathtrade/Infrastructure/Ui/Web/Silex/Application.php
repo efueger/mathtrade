@@ -18,7 +18,7 @@ class Application
 
         $app['debug'] = true;
 
-        $app->register(new YamlConfigServiceProvider(__DIR__ . '/Public/config/settings.yml'));
+        $app->register(new YamlConfigServiceProvider(__DIR__ . '/config/settings.yml'));
 
         $app->register(new TwigServiceProvider(), array(
             'twig.path' => __DIR__ . '/../../Twig/views',

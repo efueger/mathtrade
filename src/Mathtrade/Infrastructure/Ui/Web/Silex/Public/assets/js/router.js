@@ -3,10 +3,12 @@ define(['backbone','models/items','MT','handlebars'],function(Backbone,Items,MT,
 var gs = new Items(mathItems);
 MT.init({
 	user:gs,
-	wants:wants,
+	//wants:wants,
 	items:mathItems,
-	wildcards:wildcards
+	//wildcards:wildcards
 });
+
+var hash = '';
 
 var Router = Backbone.Router.extend({
 		routes: {

@@ -1,6 +1,4 @@
 <?php
-
-
 require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
@@ -175,7 +173,7 @@ $app->get('/bggimport/get',function (Silex\Application $app) {
 	$xml = simplexml_load_file('http://boardgamegeek.com/xmlapi2/collection?username='.$user['bgg_user'].'&trade=1');
 	$json = json_encode($xml);
 	$array = json_decode($json,true);
-	if (!$array['item']) {
+	if (!isset($array['item']) || !$array['item']) {
 		$xml = simplexml_load_file('http://boardgamegeek.com/xmlapi2/collection?username='.$user['bgg_user'].'&trade=1');
 		$json = json_encode($xml);
 		$array = json_decode($json,true);
@@ -443,48 +441,6 @@ $app->get('/rest/items/{id}/{hash}', function ($id, $hash) use ($app) {
     return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
 });
 
-/*$app->get('/rest/itemsbyuser/{hash}', function ($hash) use($app) {
-	$user = getUser($hash);
-
-	$sql = "SELECT * FROM items where username = ?";
-	$post = $app['db']->fetchAll($sql,array($user['name']));
-
-	//Fetch want lists
-	$ids = array();
-	foreach ($post as $i) {
-		$ids[] = $i['id'];
-	}
-
-
-	$sql = "SELECT w.*,i.name,wl.name as wlname
-            FROM wantlist w
-            LEFT JOIN items i ON type =1 AND w.target_id = i.item_id
-            LEFT JOIN wildcard wl ON type=2 AND w.target_id = wl.id
-            WHERE w.item_id IN (?) and w.user_id = ? ORDER BY pos ASC";
-	$want = $app['db']->fetchAll($sql,
-		array($ids,$user['id']),
-		array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
-	//echo $sql;
-
-	foreach ($post as $key => &$p) {
-		foreach ($want as $j => $w) {
-			if ($w['item_id'] == $p['item_id']) {
-				$w['id'] = $w['type']==2?'w'.$w['target_id']:$w['target_id'];
-				$w['wantid'] = $w['id'];
-				if ($w['type']==2) {
-					$w['name'] = $w['wlname'];
-					$w['wantid'] = "%".$w['wlname'];
-				}
-				$p['wantlist'][] = $w;
-				unset($want[$j]);
-			}
-		}
-	}
-
-
-	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
-});
-*/
 
 $app->get('/rest/results/{hash}', function ($hash) use ($app) {
     $user = getUser($hash);
@@ -521,35 +477,6 @@ $app->get('/rest/results/{hash}', function ($hash) use ($app) {
     return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
 });
 
-
-// $app->get('/rest/useritems/{hash}', function ($hash) use ($app) {
-// 	$user = getUser($hash);
-
-// 	$sql = "SELECT i.* FROM user_items ui
-//             INNER JOIN items i ON ui.item_id = i.id
-//             WHERE user_id = ? and type =1";
-// 	$post = $app['db']->fetchAll($sql,array((int)$user['id']));
-
-// 	//Now exclude the items of the wilcards
-// 	$sql = "SELECT wi.item_id FROM wildcarditems wi
-//             INNER JOIN wildcard w on wi.wildcard_id = w.id
-//             WHERE w.user_id = ?";
-// 	$excl = $app['db']->fetchAll($sql,array((int)$user['id']));
-// 	$exclude = array();
-// 	foreach ($excl as $a) {
-// 		$exclude[] = $a['item_id'];
-// 	}
-
-// 	foreach ($post as $k => $i) {
-// 		if (in_array($i['id'],$exclude) ) {
-// 			unset($post[$k]);
-// 		}
-// 	}
-// 	$post = array_values($post);
-
-
-// 	return new Response(json_encode($post), returnCodeOK,array('Content-Type'=>'application/json'));
-// });
 
 
 /**
@@ -916,30 +843,6 @@ $app->post('/', function (Silex\Application $app) {
 });
 
 
-class CsvIterator
-{
-    protected $file;
-
-    public function __construct($file)
-    {
-        $this->file = fopen($file, 'r');
-    }
-
-    public function parse()
-    {
-        $headers = array_map('trim', fgetcsv($this->file, 4096));
-        $rows = array();
-        while (!feof($this->file)) {
-            $row = array_map('trim', (array)fgetcsv($this->file, 4096));
-            if (count($headers) !== count($row)) {
-                continue;
-            }
-            $row = array_combine($headers, $row);
-            array_push($rows, $row);
-        }
-        return $rows;
-    }
-}
 
 
 $app->run();

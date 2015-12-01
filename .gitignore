@@ -6,4 +6,4 @@ tags
 /.idea
 node_modules
 src/Mathtrade/Infrastructure/Ui/Web/Silex/Public/components
-src/Mathtrade/Infrastructure/Ui/Web/Silex/Public/config
+src/Mathtrade/Infrastructure/Ui/Web/Silex/config
