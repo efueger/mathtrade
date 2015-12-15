@@ -11,9 +11,12 @@
       - php5-mysql
       - mysql-server
       - python-mysqldb
-    - copy: src=templates/apache/default dest=/etc/apache2/sites-available/default mode=0755
+    - name: copy apache config
+      copy: src=templates/apache/default dest=/etc/apache2/sites-available/default mode=0755
     - file: path=/var/www state=absent
     - file: path=/var/www src=/home/vagrant/web/src/Mathtrade/Infrastructure/Ui/Web/Silex/Public force=yes state=link
+    - name: Creates config directory
+      file: path=/var/www/config state=directory
     - copy: src=templates/silex/settings.yml dest=/var/www/config/settings.yml  mode=0755
     - apache2_module: name=rewrite state=present
     - service: name=apache2 enabled=yes
@@ -23,4 +26,6 @@
     - mysql_user: name=ediar password=noSql priv=*.*:ALL state=present host=%
     - service: name=mysql enabled=yes
     - service: name=mysql state=restarted
+    - copy: src=templates/mysql/structure.sql dest=/tmp/structure.sql  mode=0755
+    - shell: mysql -h "localhost" -u "root" "mathtrade" < "/tmp/structure.sql"
 
