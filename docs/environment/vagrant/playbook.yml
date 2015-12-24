@@ -11,6 +11,8 @@
       - php5-mysql
       - mysql-server
       - python-mysqldb
+      - php5-curl
+      - php5-xdebug
     - name: copy apache config
       copy: src=templates/apache/default dest=/etc/apache2/sites-available/default mode=0755
     - file: path=/var/www state=absent
@@ -18,6 +20,17 @@
     - name: Creates config directory
       file: path=/var/www/config state=directory
     - copy: src=templates/silex/settings.yml dest=/var/www/config/settings.yml  mode=0755
+    - name: PHP | Ensure XDebug is configured properly
+      lineinfile: dest=/etc/php5/conf.d/xdebug.ini line="{{ item }}"
+      with_items:
+        - "xdebug.default_enable = 1;"
+        - "xdebug.remote_enable = 1;"
+        - "xdebug.remote_connect_back = 1;"
+        - "xdebug.remote_autostart = 1;"
+        - "xdebug.remote_port = 9000;"
+        - "xdebug.profiler_enable = 0;"
+        - "xdebug.profiler_enable_trigger = 1;"
+        - "xdebug.profiler_output_dir = /tmp/xdebug;"
     - apache2_module: name=rewrite state=present
     - service: name=apache2 enabled=yes
     - service: name=apache2 state=restarted
