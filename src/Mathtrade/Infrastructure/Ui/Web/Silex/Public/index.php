@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
@@ -168,38 +169,40 @@ $app->get('/bggimport', function (Silex\Application $app) {
 });
 
 $app->get('/bggimport/get',function (Silex\Application $app) {
-	$user = logged();
-	if (!is_array($user)) return $user;
-	$xml = simplexml_load_file('http://boardgamegeek.com/xmlapi2/collection?username='.$user['bgg_user'].'&trade=1');
-	$json = json_encode($xml);
-	$array = json_decode($json,true);
-	if (!isset($array['item']) || !$array['item']) {
-		$xml = simplexml_load_file('http://boardgamegeek.com/xmlapi2/collection?username='.$user['bgg_user'].'&trade=1');
-		$json = json_encode($xml);
-		$array = json_decode($json,true);
-	}
-	// file_put_contents('bgg.txt', $json);
+    $user = logged();
 
-	//$array = json_decode(file_get_contents('bgg.txt'),TRUE);
+    if (!is_array($user)) {
+        return $user;
+    }
+    $user['bgg_user'] = 'djedy';
+    define('USER_TRADE_REQUEST', 'http://boardgamegeek.com/xmlapi2/collection?username=' . $user['bgg_user'] . '&trade=1');
+
+    $bggClient = new \Guzzle\Http\Client();
+
+    $queryRequest = $bggClient->get(USER_TRADE_REQUEST);
+    $queryResponse = $queryRequest->send();
+    guardFromQueryError($queryResponse);
+
+    $dataQuery = $bggClient->get(USER_TRADE_REQUEST);
+    $dataResponse =  $dataQuery->send();
+    guardFromErrorGettingData($dataResponse);
+    $xml = $dataResponse->xml();
+    $json = json_encode($xml);
+    $xml = json_decode($json, true);
 	$games = array();
 
-	foreach ($array['item'] as $g) {
+	foreach ($xml['item'] as $g) {
 		//print_r($g);
 		$ng = array();
 		$ng['name'] = $g['name'];
 		$ng['bgg_img'] = $g['thumbnail'];
-		if (isset($g['conditiontext']))
-		$ng['description'] = $g['conditiontext'];
+		if (isset($g['conditiontext'])) {
+            $ng['description'] = $g['conditiontext'];
+        }
 		$ng['bgg_id'] = $g['@attributes']['objectid'];
 		$ng['collid'] = $g['@attributes']['collid'];
 		$games[] = $ng;
 	}
-
-
-    // echo "<pre>";
-    // print_r($games);
-    // print_r($array);
-    // echo "</pre>";
 
     return new Response(json_encode($games), 200, array('Content-Type' => 'application/json'));
 });
@@ -842,7 +845,26 @@ $app->post('/', function (Silex\Application $app) {
     return ('{"jsonrpc" : "2.0", "file" :"' . $fileName . '", "id" : "id"}');
 });
 
-
-
+/**
+ * @param $queryResponse
+ * @throws Exception
+ */
+function guardFromQueryError($queryResponse)
+{
+    $statusCode = $queryResponse->getStatusCode();
+    if ($statusCode !== 202 && $statusCode !== 200) {
+        throw new Exception('Error in query');
+    }
+}
+/**
+ * @param $dataResponse
+ * @throws Exception
+ */
+function guardFromErrorGettingData($dataResponse)
+{
+    if ($dataResponse->getStatusCode() !== 200) {
+        throw new Exception('Error getting data');
+    }
+}
 
 $app->run();
