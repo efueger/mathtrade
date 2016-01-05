@@ -2,8 +2,8 @@
 
 namespace Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Game;
 
-use Edysanchez\Mathtrade\Domain\Model\Game;
-use Edysanchez\Mathtrade\Domain\Model\GameRepository;
+
+use Edysanchez\Mathtrade\Domain\Model\Game\Game;
 
 class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,54 +11,49 @@ class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
     const A_GAME_ID = 0;
     const A_GAME_NAME = 'game';
     const A_GAME_DESCRIPTION = 'description';
+    const A_USER_NAME = 'user';
+    const USER_NAME_WITH_GAMES = 'userGames';
 
-    /** @var  GameRepository */
+    /** @var InMemoryGameRepository */
     protected $repo;
 
     public function  setUp() {
 
-        $this->repo = new InMemoryGameRepository();
-    }
-    public function testFindEmptyRepositoryShouldReturnNull()
-    {
-
-        $this->assertNull($this->repo->find(self::A_GAME_ID));
-    }
-
-    public function testFindGameNotInRepositoryShouldReturnNull()
-    {
-        $this->assertNull($this->repo->find(self::A_GAME_ID));
-    }
-
-    public function testFindGameInRepositoryShouldReturnGme()
-    {
         /** @var  Game */
         $game=new Game(self::A_GAME_ID, self::A_GAME_NAME, self::A_GAME_DESCRIPTION);
+        $repo = array();
+        $repo[self::USER_NAME_WITH_GAMES] = $game;
 
-        $this->repo->persist($game);
-        /** @var Game */
-        $anotherGame = $this->repo->find(self::A_GAME_ID);
-        $this->assertNotNull($anotherGame);
-        $this->assertEquals($game->name(),$anotherGame->name());
+        $this->repo = new InMemoryGameRepository($repo);
     }
 
-    public function testUpdateGameInRepositoryShouldChange()
+    /**
+     * @test
+     */
+    public function findEmptyRepositoryShouldReturnNull()
     {
-        /** @var  Game */
-        $game=new Game(self::A_GAME_ID,self::A_GAME_NAME, self::A_GAME_DESCRIPTION);
 
-        $this->repo->persist($game);
-
-        /** @var  Game */
-        $game= $this->repo->find($game->id());
-
-        $game->setName('cucu');
-
-        $this->repo->persist($game);
-
-        /** @var Game */
-        $game=$this->repo->find($game->id());
-
-        $this->assertEquals($game->name(),'cucu');
+        $this->assertEmpty($this->repo->findByUsername(self::A_USER_NAME));
     }
+
+    /**
+     * @test
+     */
+    public function findGameNotInRepositoryShouldReturnNull()
+    {
+        $this->assertEmpty($this->repo->findByUsername(self::A_USER_NAME));
+    }
+
+    /**
+     * @test
+     */
+    public function findGameInRepositoryShouldReturnGme()
+    {
+
+        /** @var Game[] */
+        $games = $this->repo->findByUsername(self::USER_NAME_WITH_GAMES);
+        $this->assertNotEmpty($games);
+        $this->assertEquals($games[0]->name(), self::A_GAME_NAME);
+    }
+
 }

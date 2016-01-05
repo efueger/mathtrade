@@ -2,72 +2,31 @@
 
 namespace Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Game;
 
-use Edysanchez\Mathtrade\Domain\Model\Game;
-use Edysanchez\Mathtrade\Domain\Model\GameRepository;
-use Symfony\Component\DependencyInjection\Exception\BadMethodCallException;
+use Edysanchez\Mathtrade\Domain\Model\Game\Game;
+use Edysanchez\Mathtrade\Domain\Model\Game\GameRepository;
 
 class InMemoryGameRepository implements GameRepository
 {
     protected $repo;
     protected $nextId=0;
 
-    public function __construct()
+    public function __construct($repo)
     {
-        $this->repo = array();
+        $this->repo = $repo;
     }
 
     /**
-     * @param $game
-     * @return Game
+     * @param string
+     * @return Game[]
      */
-    public function persist($game)
+    public function findByUsername($username)
     {
-        $tmpGame = $this->find($game->id());
-        if ($tmpGame === null) {
-            $game->setId($this->nextId);
-            $this->nextId++;
-            array_push($this->repo, $game);
-        } else {
-            $tmpGame = $game;
-        }
-    }
-
-    /**
-     * @param $id
-     * @return Game|null
-     */
-    public function find($id)
-    {
-        foreach ($this->repo as $game) {
-            if ($game->id() === $id) {
-                return $game;
+        $res = array();
+        foreach($this->repo as $user => $games) {
+            if($user == $username) {
+                $res[] = $games;
             }
         }
-        return null;
-    }
-
-    /**
-     * @param Game $game
-     */
-    public function add($game)
-    {
-        throw new BadMethodCallException();
-    }
-
-    /**
-     * @param Game $game
-     */
-    public function save($game)
-    {
-        throw new BadMethodCallException();
-    }
-
-
-    /**
-     * @return Game
-     */
-    public function findAll()
-    {
-        throw new \BadMethodCallException();
+        return $res;
     }
 }

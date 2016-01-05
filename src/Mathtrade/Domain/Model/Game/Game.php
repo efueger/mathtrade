@@ -1,6 +1,6 @@
 <?php
 
-namespace Edysanchez\Mathtrade\Domain\Model;
+namespace Edysanchez\Mathtrade\Domain\Model\Game;
 
 class Game
 {

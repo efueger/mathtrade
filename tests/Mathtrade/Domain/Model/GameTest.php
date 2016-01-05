@@ -2,6 +2,8 @@
 
 namespace Edysanchez\Mathtrade\Domain\Model;
 
+use Edysanchez\Mathtrade\Domain\Model\Game\Game;
+
 class GameTest extends \PHPUnit_Framework_TestCase
 {
 
