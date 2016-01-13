@@ -1,5 +1,5 @@
 <?php
-namespace Edysanchez\Mathtrade\Application\Service\BoardgamegeekImport;
+namespace Edysanchez\Mathtrade\Application\Service\BoardGameGeekImport;
 
 class BoardGameGeekImportRequest
 {
