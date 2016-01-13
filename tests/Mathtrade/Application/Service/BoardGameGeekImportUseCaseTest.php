@@ -52,7 +52,8 @@ class BoardGameGeekImportUseCaseTest extends \PHPUnit_Framework_TestCase
         $this->boardGameGeekImportUseCase = new BoardGameGeekImportUseCase($this->repository);
         $response = $this->boardGameGeekImportUseCase->execute($boardGameGeekImportRequest);
         $this->assertNotEmpty($response);
-        $this->assertEquals($response->games()[0]['id'], self::A_GAME_ID);
+        $games = $response->games();
+        $this->assertEquals($games[0]['id'], self::A_GAME_ID);
     }
 
     /**
@@ -61,7 +62,7 @@ class BoardGameGeekImportUseCaseTest extends \PHPUnit_Framework_TestCase
     protected function createRepo()
     {
         $game = new Game(self::A_GAME_ID, self::A_GAME_NAME, self::A_GAME_DESCRIPTION);
-        $repository = new InMemoryGameRepository(['username' => [$game]]);
+        $repository = new InMemoryGameRepository(array('username' => array($game)));
         return $repository;
     }
 }
