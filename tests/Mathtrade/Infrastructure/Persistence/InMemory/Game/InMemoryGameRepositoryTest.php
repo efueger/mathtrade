@@ -22,7 +22,7 @@ class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
         /** @var  Game */
         $game=new Game(self::A_GAME_ID, self::A_GAME_NAME, self::A_GAME_DESCRIPTION);
         $repo = array();
-        $repo[self::USER_NAME_WITH_GAMES] = $game;
+        $repo[self::USER_NAME_WITH_GAMES] = [$game];
 
         $this->repo = new InMemoryGameRepository($repo);
     }
@@ -32,15 +32,16 @@ class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     public function findEmptyRepositoryShouldReturnNull()
     {
-
+        $this->setExpectedException('\Exception');
         $this->assertEmpty($this->repo->findByUsername(self::A_USER_NAME));
     }
 
     /**
      * @test
      */
-    public function findGameNotInRepositoryShouldReturnNull()
+    public function findUserWithoutGamesInRepositoryShouldReturnNull()
     {
+        $this->setExpectedException('\Exception');
         $this->assertEmpty($this->repo->findByUsername(self::A_USER_NAME));
     }
 

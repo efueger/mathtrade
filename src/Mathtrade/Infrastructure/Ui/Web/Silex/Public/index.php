@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
 
+use Edysanchez\Mathtrade\Application\Service\BoardgamegeekImport\BoardGameGeekImportRequest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -169,42 +170,19 @@ $app->get('/bggimport', function (Silex\Application $app) {
 });
 
 $app->get('/bggimport/get',function (Silex\Application $app) {
-    $user = logged();
+
+     $user = logged();
 
     if (!is_array($user)) {
         return $user;
     }
-    $user['bgg_user'] = 'djedy';
-    define('USER_TRADE_REQUEST', 'http://boardgamegeek.com/xmlapi2/collection?username=' . $user['bgg_user'] . '&trade=1');
 
-    $bggClient = new \Guzzle\Http\Client();
+    $boardGameGeekImportRequest = new BoardGameGeekImportRequest($user['bgg_user']);
+    $useCase = $app['board_game_geek_import'];
+    $response = $useCase->execute($boardGameGeekImportRequest);
 
-    $queryRequest = $bggClient->get(USER_TRADE_REQUEST);
-    $queryResponse = $queryRequest->send();
-    guardFromQueryError($queryResponse);
 
-    $dataQuery = $bggClient->get(USER_TRADE_REQUEST);
-    $dataResponse =  $dataQuery->send();
-    guardFromErrorGettingData($dataResponse);
-    $xml = $dataResponse->xml();
-    $json = json_encode($xml);
-    $xml = json_decode($json, true);
-	$games = array();
-
-	foreach ($xml['item'] as $g) {
-		//print_r($g);
-		$ng = array();
-		$ng['name'] = $g['name'];
-		$ng['bgg_img'] = $g['thumbnail'];
-		if (isset($g['conditiontext'])) {
-            $ng['description'] = $g['conditiontext'];
-        }
-		$ng['bgg_id'] = $g['@attributes']['objectid'];
-		$ng['collid'] = $g['@attributes']['collid'];
-		$games[] = $ng;
-	}
-
-    return new Response(json_encode($games), 200, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($response->games()), 200, array('Content-Type' => 'application/json'));
 });
 
 
@@ -844,27 +822,5 @@ $app->post('/', function (Silex\Application $app) {
     // Return Success JSON-RPC response
     return ('{"jsonrpc" : "2.0", "file" :"' . $fileName . '", "id" : "id"}');
 });
-
-/**
- * @param $queryResponse
- * @throws Exception
- */
-function guardFromQueryError($queryResponse)
-{
-    $statusCode = $queryResponse->getStatusCode();
-    if ($statusCode !== 202 && $statusCode !== 200) {
-        throw new Exception('Error in query');
-    }
-}
-/**
- * @param $dataResponse
- * @throws Exception
- */
-function guardFromErrorGettingData($dataResponse)
-{
-    if ($dataResponse->getStatusCode() !== 200) {
-        throw new Exception('Error getting data');
-    }
-}
 
 $app->run();

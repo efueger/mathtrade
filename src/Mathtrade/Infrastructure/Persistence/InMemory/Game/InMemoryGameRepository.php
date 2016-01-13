@@ -4,6 +4,7 @@ namespace Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Game;
 
 use Edysanchez\Mathtrade\Domain\Model\Game\Game;
 use Edysanchez\Mathtrade\Domain\Model\Game\GameRepository;
+use Exception;
 
 class InMemoryGameRepository implements GameRepository
 {
@@ -16,16 +17,20 @@ class InMemoryGameRepository implements GameRepository
     }
 
     /**
-     * @param string
-     * @return Game[]
+     * @param $username
+     * @return array|\Edysanchez\Mathtrade\Domain\Model\Game\Game[]
+     * @throws Exception
      */
     public function findByUsername($username)
     {
         $res = array();
         foreach($this->repo as $user => $games) {
             if($user == $username) {
-                $res[] = $games;
+                $res = $games;
             }
+        }
+        if(count($res) === 0 ) {
+            throw new Exception('Username not found');
         }
         return $res;
     }

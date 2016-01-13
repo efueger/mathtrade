@@ -3,8 +3,10 @@
 namespace Edysanchez\Mathtrade\Infrastructure\Ui\Web\Silex;
 
 use DerAlex\Silex\YamlConfigServiceProvider;
+use Edysanchez\Mathtrade\Application\Service\BoardGameGeekImport\BoardGameGeekImportUseCase;
 use Edysanchez\Mathtrade\Application\Service\GetAllItems\GetAllItemsUseCase;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\Item\ItemRepository;
+use Edysanchez\Mathtrade\Infrastructure\Persistence\XmlApi\Game\BoardGameGeekRepository;
 use Silex\Provider\DoctrineServiceProvider;
 use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\SessionServiceProvider;
@@ -37,6 +39,14 @@ class Application
 
         $app['get_all_items'] = $app->share(function () use ($app) {
             return new GetAllItemsUseCase($app['item_repository']);
+        });
+
+        $app['board_game_geek_game_repository'] = $app->share(function () {
+            return new BoardGameGeekRepository();
+        });
+
+        $app['board_game_geek_import'] = $app->share(function () use ($app) {
+            return new BoardGameGeekImportUseCase($app['board_game_geek_game_repository']);
         });
 
 
