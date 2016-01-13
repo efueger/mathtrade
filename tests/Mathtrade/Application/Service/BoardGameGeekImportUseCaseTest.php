@@ -2,8 +2,7 @@
 
 namespace EdySanchez\Mathtrade\Test\Application\Service;
 
-
-use Edysanchez\Mathtrade\Application\Service\BoardGamegeekImport\BoardGameGeekImportRequest;
+use Edysanchez\Mathtrade\Application\Service\BoardGameGeekImport\BoardGameGeekImportRequest;
 use Edysanchez\Mathtrade\Application\Service\BoardGameGeekImport\BoardGameGeekImportUseCase;
 use Edysanchez\Mathtrade\Domain\Model\Game\Game;
 use Edysanchez\Mathtrade\Domain\Model\Game\GameRepository;
