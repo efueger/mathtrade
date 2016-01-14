@@ -1,15 +1,16 @@
 <?php
 
-require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
 
-use Edysanchez\Mathtrade\Application\Service\BoardGameGeekImport\BoardGameGeekImportRequest;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 const RETURN_CODE_OK = 200;
 const USER_NOT_FOUND = 520;
 const SALT = '9ywmLatNHWuJJMH7k7LX';
 
+use Edysanchez\Mathtrade\Application\Service\BoardGameGeekImport\BoardGameGeekImportRequest;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
 
 define('CONTROLLERS', __DIR__ . '/');
 
@@ -425,22 +426,22 @@ $app->get('/rest/items/{id}/{hash}', function ($id, $hash) use ($app) {
             array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
         );
 
-    foreach ($post as $key => &$p) {
-        foreach ($want as $j => $w) {
-            if ($w['item_id'] == $p['item_id']) {
-                $w['id'] = $w['type'] == 2 ? 'w' . $w['target_id'] : $w['target_id'];
-                $w['wantid'] = $w['id'];
-                if ($w['type'] == 2) {
-                    $w['name'] = $w['wlname'];
-                    $w['wantid'] = "%" . $w['wlname'];
+        foreach ($post as $key => &$p) {
+            foreach ($want as $j => $w) {
+                if ($w['item_id'] == $p['item_id']) {
+                    $w['id'] = $w['type'] == 2 ? 'w' . $w['target_id'] : $w['target_id'];
+                    $w['wantid'] = $w['id'];
+                    if ($w['type'] == 2) {
+                        $w['name'] = $w['wlname'];
+                        $w['wantid'] = "%" . $w['wlname'];
+                    }
+                    $p['wantlist'][] = $w;
+                    unset($want[$j]);
                 }
-                $p['wantlist'][] = $w;
-                unset($want[$j]);
             }
         }
-    }
 
-    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
+        return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -768,8 +769,7 @@ $app->get('/mt/get', function (Silex\Application $app) {
                                 continue;
                             }
                             $G->bgg_url = $game->childNodes->item(0)->childNodes->item(0)->getAttribute('href');
-                            if (
-                                $game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)
+                            if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)
                                 instanceof DOMText
                             ) {
                                 continue;
@@ -864,7 +864,7 @@ $app->post('/', function (Silex\Application $app) {
     if (!empty($_FILES)) {
         if ($_FILES["file"]["error"] || !is_uploaded_file($_FILES["file"]["tmp_name"])) {
             die(
-            '{"jsonrpc" : "2.0", "error" : {"code": 103, "message": "Failed to move uploaded file."}, "id" : "id"}'
+                '{"jsonrpc" : "2.0", "error" : {"code": 103, "message": "Failed to move uploaded file."}, "id" : "id"}'
             );
         }
         // Read binary input stream and append it to temp file
