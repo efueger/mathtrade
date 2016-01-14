@@ -38,7 +38,7 @@ class BoardGameGeekRepository implements GameRepository
             $id = uniqid();
             $game = new Game((int)$id, (string)$gameNode->name);
             $game->setThumbnail((string)$gameNode->thumbnail);
-            $game->setDescription((string)$gameNode->textCondition);
+            $game->setDescription((string)$gameNode->conditiontext);
             $attributes = $gameNode->attributes();
             $game->setBoardGameGeekId((int)$attributes['objectid']);
             $game->setCollectionId((int)$attributes['collid']);
@@ -71,25 +71,4 @@ class BoardGameGeekRepository implements GameRepository
         }
     }
 
-    /**
-     * @param $queryResponse
-     * @throws Exception
-     */
-    private function guardFromQueryError($queryResponse)
-    {
-        $statusCode = $queryResponse->getStatusCode();
-        if ($statusCode !== 202 && $statusCode !== 200) {
-            throw new Exception('Error in query');
-        }
-    }
-    /**
-     * @param $dataResponse
-     * @throws Exception
-     */
-    private function guardFromErrorGettingData($dataResponse)
-    {
-        if ($dataResponse->getStatusCode() !== 200) {
-            throw new Exception('Error getting data');
-        }
-    }
 }

@@ -26,7 +26,6 @@ class BoardGameGeekImportUseCase
         $response = array();
         foreach($games as $game) {
             $responseGame = array();
-            $responseGame['id'] = $game->id();
             $responseGame['name'] = $game->name();
             $responseGame['bgg_img'] = $game->thumbnail();
             $responseGame['description'] = $game->description();
