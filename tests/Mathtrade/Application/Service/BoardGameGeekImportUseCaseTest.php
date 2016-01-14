@@ -52,7 +52,6 @@ class BoardGameGeekImportUseCaseTest extends \PHPUnit_Framework_TestCase
         $response = $this->boardGameGeekImportUseCase->execute($boardGameGeekImportRequest);
         $this->assertNotEmpty($response);
         $games = $response->games();
-        $this->assertEquals($games[0]['id'], self::A_GAME_ID);
     }
 
     /**
