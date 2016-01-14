@@ -22,8 +22,8 @@ class InMemoryItemRepository implements ItemRepository
      */
     public function findById($id)
     {
-        foreach($this->repository as $item) {
-            if($item->id() === $id) {
+        foreach ($this->repository as $item) {
+            if ($item->id() === $id) {
                 return $item;
             }
         }
@@ -35,7 +35,7 @@ class InMemoryItemRepository implements ItemRepository
      */
     public function add(Item $item)
     {
-       $this->repository[] = $item;
+        $this->repository[] = $item;
     }
 
     /**

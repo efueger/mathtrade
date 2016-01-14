@@ -2,8 +2,8 @@
 
 namespace Edysanchez\Mathtrade\Domain\Model\Game;
 
-
-interface GameRepository {
+interface GameRepository
+{
 
 
     /**
@@ -11,5 +11,4 @@ interface GameRepository {
      * @return Game []
      */
     public function findByUsername($username);
-
 }

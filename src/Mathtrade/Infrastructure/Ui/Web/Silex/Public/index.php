@@ -94,7 +94,6 @@ $app->match('/signin', function (Silex\Application $app) {
     //Get post params..
     $r = $app['request']->request->all();
     if (count($r) > 0) {
-
         $sql = "SELECT * FROM accounts WHERE username = ?";
         $user = $app['db']->fetchAll($sql, array($r['user']));
         if (count($user) > 0) {
@@ -105,7 +104,6 @@ $app->match('/signin', function (Silex\Application $app) {
                 unset($user['password']);
                 $app['session']->set('user', $user);
                 return $app->redirect('/home');
-
             }
         }
         return $app->redirect('/signin?error=1');
@@ -148,7 +146,9 @@ $app->get('/logout', function (Silex\Application $app) {
  */
 $app->get('/home', function (Silex\Application $app) {
     $user = logged();
-    if (!is_array($user)) return $user;
+    if (!is_array($user)) {
+        return $user;
+    }
 
     $games = $app['db']->fetchAll('SELECT i.*, !isnull(im.id) as inMT FROM newitems i LEFT JOIN items_mt im ON i.id = im.item_id WHERE account_id = ?', array($user['id']));
     return $app['twig']->render('home.twig', array(
@@ -162,14 +162,16 @@ $app->get('/home', function (Silex\Application $app) {
  */
 $app->get('/bggimport', function (Silex\Application $app) {
     $user = logged();
-    if (!is_array($user)) return $user;
+    if (!is_array($user)) {
+        return $user;
+    }
 
     return $app['twig']->render('bggimport.twig', array(
         'user' => $user,
     ));
 });
 
-$app->get('/bggimport/get',function (Silex\Application $app) {
+$app->get('/bggimport/get', function (Silex\Application $app) {
 
      $user = logged();
 
@@ -189,7 +191,9 @@ $app->get('/bggimport/get',function (Silex\Application $app) {
 //Allows adding games 
 $app->post('/bggimport/add', function (Silex\Application $app) {
     $user = logged();
-    if (!is_array($user)) return $user;
+    if (!is_array($user)) {
+        return $user;
+    }
 
     $games = $app['request']->request->get('data');
 
@@ -198,7 +202,9 @@ $app->post('/bggimport/add', function (Silex\Application $app) {
     foreach ($games as $g) {
         $already = $app['db']->fetchAll('SELECT id FROM newitems WHERE account_id = ? AND collid = ?', array($user['id'], $g['collid']));
 
-        if (count($already) > 0) continue;
+        if (count($already) > 0) {
+            continue;
+        }
 
         $app['db']->insert('newitems', array(
             'account_id' => $user['id'],
@@ -220,7 +226,9 @@ $app->post('/bggimport/add', function (Silex\Application $app) {
  */
 $app->get('/mathtrade', function (Silex\Application $app) {
     $user = logged();
-    if (!is_array($user)) return $user;
+    if (!is_array($user)) {
+        return $user;
+    }
 
     $sql = "SELECT i.*,a.username FROM items_mt mt
 			LEFT JOIN newitems i ON mt.item_id = i.id 
@@ -270,21 +278,22 @@ $app->get('/{hash}', function ($hash) use ($app) {
         if (!isset($wildcards[$w['wid']])) {
             $wildcards[$w['wid']] = array('id' => $w['wid'], 'name' => $w['wildname'], 'wantid' => '%' . $w['wildname'], 'items' => array());
         }
-        if (isset($w['item_id']))
+        if (isset($w['item_id'])) {
             $wildcards[$w['wid']]['items'][] = array(
                 'id' => $w['item_id'],
                 'item_id' => $w['item_id'],
                 'name' => $w['name'],
 
             );
+        }
     }
     $wildcards = array_values($wildcards);
     //print_r($wildcards);
 
-	//Last Call
-	//Items that users wanted to trade for our games that didn't switch
-	$sql = "SELECT item_id FROM results;";
-	//$traded
+    //Last Call
+    //Items that users wanted to trade for our games that didn't switch
+    $sql = "SELECT item_id FROM results;";
+    //$traded
 
 
     return $app['twig']->render('index.twig', array(
@@ -308,9 +317,7 @@ $app->get('/import/results', function (Silex\Application $app) {
 
     $start = false;
     foreach ($lines as $i => $l) {
-
         if (!$start) {
-
             if (!preg_match('/TRADE LOOPS/', $l)) {
                 continue;
             } else {
@@ -320,14 +327,12 @@ $app->get('/import/results', function (Silex\Application $app) {
         }
         //Has started
         if ($start) {
-
             preg_match("/\s([0-9]+).*\s([0-9]+)/", $l, $matches);
             if (count($matches) == 3) {
                 $app['db']->insert('results', array(
                     'item_id' => $matches[1],
                     'item_rcvd' => $matches[2],
                 ));
-
             }
 
             if (preg_match('/ITEM SUMMARY/', $l)) {
@@ -505,13 +510,15 @@ $app->post('/rest/useritems/', function (Request $request) use ($app) {
         $sql = "INSERT INTO user_items (user_id,item_id,type) VALUES ";
         $first = true;
         foreach ($bulk as $id) {
-            if ($first) $first = false;
-            else $sql .= ',';
+            if ($first) {
+                $first = false;
+            } else {
+                $sql .= ',';
+            }
             $sql .= '(' . $user['id'] . ',' . $id . ',2)';
         }
 
         $app['db']->executeQuery($sql);
-
     } else {
         //Delete item if its in a list
         $app['db']->delete('user_items', array(
@@ -639,7 +646,6 @@ $app->post('/gethash/{userName}', function ($userName, Request $request) use ($a
 $app->get('/mt/get', function (Silex\Application $app) {
     $items = array();
     do {
-
         $url = isset($pages[1]) ? $pages[1] : 'http://labsk.net/index.php?topic=151319.0';
         file_put_contents('test.html', file_get_contents($url));
         $html = file_get_contents('test.html');
@@ -652,8 +658,9 @@ $app->get('/mt/get', function (Silex\Application $app) {
         // die();
         preg_match_all('/post_wrapper">(.*?)class="botslice"/', $match[1], $posts);
 
-        if (!isset($pages))
+        if (!isset($pages)) {
             unset($posts[1][0]);
+        }
 
         //Get pagination
         preg_match('/<a class="navPages" href="([^"]*?)">>><\/a>/', $string, $pages);
@@ -668,10 +675,11 @@ $app->get('/mt/get', function (Silex\Application $app) {
 
 
             foreach ($innerpost as $el) {
-
                 $nodes = $el->childNodes;
                 foreach ($nodes as $node) {
-                    if ($node->nodeName != 'table') continue;
+                    if ($node->nodeName != 'table') {
+                        continue;
+                    }
 
                     //Skip tablebody
                     $gamelist = $node->childNodes;
@@ -679,15 +687,15 @@ $app->get('/mt/get', function (Silex\Application $app) {
 
                     //Check if it's a group
                     if ($gamelist->item(0)->childNodes->item(0)->childNodes->item(0)->nodeName == 'strong') {
-
                         foreach ($gamelist as $id => $game) {
                             if ($id % 2 == 0) {
                                 $Group = array();
                                 foreach ($game->childNodes->item(0)->childNodes as $i => $grgame) {
-                                    if ($i < 2) continue;
+                                    if ($i < 2) {
+                                        continue;
+                                    }
                                     if ($grgame->nodeName == 'a') {
                                         if (strpos($grgame->nodeValue, '[') === false) {
-
                                             $GI = new stdClass();
                                             $GI->name = $grgame->nodeValue;
                                             $Group[] = $GI;
@@ -702,23 +710,28 @@ $app->get('/mt/get', function (Silex\Application $app) {
                                     if ($grgame->nodeName == 'a') {
                                         $Group[$i]->bgg_url = $grgame->getAttribute('href');
                                         $Group[$i]->bgg_img = $grgame->childNodes->item(0)->getAttribute('src');
-
                                     }
                                 }
                                 $items[] = $Group;
                             }
                         }
-
-                    } else
+                    } else {
                         foreach ($gamelist as $game) {
                             $G = new stdClass();
 
-                            if (!$game->childNodes->item(0)->childNodes->item(0)) continue;
-                            if ($game->childNodes->item(0)->childNodes->item(0) instanceof DOMText) continue;
+                            if (!$game->childNodes->item(0)->childNodes->item(0)) {
+                                continue;
+                            }
+                            if ($game->childNodes->item(0)->childNodes->item(0) instanceof DOMText) {
+                                continue;
+                            }
                             $G->bgg_url = $game->childNodes->item(0)->childNodes->item(0)->getAttribute('href');
-                            if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0) instanceof DOMText) continue;
-                            if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0))
+                            if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0) instanceof DOMText) {
+                                continue;
+                            }
+                            if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)) {
                                 $G->bgg_img = $game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)->getAttribute('src');
+                            }
                             //	else continue;
 
                             //Second Columm table
@@ -726,12 +739,13 @@ $app->get('/mt/get', function (Silex\Application $app) {
                             //if ( count($game->childNodes) <2) continue;
                             //if (!$game->childNodes->item(1))continue;
                             if (count($game->childNodes->item(1)->childNodes) > 0) {
-
                                 $col2 = $game->childNodes->item(1)->childNodes->item(0);
                                 $G->name = $col2->childNodes->item(0)->nodeValue;
                                 $G->description = '';
                                 foreach ($col2->childNodes as $i => $row) {
-                                    if ($i == 0) continue;
+                                    if ($i == 0) {
+                                        continue;
+                                    }
                                     $G->description .= $row->nodeValue;
                                 }
                                 if ($G->name != '') {
@@ -739,6 +753,7 @@ $app->get('/mt/get', function (Silex\Application $app) {
                                 }
                             }
                         }
+                    }
                 }
             }
         }

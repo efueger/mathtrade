@@ -32,13 +32,12 @@ class ItemRepository implements Model\Item\ItemRepository
      */
     public function find($id)
     {
-
         $sql = "SELECT id,name,img,username as userName FROM items ";
         $items = $this->connection->fetchAll($sql);
         $games = array();
-        foreach($items as $item) {
-            $game = new Item($item['id'],$item['name'], '',$item['userName']);
-            array_push($games,$game);
+        foreach ($items as $item) {
+            $game = new Item($item['id'], $item['name'], '', $item['userName']);
+            array_push($games, $game);
         }
         return $games;
     }
@@ -65,14 +64,14 @@ class ItemRepository implements Model\Item\ItemRepository
         $sql = "SELECT id,name,bgg_img as img,username as userName FROM items";
         $items = $this->connection->fetchAll($sql);
         $games = array();
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $game = new Item(
                 utf8_encode($item['id']),
                 utf8_encode($item['name']),
                 utf8_encode($item['img']),
                 utf8_encode($item['userName'])
             );
-            array_push($games,$game);
+            array_push($games, $game);
         }
         return $games;
     }

@@ -2,7 +2,6 @@
 
 namespace Edysanchez\Mathtrade\Domain\Model\Item;
 
-
 class Item
 {
     private $id;
@@ -46,5 +45,4 @@ class Item
     {
         return $this->name;
     }
-
 }

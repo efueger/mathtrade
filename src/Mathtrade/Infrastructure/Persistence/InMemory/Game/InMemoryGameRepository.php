@@ -24,12 +24,12 @@ class InMemoryGameRepository implements GameRepository
     public function findByUsername($username)
     {
         $res = array();
-        foreach($this->repo as $user => $games) {
-            if($user == $username) {
+        foreach ($this->repo as $user => $games) {
+            if ($user == $username) {
                 $res = $games;
             }
         }
-        if(count($res) === 0 ) {
+        if (count($res) === 0) {
             throw new Exception('Username not found');
         }
         return $res;

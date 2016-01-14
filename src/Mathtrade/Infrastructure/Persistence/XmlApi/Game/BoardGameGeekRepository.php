@@ -24,7 +24,7 @@ class BoardGameGeekRepository implements GameRepository
 
         $this->guardFromHTTPError($queryResponse);
 
-        if($queryResponse->getStatusCode() === 202) {
+        if ($queryResponse->getStatusCode() === 202) {
             $queryResponse = $queryRequest->send();
         }
         $this->guardFromHTTPError($queryResponse);
@@ -34,7 +34,7 @@ class BoardGameGeekRepository implements GameRepository
 
         $games = array();
 
-        foreach($xml->children() as $gameNode) {
+        foreach ($xml->children() as $gameNode) {
             $id = uniqid();
             $game = new Game((int)$id, (string)$gameNode->name);
             $game->setThumbnail((string)$gameNode->thumbnail);
@@ -70,5 +70,4 @@ class BoardGameGeekRepository implements GameRepository
             throw new \Exception('Api Error');
         }
     }
-
 }

@@ -20,11 +20,12 @@ class BoardGameGeekImportUseCase
      * @return BoardGameGeekImportResponse
      */
 
-    public function execute(BoardGameGeekImportRequest $request) {
+    public function execute(BoardGameGeekImportRequest $request)
+    {
         $games = $this->repository->findByUsername($request->username());
 
         $response = array();
-        foreach($games as $game) {
+        foreach ($games as $game) {
             $responseGame = array();
             $responseGame['name'] = $game->name();
             $responseGame['bgg_img'] = $game->thumbnail();
@@ -36,6 +37,5 @@ class BoardGameGeekImportUseCase
         }
 
         return new BoardGameGeekImportResponse($response);
-
     }
 }

@@ -7,7 +7,6 @@ class BoardGameGeekImportResponse
 
     public function __construct($games)
     {
-
         $this->games = $games;
     }
 
