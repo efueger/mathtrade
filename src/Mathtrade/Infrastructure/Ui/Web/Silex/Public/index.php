@@ -2,11 +2,11 @@
 
 require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
 
-use Edysanchez\Mathtrade\Application\Service\BoardgamegeekImport\BoardGameGeekImportRequest;
+use Edysanchez\Mathtrade\Application\Service\BoardGameGeekImport\BoardGameGeekImportRequest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-const returnCodeOK = 200;
+const RETURN_CODE_OK = 200;
 const USER_NOT_FOUND = 520;
 const SALT = '9ywmLatNHWuJJMH7k7LX';
 
@@ -36,10 +36,15 @@ function getWantUser($user)
     foreach ($post as $i) {
         $ids[] = $i['id'];
     }
-    $sql = "SELECT w.*,i.name FROM wantlist w INNER JOIN items i ON type =1 AND w.target_id = i.item_id WHERE w.item_id IN (?) ORDER BY pos ASC";
-    $want = $app['db']->fetchAll($sql,
+    $sql = "SELECT w.*,i.name".
+        " FROM wantlist w INNER JOIN items i ON type =1 AND w.target_id = i.item_id".
+        " WHERE w.item_id IN (?) ORDER BY pos ASC";
+
+    $want = $app['db']->fetchAll(
+        $sql,
         array($ids),
-        array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+        array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+    );
 
     foreach ($post as $key => &$p) {
         foreach ($want as $j => $w) {
@@ -150,7 +155,11 @@ $app->get('/home', function (Silex\Application $app) {
         return $user;
     }
 
-    $games = $app['db']->fetchAll('SELECT i.*, !isnull(im.id) as inMT FROM newitems i LEFT JOIN items_mt im ON i.id = im.item_id WHERE account_id = ?', array($user['id']));
+    $games = $app['db']->fetchAll(
+        'SELECT i.*, !isnull(im.id) as inMT '.
+        'FROM newitems i LEFT JOIN items_mt im ON i.id = im.item_id WHERE account_id = ?',
+        array($user['id'])
+    );
     return $app['twig']->render('home.twig', array(
         'user' => $user,
         'games' => str_replace('"', '\\"', json_encode($games, JSON_HEX_APOS)),
@@ -200,7 +209,10 @@ $app->post('/bggimport/add', function (Silex\Application $app) {
     $games = json_decode($games, true);
 
     foreach ($games as $g) {
-        $already = $app['db']->fetchAll('SELECT id FROM newitems WHERE account_id = ? AND collid = ?', array($user['id'], $g['collid']));
+        $already = $app['db']->fetchAll(
+            'SELECT id FROM newitems WHERE account_id = ? AND collid = ?',
+            array($user['id'], $g['collid'])
+        );
 
         if (count($already) > 0) {
             continue;
@@ -276,19 +288,22 @@ $app->get('/{hash}', function ($hash) use ($app) {
     $wildcards = array();
     foreach ($dirty as $w) {
         if (!isset($wildcards[$w['wid']])) {
-            $wildcards[$w['wid']] = array('id' => $w['wid'], 'name' => $w['wildname'], 'wantid' => '%' . $w['wildname'], 'items' => array());
+            $wildcards[$w['wid']] = array(
+                'id' => $w['wid'],
+                'name' => $w['wildname'],
+                'wantid' => '%' . $w['wildname'],
+                'items' => array()
+            );
         }
         if (isset($w['item_id'])) {
             $wildcards[$w['wid']]['items'][] = array(
                 'id' => $w['item_id'],
                 'item_id' => $w['item_id'],
                 'name' => $w['name'],
-
             );
         }
     }
     $wildcards = array_values($wildcards);
-    //print_r($wildcards);
 
     //Last Call
     //Items that users wanted to trade for our games that didn't switch
@@ -350,7 +365,7 @@ $app->get('/import/results', function (Silex\Application $app) {
 $app->get('/rest/items', function (Silex\Application $app) {
     $sql = "SELECT * FROM items";
     $post = $app['db']->fetchAll($sql);
-    return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -370,7 +385,7 @@ $app->post('/rest/addtomt', function (Request $request) use ($app) {
     } else {
         $post = $app['db']->insert('items_mt', $d);
     }
-    return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -381,7 +396,7 @@ $app->get('/rest/itemstype/{type}/{hash}', function ($type, $hash) use ($app) {
             WHERE type = ?";
 
     $post = $app['db']->fetchAll($sql, array($user['id'], $type == 'interested' ? 1 : 2));
-    return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 //Delegate the rest urls to the rest controller
@@ -404,10 +419,11 @@ $app->get('/rest/items/{id}/{hash}', function ($id, $hash) use ($app) {
             LEFT JOIN items i ON type =1 AND w.target_id = i.item_id
             LEFT JOIN wildcard wl ON type=2 AND w.target_id = wl.id
             WHERE w.item_id IN (?) AND w.user_id = ? ORDER BY pos ASC";
-    $want = $app['db']->fetchAll($sql,
-        array($ids, $user['id']),
-        array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
-    //echo $sql;
+        $want = $app['db']->fetchAll(
+            $sql,
+            array($ids, $user['id']),
+            array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+        );
 
     foreach ($post as $key => &$p) {
         foreach ($want as $j => $w) {
@@ -424,7 +440,7 @@ $app->get('/rest/items/{id}/{hash}', function ($id, $hash) use ($app) {
         }
     }
 
-    return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -445,10 +461,11 @@ $app->get('/rest/results/{hash}', function ($hash) use ($app) {
     		FROM results r
 			LEFT JOIN items i2  ON  r.item_rcvd = i2.id
     		WHERE r.item_id IN (?)";
-    $results = $app['db']->fetchAll($sql,
+    $results = $app['db']->fetchAll(
+        $sql,
         array($ids),
-        array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
-    //echo $sql;
+        array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+    );
 
     foreach ($post as $key => &$p) {
         foreach ($results as $j => $w) {
@@ -460,7 +477,7 @@ $app->get('/rest/results/{hash}', function ($hash) use ($app) {
     }
 
 
-    return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -488,7 +505,7 @@ $app->post('/rest/items/', function (Request $request) use ($app) {
     $post = $app['db']->fetchAll($sql, array($app['db']->lastInsertId()));
 
     //print_r($request->all());
-    return new Response(json_encode($post[0]), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post[0]), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -501,7 +518,8 @@ $app->post('/rest/useritems/', function (Request $request) use ($app) {
     if ($request->get('bulk')) {
         $bulk = json_decode($request->get('bulk'));
 
-        $app['db']->executeQuery('DELETE FROM user_items WHERE item_id IN (?) AND user_id = ' . $user['id'] . ' ',
+        $app['db']->executeQuery(
+            'DELETE FROM user_items WHERE item_id IN (?) AND user_id = ' . $user['id'] . ' ',
             array($bulk),
             array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
         );
@@ -534,7 +552,7 @@ $app->post('/rest/useritems/', function (Request $request) use ($app) {
 
         ));
     }
-    return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -545,7 +563,15 @@ $app->post('/rest/wildcards/{hash}', function ($hash, Request $request) use ($ap
         'name' => $request->get('name')
     ));
     $w = $app['db']->lastInsertId();
-    return new Response(json_encode(array('id' => $w, 'wantid' => '%' . $request->get('name'))), 200, array('Content-Type' => 'application/json'));
+    return new Response(
+        json_encode(
+            array(
+                'id' => $w,
+                'wantid' => '%' . $request->get('name'))
+        ),
+        200,
+        array('Content-Type' => 'application/json')
+    );
 });
 
 $app->delete('/rest/wildcards/{hash}', function ($hash, Request $request) use ($app) {
@@ -554,14 +580,18 @@ $app->delete('/rest/wildcards/{hash}', function ($hash, Request $request) use ($
         'user_id' => $user['id'],
         'id' => $request->get('id')
     ));
-    return new Response(json_encode($post), 200, array('Content-Type' => 'application/json'));
+    return new Response(
+        json_encode($post),
+        200,
+        array('Content-Type' => 'application/json')
+    );
 });
 
 
 $app->get('/rest/userwantlist/{user}', function ($user) use ($app) {
     $sql = "SELECT * FROM wantlist WHERE user_id = ?";
     $post = $app['db']->fetchAll($sql, array($user));
-    return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -586,7 +616,11 @@ $app->post('/rest/wantlist/{hash}', function ($hash, Request $request) use ($app
     }
 
     print_r($d);
-    return new Response(json_encode($d), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(
+        json_encode($d),
+        RETURN_CODE_OK,
+        array('Content-Type' => 'application/json')
+    );
 });
 
 $app->post('/rest/wildcarditems/{hash}', function ($hash, Request $request) use ($app) {
@@ -607,7 +641,11 @@ $app->post('/rest/wildcarditems/{hash}', function ($hash, Request $request) use 
         ));
     }
 
-    return new Response(json_encode($d), 200, array('Content-Type' => 'application/json'));
+    return new Response(
+        json_encode($d),
+        200,
+        array('Content-Type' => 'application/json')
+    );
 });
 
 
@@ -626,7 +664,7 @@ $app->post('/gethash/{userName}', function ($userName, Request $request) use ($a
 
     $sql = "SELECT distinct username FROM items WHERE username = ?";
     $user = $app['db']->fetchAll($sql, array($userName));
-    $returnCode = returnCodeOK;
+    $returnCode = RETURN_CODE_OK;
     if (!(0 === count($user))) {
         $hash = generateHash($userName);
         $app['db']->insert('users', array(
@@ -663,7 +701,11 @@ $app->get('/mt/get', function (Silex\Application $app) {
         }
 
         //Get pagination
-        preg_match('/<a class="navPages" href="([^"]*?)">>><\/a>/', $string, $pages);
+        preg_match(
+            '/<a class="navPages" href="([^"]*?)">>><\/a>/',
+            $string,
+            $pages
+        );
 
         foreach (array_slice($posts[1], 0) as $post) {
             $dom = new DOMDocument();
@@ -726,11 +768,18 @@ $app->get('/mt/get', function (Silex\Application $app) {
                                 continue;
                             }
                             $G->bgg_url = $game->childNodes->item(0)->childNodes->item(0)->getAttribute('href');
-                            if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0) instanceof DOMText) {
+                            if (
+                                $game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)
+                                instanceof DOMText
+                            ) {
                                 continue;
                             }
                             if ($game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)) {
-                                $G->bgg_img = $game->childNodes->item(0)->childNodes->item(0)->childNodes->item(0)->getAttribute('src');
+                                $G->bgg_img =
+                                    $game->childNodes->item(0)
+                                        ->childNodes->item(0)
+                                        ->childNodes->item(0)
+                                        ->getAttribute('src');
                             }
                             //	else continue;
 
@@ -758,16 +807,17 @@ $app->get('/mt/get', function (Silex\Application $app) {
             }
         }
     } while (!empty($pages[1]));
-//	unset($items[55][2]->description);
+
     echo "<pre>";
     print_r($items);
     echo "</pre>";
-    file_put_contents('mtitems.data', str_replace('"', '\\"', json_encode($items, JSON_HEX_APOS)));
+    file_put_contents(
+        'mtitems.data',
+        str_replace('"', '\\"', json_encode($items, JSON_HEX_APOS))
+    );
 
     return;
-    //Let's get all the items offered
-    preg_match_all('/<tr>(.*?)<\/tr>/', $posts[1][1], $games);
-    print_r($games[1]);
+
 
 });
 
@@ -813,7 +863,9 @@ $app->post('/', function (Silex\Application $app) {
     }
     if (!empty($_FILES)) {
         if ($_FILES["file"]["error"] || !is_uploaded_file($_FILES["file"]["tmp_name"])) {
-            die('{"jsonrpc" : "2.0", "error" : {"code": 103, "message": "Failed to move uploaded file."}, "id" : "id"}');
+            die(
+            '{"jsonrpc" : "2.0", "error" : {"code": 103, "message": "Failed to move uploaded file."}, "id" : "id"}'
+            );
         }
         // Read binary input stream and append it to temp file
         if (!$in = @fopen($_FILES["file"]["tmp_name"], "rb")) {

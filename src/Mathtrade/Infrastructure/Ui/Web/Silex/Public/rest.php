@@ -21,7 +21,7 @@ $rest->get('/itemstype/{type}/', function ($type) use ($app) {
             WHERE type = ?";
 
     $post = $app['db']->fetchAll($sql, array($user['id'], $type == 'interested' ? 1 : 2));
-    return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -38,7 +38,7 @@ $rest->get('/pendingitems/', function () use ($app) {
 			WHERE ui.id IS NULL";
     $result = $app['db']->fetchAll($sql, array($user['id']));
 
-    return new Response(json_encode($result), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($result), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -87,7 +87,7 @@ $rest->get('/itemsbyuser/', function () use ($app) {
     }
 
 
-    return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -117,7 +117,7 @@ $rest->get('/useritems/', function () use ($app) {
     $post = array_values($post);
 
 
-    return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 
