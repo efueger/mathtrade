@@ -14,7 +14,7 @@ before_install:
 script: 
      - mkdir -p build/logs
      - bin/phpunit -c phpunit.metrics.xml.dist
-     - bin/phpcs --standard=PSR2 src/
+     - bin/phpcs --extensions=php --standard=PSR2 src/
 
 after_script:
     - php bin/coveralls -v
