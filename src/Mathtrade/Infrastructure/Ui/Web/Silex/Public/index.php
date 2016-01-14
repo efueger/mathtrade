@@ -426,22 +426,21 @@ $app->get('/rest/items/{id}/{hash}', function ($id, $hash) use ($app) {
             array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
         );
 
-        foreach ($post as $key => &$p) {
-            foreach ($want as $j => $w) {
-                if ($w['item_id'] == $p['item_id']) {
-                    $w['id'] = $w['type'] == 2 ? 'w' . $w['target_id'] : $w['target_id'];
-                    $w['wantid'] = $w['id'];
-                    if ($w['type'] == 2) {
-                        $w['name'] = $w['wlname'];
-                        $w['wantid'] = "%" . $w['wlname'];
-                    }
-                    $p['wantlist'][] = $w;
-                    unset($want[$j]);
+    foreach ($post as $key => &$p) {
+        foreach ($want as $j => $w) {
+            if ($w['item_id'] == $p['item_id']) {
+                $w['id'] = $w['type'] == 2 ? 'w' . $w['target_id'] : $w['target_id'];
+                $w['wantid'] = $w['id'];
+                if ($w['type'] == 2) {
+                    $w['name'] = $w['wlname'];
+                    $w['wantid'] = "%" . $w['wlname'];
                 }
+                $p['wantlist'][] = $w;
+                unset($want[$j]);
             }
         }
-
-        return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
+    }
+    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
 
 
