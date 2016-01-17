@@ -1,73 +1,19 @@
 <?php
 
-
+require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
 
 const RETURN_CODE_OK = 200;
 const USER_NOT_FOUND = 520;
 const SALT = '9ywmLatNHWuJJMH7k7LX';
 
+
 use Edysanchez\Mathtrade\Application\Service\BoardGameGeekImport\BoardGameGeekImportRequest;
+use Edysanchez\Mathtrade\Infrastructure\Ui\Web\Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
+$app =  Application::bootstrap();
 
-define('CONTROLLERS', __DIR__ . '/');
-
-$app =  \Edysanchez\Mathtrade\Infrastructure\Ui\Web\Silex\Application::bootstrap();
-
-function getUser($hash)
-{
-    global $app;
-    //Get the user
-    $sql = "SELECT * FROM users WHERE hash = ?";
-    $user = $app['db']->fetchAll($sql, array($hash));
-    $user = $user[0];
-    return $user;
-}
-
-function getWantUser($user)
-{
-    global $app;
-    $sql = "SELECT * FROM items where username = ?";
-    $post = $app['db']->fetchAll($sql, array($user));
-
-    //Fetch want lists
-    $ids = array();
-    foreach ($post as $i) {
-        $ids[] = $i['id'];
-    }
-    $sql = "SELECT w.*,i.name".
-        " FROM wantlist w INNER JOIN items i ON type =1 AND w.target_id = i.item_id".
-        " WHERE w.item_id IN (?) ORDER BY pos ASC";
-
-    $want = $app['db']->fetchAll(
-        $sql,
-        array($ids),
-        array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
-    );
-
-    foreach ($post as $key => &$p) {
-        foreach ($want as $j => $w) {
-            if ($w['item_id'] == $p['item_id']) {
-                $w['id'] = $w['target_id'];
-                $p['wantlist'][] = $w;
-                unset($want[$j]);
-            }
-        }
-    }
-    return $post;
-}
-
-
-function logged()
-{
-    global $app;
-    if (null === $user = $app['session']->get('user')) {
-        return $app->redirect('/signin');
-    }
-    return $user;
-}
 
 // ... definitions
 
@@ -151,7 +97,7 @@ $app->get('/logout', function (Silex\Application $app) {
  * Home of the app
  */
 $app->get('/home', function (Silex\Application $app) {
-    $user = logged();
+    $user = Application::logged();
     if (!is_array($user)) {
         return $user;
     }
@@ -171,7 +117,7 @@ $app->get('/home', function (Silex\Application $app) {
  * Home of the app
  */
 $app->get('/bggimport', function (Silex\Application $app) {
-    $user = logged();
+    $user = Application::logged();
     if (!is_array($user)) {
         return $user;
     }
@@ -183,7 +129,7 @@ $app->get('/bggimport', function (Silex\Application $app) {
 
 $app->get('/bggimport/get', function (Silex\Application $app) {
 
-     $user = logged();
+     $user = Application::logged();
 
     if (!is_array($user)) {
         return $user;
@@ -198,9 +144,9 @@ $app->get('/bggimport/get', function (Silex\Application $app) {
 });
 
 
-//Allows adding games 
+//Allows adding games
 $app->post('/bggimport/add', function (Silex\Application $app) {
-    $user = logged();
+    $user = Application::logged();
     if (!is_array($user)) {
         return $user;
     }
@@ -238,13 +184,13 @@ $app->post('/bggimport/add', function (Silex\Application $app) {
  * Home of the app
  */
 $app->get('/mathtrade', function (Silex\Application $app) {
-    $user = logged();
+    $user = Application::logged();
     if (!is_array($user)) {
         return $user;
     }
 
     $sql = "SELECT i.*,a.username FROM items_mt mt
-			LEFT JOIN newitems i ON mt.item_id = i.id 
+			LEFT JOIN newitems i ON mt.item_id = i.id
 			LEFT JOIN accounts a ON i.account_id= a.id";
     $games = $app['db']->fetchAll($sql);
 
@@ -263,7 +209,7 @@ $app->get('/{hash}', function ($hash) use ($app) {
     $wants = array();
 
     //Get the user
-    $user = getUser($hash);
+    $user = Application::getUser($hash);
 
     //Items selected by user either
     $sql = "SELECT i.*,ui.type FROM user_items ui
@@ -277,7 +223,7 @@ $app->get('/{hash}', function ($hash) use ($app) {
 			WHERE ui.id IS NULL";
     $pending = $app['db']->fetchAll($sql, array($user['id']));
 
-    $wants = getWantUser($user['id']);
+    $wants = Application::getWantUser($user['id']);
 
 
     $sql = "SELECT w.id as wid,w.name as wildname,i.* FROM wildcard w
@@ -391,7 +337,7 @@ $app->post('/rest/addtomt', function (Request $request) use ($app) {
 
 
 $app->get('/rest/itemstype/{type}/{hash}', function ($type, $hash) use ($app) {
-    $user = getUser($hash);
+    $user = Application::getUser($hash);
     $sql = "SELECT * FROM user_items ui
             INNER JOIN items i ON ui.item_id = i.id AND user_id = ?
             WHERE type = ?";
@@ -408,7 +354,7 @@ $app->get('/rest/items/{id}/{hash}', function ($id, $hash) use ($app) {
     $sql = "SELECT * FROM items WHERE id = ?";
     $post = $app['db']->fetchAll($sql, array($id));
 
-    $user = getUser($hash);
+    $user = Application::getUser($hash);
 
     //Fetch want lists
     $ids = array();
@@ -445,7 +391,7 @@ $app->get('/rest/items/{id}/{hash}', function ($id, $hash) use ($app) {
 
 
 $app->get('/rest/results/{hash}', function ($hash) use ($app) {
-    $user = getUser($hash);
+    $user = Application::getUser($hash);
 
     $sql = "SELECT * FROM items where username = ?";
     $post = $app['db']->fetchAll($sql, array($user['name']));
@@ -557,7 +503,7 @@ $app->post('/rest/useritems/', function (Request $request) use ($app) {
 
 
 $app->post('/rest/wildcards/{hash}', function ($hash, Request $request) use ($app) {
-    $user = getUser($hash);
+    $user = Application::getUser($hash);
     $post = $app['db']->insert('wildcard', array(
         'user_id' => $user['id'],
         'name' => $request->get('name')
@@ -575,7 +521,7 @@ $app->post('/rest/wildcards/{hash}', function ($hash, Request $request) use ($ap
 });
 
 $app->delete('/rest/wildcards/{hash}', function ($hash, Request $request) use ($app) {
-    $user = getUser($hash);
+    $user = Application::getUser($hash);
     $post = $app['db']->delete('wildcard', array(
         'user_id' => $user['id'],
         'id' => $request->get('id')
@@ -596,7 +542,7 @@ $app->get('/rest/userwantlist/{user}', function ($user) use ($app) {
 
 
 $app->post('/rest/wantlist/{hash}', function ($hash, Request $request) use ($app) {
-    $user = getUser($hash);
+    $user = Application::getUser($hash);
 
     $d = json_decode($request->get('d'));
     $wantid = $request->get('wid');
@@ -624,7 +570,7 @@ $app->post('/rest/wantlist/{hash}', function ($hash, Request $request) use ($app
 });
 
 $app->post('/rest/wildcarditems/{hash}', function ($hash, Request $request) use ($app) {
-    $user = getUser($hash);
+    $user = Application::getUser($hash);
     $d = json_decode($request->get('d'));
     $wildid = $request->get('wid');
 
@@ -647,17 +593,6 @@ $app->post('/rest/wildcarditems/{hash}', function ($hash, Request $request) use 
         array('Content-Type' => 'application/json')
     );
 });
-
-
-/**
- * @param $userName
- * @return string
- */
-function generateHash($userName)
-{
-    return md5(time() . $userName . time());
-}
-
 
 $app->post('/gethash/{userName}', function ($userName, Request $request) use ($app) {
 
@@ -874,8 +809,7 @@ $app->post('/', function (Silex\Application $app) {
         if (!$in = @fopen("php://input", "rb")) {
             die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "Failed to open input stream."}, "id" : "id"}');
         }
-    }
-    while ($buff = fread($in, 4096)) {
+    } while ($buff = fread($in, 4096)) {
         fwrite($out, $buff);
     }
     @fclose($out);

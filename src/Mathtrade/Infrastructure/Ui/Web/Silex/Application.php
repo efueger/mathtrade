@@ -12,8 +12,74 @@ use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\SessionServiceProvider;
 use Symfony\Component\HttpFoundation\Response;
 
+define('CONTROLLERS', __DIR__ . '/');
+
 class Application
 {
+
+    public static function getUser($hash)
+    {
+        global $app;
+        //Get the user
+        $sql = "SELECT * FROM users WHERE hash = ?";
+        $user = $app['db']->fetchAll($sql, array($hash));
+        $user = $user[0];
+        return $user;
+    }
+
+    public static function getWantUser($user)
+    {
+        global $app;
+        $sql = "SELECT * FROM items where username = ?";
+        $post = $app['db']->fetchAll($sql, array($user));
+
+        //Fetch want lists
+        $ids = array();
+        foreach ($post as $i) {
+            $ids[] = $i['id'];
+        }
+        $sql = "SELECT w.*,i.name".
+            " FROM wantlist w INNER JOIN items i ON type =1 AND w.target_id = i.item_id".
+            " WHERE w.item_id IN (?) ORDER BY pos ASC";
+
+        $want = $app['db']->fetchAll(
+            $sql,
+            array($ids),
+            array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+        );
+
+        foreach ($post as $key => &$p) {
+            foreach ($want as $j => $w) {
+                if ($w['item_id'] == $p['item_id']) {
+                    $w['id'] = $w['target_id'];
+                    $p['wantlist'][] = $w;
+                    unset($want[$j]);
+                }
+            }
+        }
+        return $post;
+    }
+
+
+    public static function logged()
+    {
+        global $app;
+        if (null === $user = $app['session']->get('user')) {
+            return $app->redirect('/signin');
+        }
+        return $user;
+    }
+
+    /**
+     * @param $userName
+     * @return string
+     */
+    public static function generateHash($userName)
+    {
+        return md5(time() . $userName . time());
+    }
+
+
     public static function bootstrap()
     {
         $app = new \Silex\Application();

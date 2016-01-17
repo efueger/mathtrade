@@ -48,7 +48,7 @@ $rest->get('/pendingitems/', function () use ($app) {
 $rest->get('/itemsbyuser/', function () use ($app) {
     $user = $app['session']->get('user');
 
-    $sql = "SELECT i.* FROM items_mt imt 
+    $sql = "SELECT i.* FROM items_mt imt
 			LEFT JOIN newitems i ON imt.item_id = i.id where i.account_id = ?";
     $post = $app['db']->fetchAll($sql, array($user['id']));
 
