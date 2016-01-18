@@ -350,46 +350,6 @@ $app->get('/rest/itemstype/{type}/{hash}', function ($type, $hash) use ($app) {
 $app->mount('/rest', include CONTROLLERS . 'rest.php');
 
 
-$app->get('/rest/items/{id}/{hash}', function ($id, $hash) use ($app) {
-    $sql = "SELECT * FROM items WHERE id = ?";
-    $post = $app['db']->fetchAll($sql, array($id));
-
-    $user = Application::getUser($hash);
-
-    //Fetch want lists
-    $ids = array();
-    foreach ($post as $i) {
-        $ids[] = $i['id'];
-    }
-    $sql = "SELECT w.*,i.name,wl.name as wlname
-            FROM wantlist w
-            LEFT JOIN items i ON type =1 AND w.target_id = i.item_id
-            LEFT JOIN wildcard wl ON type=2 AND w.target_id = wl.id
-            WHERE w.item_id IN (?) AND w.user_id = ? ORDER BY pos ASC";
-        $want = $app['db']->fetchAll(
-            $sql,
-            array($ids, $user['id']),
-            array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
-        );
-
-    foreach ($post as $key => &$p) {
-        foreach ($want as $j => $w) {
-            if ($w['item_id'] == $p['item_id']) {
-                $w['id'] = $w['type'] == 2 ? 'w' . $w['target_id'] : $w['target_id'];
-                $w['wantid'] = $w['id'];
-                if ($w['type'] == 2) {
-                    $w['name'] = $w['wlname'];
-                    $w['wantid'] = "%" . $w['wlname'];
-                }
-                $p['wantlist'][] = $w;
-                unset($want[$j]);
-            }
-        }
-    }
-    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
-});
-
-
 $app->get('/rest/results/{hash}', function ($hash) use ($app) {
     $user = Application::getUser($hash);
 
@@ -601,7 +561,7 @@ $app->post('/gethash/{userName}', function ($userName, Request $request) use ($a
     $user = $app['db']->fetchAll($sql, array($userName));
     $returnCode = RETURN_CODE_OK;
     if (!(0 === count($user))) {
-        $hash = generateHash($userName);
+        $hash = Application::generateHash($userName);
         $app['db']->insert('users', array(
             'name' => $userName,
             'hash' => $hash
