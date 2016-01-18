@@ -15,7 +15,7 @@ script:
      - mkdir -p build/logs
      - bin/phpunit -c phpunit.metrics.xml.dist
      - bin/phpcs --extensions=php --standard=PSR2 src/
-     - bin/phpmd src text 'cleancode,codesize,controversial,design,unusedcode'
+     - bin/phpmd src text 'codesize,controversial,design'
      - bin/phpcpd src  --progress
 
 after_script:
