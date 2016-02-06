@@ -16,22 +16,34 @@ class InMemoryGameRepository implements GameRepository
         $this->repo = $repo;
     }
 
+    public function add($userName, Game $game) {
+        $this->repo[$userName][] = $game;
+    }
+
+    public function findByUserName($userName) {
+        return $this->repo[$userName];
+    }
+
     /**
-     * @param $username
-     * @return array|\Edysanchez\Mathtrade\Domain\Model\Game\Game[]
-     * @throws Exception
+     * @param $userName
+     * @param Game $game
+     * @return bool
      */
-    public function findByUsername($username)
+    public function isGameImportedByUser($userName,Game $game)
     {
-        $res = array();
-        foreach ($this->repo as $user => $games) {
-            if ($user == $username) {
-                $res = $games;
+        $userGames = [];
+
+        /** @var Game $ownedGame */
+        foreach($this->repo as $user=> $games) {
+            if($userName === $user) {
+                $userGames = $games;
             }
         }
-        if (count($res) === 0) {
-            throw new Exception('Username not found');
+        foreach($userGames as $ownedGame) {
+            if($ownedGame->collectionId() === $game->collectionId()) {
+                return true;
+            }
         }
-        return $res;
+        return false;
     }
 }

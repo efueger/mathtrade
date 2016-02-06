@@ -20,7 +20,7 @@ class InMemoryItemRepository implements ItemRepository
      * @param $id
      * @return Item|null
      */
-    public function findById($id)
+    public function find($id)
     {
         foreach ($this->repository as $item) {
             if ($item->id() === $id) {
@@ -45,21 +45,5 @@ class InMemoryItemRepository implements ItemRepository
     {
         return $this->repository;
     }
-
-    /**
-     * @param Item $item
-     */
-    public function save(Item $item)
-    {
-        throw new \BadMethodCallException();
-    }
-
-    /**
-     * @param $id
-     * @return Item
-     */
-    public function find($id)
-    {
-        throw new \BadMethodCallException();
-    }
+    
 }

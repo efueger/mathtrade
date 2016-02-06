@@ -5,10 +5,17 @@ namespace Edysanchez\Mathtrade\Domain\Model\Game;
 interface GameRepository
 {
 
+    /**
+     * @param $userName
+     * @param Game $game
+     */
+    public function add($userName, Game $game) ;
 
     /**
-     * @param $username
-     * @return Game []
+     * @param int $id
+     * @param Game $game
+     * @return mixed
      */
-    public function findByUsername($username);
+    public function isGameImportedByUser($id, Game $game);
+
 }

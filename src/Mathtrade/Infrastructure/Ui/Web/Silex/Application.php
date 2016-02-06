@@ -3,8 +3,11 @@
 namespace Edysanchez\Mathtrade\Infrastructure\Ui\Web\Silex;
 
 use DerAlex\Silex\YamlConfigServiceProvider;
-use Edysanchez\Mathtrade\Application\Service\BoardGameGeekImport\BoardGameGeekImportUseCase;
+use Edysanchez\Mathtrade\Application\Service\AddBoardGameGeekGames\AddBoardGameGeekGamesUseCase;
 use Edysanchez\Mathtrade\Application\Service\GetAllItems\GetAllItemsUseCase;
+use Edysanchez\Mathtrade\Application\Service\GetImportableBoardGameGeekGames\GetImportableBoardGameGeekGamesUseCase;
+use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\DoctrineClient;
+use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\Game\GameRepository;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\Item\ItemRepository;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\XmlApi\Game\BoardGameGeekRepository;
 use Silex\Provider\DoctrineServiceProvider;
@@ -12,10 +15,11 @@ use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\SessionServiceProvider;
 use Symfony\Component\HttpFoundation\Response;
 
-define('CONTROLLERS', __DIR__ . '/');
+
 
 class Application
 {
+
 
     public static function getUser($hash)
     {
@@ -103,6 +107,24 @@ class Application
             return $repo;
         });
 
+        $app['doctrine_client'] = $app->share(function () use ($app) {
+            $databaseConfig = $app['config']['database'];
+            return new DoctrineClient(
+                $databaseConfig['dbname'],
+                $databaseConfig['user'],
+                $databaseConfig['password'],
+                $databaseConfig['host'],
+                $databaseConfig['driver']
+            );
+        });
+        $app['game_repository'] = $app->share(function () use ($app) {
+            return new GameRepository($app['doctrine_client']);
+        });
+
+        $app['add_board_game_geek_games'] = $app->share(function () use ($app) {
+            return new AddBoardGameGeekGamesUseCase($app['game_repository']);
+        });
+
         $app['get_all_items'] = $app->share(function () use ($app) {
             return new GetAllItemsUseCase($app['item_repository']);
         });
@@ -112,14 +134,12 @@ class Application
         });
 
         $app['board_game_geek_import'] = $app->share(function () use ($app) {
-            return new BoardGameGeekImportUseCase($app['board_game_geek_game_repository']);
+            return new GetImportableBoardGameGeekGamesUseCase($app['board_game_geek_game_repository']);
         });
-
 
         $app->get('/all_items', function () use ($app) {
             $getAll = $app['get_all_items']->execute();
             return new Response(json_encode($getAll));
-
         });
 
         return $app;

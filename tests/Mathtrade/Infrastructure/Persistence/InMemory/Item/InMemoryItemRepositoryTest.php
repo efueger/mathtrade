@@ -30,7 +30,7 @@ class InMemoryItemRepositoryTest extends \PHPUnit_Framework_TestCase
     public function itShouldReturnNullIfNotFound()
     {
         $id = self::AN_ID;
-        $this->assertEquals(null,$this->repository->findById($id));
+        $this->assertEquals(null,$this->repository->find($id));
     }
 
 
@@ -58,7 +58,7 @@ class InMemoryItemRepositoryTest extends \PHPUnit_Framework_TestCase
         $item = new Item($id, self::A_NAME, self::AN_IMAGE, self::AN_USER_NAME);
         $this->repository->add($item);
 
-        $this->assertNotNull($this->repository->findById($id));
+        $this->assertNotNull($this->repository->find($id));
 
     }
 }

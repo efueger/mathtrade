@@ -1,28 +1,29 @@
 <?php
-namespace Edysanchez\Mathtrade\Application\Service\BoardGameGeekImport;
+namespace Edysanchez\Mathtrade\Application\Service\GetImportableBoardGameGeekGames;
 
+use Edysanchez\Mathtrade\Domain\Model\Game\BoardGameGeekSearchableRepository;
 use Edysanchez\Mathtrade\Domain\Model\Game\GameRepository;
 
-class BoardGameGeekImportUseCase
+class GetImportableBoardGameGeekGamesUseCase
 {
     /**
      * @var GameRepository
      */
     private $repository;
 
-    public function __construct(GameRepository $repository)
+    public function __construct(BoardGameGeekSearchableRepository $repository)
     {
         $this->repository = $repository;
     }
 
     /**
-     * @param BoardGameGeekImportRequest $request
-     * @return BoardGameGeekImportResponse
+     * @param GetImportableBoardGameGeekGamesRequest $request
+     * @return GetImportableBoardGameGeekGamesResponse
      */
 
-    public function execute(BoardGameGeekImportRequest $request)
+    public function execute(GetImportableBoardGameGeekGamesRequest $request)
     {
-        $games = $this->repository->findByUsername($request->username());
+        $games = $this->repository->findTradeableByUsername($request->username());
 
         $response = array();
         foreach ($games as $game) {
@@ -36,6 +37,6 @@ class BoardGameGeekImportUseCase
             $response[] = $responseGame;
         }
 
-        return new BoardGameGeekImportResponse($response);
+        return new GetImportableBoardGameGeekGamesResponse($response);
     }
 }

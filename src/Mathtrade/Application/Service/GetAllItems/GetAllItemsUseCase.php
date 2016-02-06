@@ -28,15 +28,24 @@ class GetAllItemsUseCase
         $response = new GetAllItemsResponse();
         $items = $this->itemsRepository->findAll();
         foreach ($items as $item) {
-            $newItem = array(
-                'id' => $item->id(),
-                'img' => $item->img(),
-                'name' => $item->name(),
-                'user_name' => $item->userName()
-            );
-
+            $newItem = $this->makePlainGame($item);
             $response->items[] = $newItem;
         }
         return $response;
+    }
+
+    /**
+     * @param $item
+     * @return array
+     */
+    protected function makePlainGame($item)
+    {
+        $newItem = array(
+            'id' => $item->id(),
+            'img' => $item->img(),
+            'name' => $item->name(),
+            'user_name' => $item->userName()
+        );
+        return $newItem;
     }
 }

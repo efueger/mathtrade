@@ -6,8 +6,10 @@ const RETURN_CODE_OK = 200;
 const USER_NOT_FOUND = 520;
 const SALT = '9ywmLatNHWuJJMH7k7LX';
 
+define('CONTROLLERS', __DIR__ . '/');
 
-use Edysanchez\Mathtrade\Application\Service\BoardGameGeekImport\BoardGameGeekImportRequest;
+use Edysanchez\Mathtrade\Application\Service\AddBoardGameGeekGames\AddBoardGameGeekGamesRequest;
+use Edysanchez\Mathtrade\Application\Service\GetImportableBoardGameGeekGames\GetImportableBoardGameGeekGamesRequest;
 use Edysanchez\Mathtrade\Infrastructure\Ui\Web\Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -113,9 +115,7 @@ $app->get('/home', function (Silex\Application $app) {
     ));
 });
 
-/**
- * Home of the app
- */
+
 $app->get('/bggimport', function (Silex\Application $app) {
     $user = Application::logged();
     if (!is_array($user)) {
@@ -135,7 +135,7 @@ $app->get('/bggimport/get', function (Silex\Application $app) {
         return $user;
     }
 
-    $boardGameGeekImportRequest = new BoardGameGeekImportRequest($user['bgg_user']);
+    $boardGameGeekImportRequest = new GetImportableBoardGameGeekGamesRequest($user['bgg_user']);
     $useCase = $app['board_game_geek_import'];
     $response = $useCase->execute($boardGameGeekImportRequest);
 
@@ -144,7 +144,6 @@ $app->get('/bggimport/get', function (Silex\Application $app) {
 });
 
 
-//Allows adding games
 $app->post('/bggimport/add', function (Silex\Application $app) {
     $user = Application::logged();
     if (!is_array($user)) {
@@ -155,27 +154,8 @@ $app->post('/bggimport/add', function (Silex\Application $app) {
 
     $games = json_decode($games, true);
 
-    foreach ($games as $g) {
-        $already = $app['db']->fetchAll(
-            'SELECT id FROM newitems WHERE account_id = ? AND collid = ?',
-            array($user['id'], $g['collid'])
-        );
-
-        if (count($already) > 0) {
-            continue;
-        }
-
-        $app['db']->insert('newitems', array(
-            'account_id' => $user['id'],
-            'name' => $g['name'],
-            'description' => $g['description'],
-            'bgg_id' => $g['bgg_id'],
-            'bgg_img' => $g['bgg_img'],
-            'collid' => $g['collid'],
-
-        ));
-    }
-
+    $addBoardGameGeekGamesRequest = new AddBoardGameGeekGamesRequest($user['id'], $games);
+    $app['add_board_game_geek_games']->execute($addBoardGameGeekGamesRequest);
 
     return new Response(json_encode($games), 200, array('Content-Type' => 'application/json'));
 });

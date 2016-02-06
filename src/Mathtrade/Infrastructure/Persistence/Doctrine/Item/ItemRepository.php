@@ -27,22 +27,6 @@ class ItemRepository implements Model\Item\ItemRepository
     }
 
     /**
-     * @param $id
-     * @return mixed
-     */
-    public function find($id)
-    {
-        $sql = "SELECT id,name,img,username as userName FROM items ";
-        $items = $this->connection->fetchAll($sql);
-        $games = array();
-        foreach ($items as $item) {
-            $game = new Item($item['id'], $item['name'], '', $item['userName']);
-            array_push($games, $game);
-        }
-        return $games;
-    }
-
-    /**
      * @param Game|Item $game
      */
     public function add(Item $game)
@@ -50,14 +34,6 @@ class ItemRepository implements Model\Item\ItemRepository
         throw new BadMethodCallException();
     }
 
-    /**
-     * @param $item
-     * @internal param Item $game
-     */
-    public function save(Item $item)
-    {
-        throw new BadMethodCallException();
-    }
 
     public function findAll()
     {
@@ -76,12 +52,4 @@ class ItemRepository implements Model\Item\ItemRepository
         return $games;
     }
 
-    /**
-     * @param $id
-     * @return Item
-     */
-    public function findById($id)
-    {
-        throw new \BadMethodCallException();
-    }
 }

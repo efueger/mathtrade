@@ -1,7 +1,8 @@
 <?php
-namespace Edysanchez\Mathtrade\Application\Service\BoardGameGeekImport;
 
-class BoardGameGeekImportResponse
+namespace Edysanchez\Mathtrade\Application\Service\GetImportableBoardGameGeekGames;
+
+class GetImportableBoardGameGeekGamesResponse
 {
     private $games;
 
