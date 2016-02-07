@@ -3,7 +3,6 @@
 
 namespace Edysanchez\Mathtrade\Domain\Model\Game;
 
-
 interface BoardGameGeekSearchableRepository
 {
     /**

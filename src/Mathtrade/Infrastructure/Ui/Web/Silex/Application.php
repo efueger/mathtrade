@@ -15,11 +15,8 @@ use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\SessionServiceProvider;
 use Symfony\Component\HttpFoundation\Response;
 
-
-
 class Application
 {
-
 
     public static function getUser($hash)
     {
@@ -28,6 +25,7 @@ class Application
         $sql = "SELECT * FROM users WHERE hash = ?";
         $user = $app['db']->fetchAll($sql, array($hash));
         $user = $user[0];
+
         return $user;
     }
 
@@ -61,9 +59,9 @@ class Application
                 }
             }
         }
+
         return $post;
     }
-
 
     public static function logged()
     {
@@ -71,6 +69,7 @@ class Application
         if (null === $user = $app['session']->get('user')) {
             return $app->redirect('/signin');
         }
+
         return $user;
     }
 
@@ -82,7 +81,6 @@ class Application
     {
         return md5(time() . $userName . time());
     }
-
 
     public static function bootstrap()
     {
@@ -104,11 +102,13 @@ class Application
 
         $app['item_repository'] = $app->share(function () {
             $repo = new ItemRepository();
+
             return $repo;
         });
 
         $app['doctrine_client'] = $app->share(function () use ($app) {
             $databaseConfig = $app['config']['database'];
+
             return new DoctrineClient(
                 $databaseConfig['dbname'],
                 $databaseConfig['user'],
@@ -139,6 +139,7 @@ class Application
 
         $app->get('/all_items', function () use ($app) {
             $getAll = $app['get_all_items']->execute();
+
             return new Response(json_encode($getAll));
         });
 

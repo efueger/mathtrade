@@ -31,6 +31,7 @@ class GetAllItemsUseCase
             $newItem = $this->makePlainGame($item);
             $response->items[] = $newItem;
         }
+
         return $response;
     }
 
@@ -46,6 +47,7 @@ class GetAllItemsUseCase
             'name' => $item->name(),
             'user_name' => $item->userName()
         );
+
         return $newItem;
     }
 }

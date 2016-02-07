@@ -4,7 +4,6 @@ namespace Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Game;
 
 use Edysanchez\Mathtrade\Domain\Model\Game\Game;
 use Edysanchez\Mathtrade\Domain\Model\Game\GameRepository;
-use Exception;
 
 class InMemoryGameRepository implements GameRepository
 {
@@ -16,17 +15,19 @@ class InMemoryGameRepository implements GameRepository
         $this->repo = $repo;
     }
 
-    public function add($userName, Game $game) {
+    public function add($userName, Game $game)
+    {
         $this->repo[$userName][] = $game;
     }
 
-    public function findByUserName($userName) {
+    public function findByUserName($userName)
+    {
         return $this->repo[$userName];
     }
 
     /**
      * @param $userName
-     * @param Game $game
+     * @param  Game $game
      * @return bool
      */
     public function isGameImportedByUser($userName,Game $game)
@@ -34,16 +35,17 @@ class InMemoryGameRepository implements GameRepository
         $userGames = [];
 
         /** @var Game $ownedGame */
-        foreach($this->repo as $user=> $games) {
-            if($userName === $user) {
+        foreach ($this->repo as $user=> $games) {
+            if ($userName === $user) {
                 $userGames = $games;
             }
         }
-        foreach($userGames as $ownedGame) {
-            if($ownedGame->collectionId() === $game->collectionId()) {
+        foreach ($userGames as $ownedGame) {
+            if ($ownedGame->collectionId() === $game->collectionId()) {
                 return true;
             }
         }
+
         return false;
     }
 }

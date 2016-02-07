@@ -17,7 +17,7 @@ class GetImportableBoardGameGeekGamesUseCase
     }
 
     /**
-     * @param GetImportableBoardGameGeekGamesRequest $request
+     * @param  GetImportableBoardGameGeekGamesRequest  $request
      * @return GetImportableBoardGameGeekGamesResponse
      */
 

@@ -20,13 +20,13 @@ class AddBoardGameGeekGamesUseCase
     }
 
     /**
-     * @param AddBoardGameGeekGamesRequest $addBoardGameGeekGamesRequest
+     * @param  AddBoardGameGeekGamesRequest $addBoardGameGeekGamesRequest
      * @throws Exception
      */
     public function execute(AddBoardGameGeekGamesRequest $addBoardGameGeekGamesRequest)
     {
         $games = $addBoardGameGeekGamesRequest->games();
-        foreach($games as $game) {
+        foreach ($games as $game) {
             $gameToImport = $this->makeGameToImport($game);
 
             if(!$this->gameRepository->isGameImportedByUser(
@@ -49,6 +49,7 @@ class AddBoardGameGeekGamesUseCase
         $gameToImport->setCollectionId($game['collid']);
         $gameToImport->setThumbnail($game['bgg_img']);
         $gameToImport->setDescription($game['description']);
+
         return $gameToImport;
     }
 }

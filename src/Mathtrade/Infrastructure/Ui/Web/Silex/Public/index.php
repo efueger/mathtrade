@@ -16,10 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 $app =  Application::bootstrap();
 
-
-// ... definitions
-
-
 $app->get('/landing', function (Silex\Application $app) {
     $items = file_get_contents('mtitems.data');
     $its = json_decode(str_replace("\\\"", '"', $items));
