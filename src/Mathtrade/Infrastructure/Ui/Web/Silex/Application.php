@@ -3,6 +3,7 @@
 namespace Edysanchez\Mathtrade\Infrastructure\Ui\Web\Silex;
 
 use DerAlex\Silex\YamlConfigServiceProvider;
+use Doctrine\DBAL\Connection;
 use Edysanchez\Mathtrade\Application\Service\AddBoardGameGeekGames\AddBoardGameGeekGamesUseCase;
 use Edysanchez\Mathtrade\Application\Service\GetAllItems\GetAllItemsUseCase;
 use Edysanchez\Mathtrade\Application\Service\GetImportableBoardGameGeekGames\GetImportableBoardGameGeekGamesUseCase;
@@ -47,7 +48,7 @@ class Application
         $want = $app['db']->fetchAll(
             $sql,
             array($ids),
-            array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+            array(Connection::PARAM_INT_ARRAY)
         );
 
         foreach ($post as $key => &$p) {

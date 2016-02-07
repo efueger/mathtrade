@@ -54,7 +54,7 @@ class AddBoardGameGeekGamesUseCaseTest extends \PHPUnit_Framework_TestCase
         $game->setCollectionId(self::A_COLLECTION_ID);
         $this->anotherGame = new Game(self::ANOTHER_GAME_ID, self::ANOTHER_GAME_NAME, self::A_GAME_DESCRIPTION);
         $this->anotherGame->setCollectionId(self::ANOTHER_COLLECTION_ID);
-        $this->gameRepository = $this->createRepo([$game]);
+        $this->gameRepository = $this->createRepo(array($game));
     }
 
     /**
