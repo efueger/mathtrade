@@ -7,8 +7,9 @@ use BadMethodCallException;
 use Doctrine\DBAL\DriverManager;
 use Edysanchez\Mathtrade\Domain\Model\Game;
 use Edysanchez\Mathtrade\Domain\Model\Item\Item;
+use Edysanchez\Mathtrade\Domain\Model\Item\ItemRepository as BaseItemRepository;
 
-class ItemRepository implements Model\Item\ItemRepository
+class ItemRepository implements BaseItemRepository
 {
     private $connection;
     /**
@@ -51,5 +52,4 @@ class ItemRepository implements Model\Item\ItemRepository
         }
         return $games;
     }
-
 }

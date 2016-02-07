@@ -27,15 +27,15 @@ class InMemoryGameRepository implements GameRepository
 
     /**
      * @param $userName
-     * @param  Game $game
+     * @param Game $game
      * @return bool
      */
-    public function isGameImportedByUser($userName,Game $game)
+    public function isGameImportedByUser($userName, Game $game)
     {
         $userGames = [];
 
         /** @var Game $ownedGame */
-        foreach ($this->repo as $user=> $games) {
+        foreach ($this->repo as $user => $games) {
             if ($userName === $user) {
                 $userGames = $games;
             }

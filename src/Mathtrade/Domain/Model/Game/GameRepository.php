@@ -9,7 +9,7 @@ interface GameRepository
      * @param $userName
      * @param Game $game
      */
-    public function add($userName, Game $game) ;
+    public function add($userName, Game $game);
 
     /**
      * @param  int   $id
@@ -17,5 +17,4 @@ interface GameRepository
      * @return mixed
      */
     public function isGameImportedByUser($id, Game $game);
-
 }

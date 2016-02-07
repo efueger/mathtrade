@@ -45,5 +45,4 @@ class InMemoryItemRepository implements ItemRepository
     {
         return $this->repository;
     }
-    
 }

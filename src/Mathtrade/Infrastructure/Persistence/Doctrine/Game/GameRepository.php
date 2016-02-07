@@ -51,7 +51,8 @@ class GameRepository implements BaseGameRepository
     {
         $results = $this->connection->fetchAll(
             'SELECT id FROM newitems WHERE account_id = ? AND collid = ?',
-            array($userId, $game->collectionId()));
+            array($userId, $game->collectionId())
+        );
         return 0<count($results);
     }
 }

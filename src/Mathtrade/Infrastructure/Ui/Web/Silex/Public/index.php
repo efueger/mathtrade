@@ -6,8 +6,6 @@ const RETURN_CODE_OK = 200;
 const USER_NOT_FOUND = 520;
 const SALT = '9ywmLatNHWuJJMH7k7LX';
 
-define('CONTROLLERS', __DIR__ . '/');
-
 use Edysanchez\Mathtrade\Application\Service\AddBoardGameGeekGames\AddBoardGameGeekGamesRequest;
 use Edysanchez\Mathtrade\Application\Service\GetImportableBoardGameGeekGames\GetImportableBoardGameGeekGamesRequest;
 use Edysanchez\Mathtrade\Infrastructure\Ui\Web\Silex\Application;
@@ -323,7 +321,7 @@ $app->get('/rest/itemstype/{type}/{hash}', function ($type, $hash) use ($app) {
 });
 
 //Delegate the rest urls to the rest controller
-$app->mount('/rest', include CONTROLLERS . 'rest.php');
+$app->mount('/rest', __DIR__ . '/' . 'rest.php');
 
 
 $app->get('/rest/results/{hash}', function ($hash) use ($app) {

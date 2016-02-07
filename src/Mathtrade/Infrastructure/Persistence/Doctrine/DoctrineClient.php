@@ -61,5 +61,4 @@ class DoctrineClient
     {
         return $this->userName;
     }
-
 }

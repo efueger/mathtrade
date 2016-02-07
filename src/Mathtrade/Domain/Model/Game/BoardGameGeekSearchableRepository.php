@@ -10,5 +10,4 @@ interface BoardGameGeekSearchableRepository
      * @return Game []
      */
     public function findTradeableByUsername($username);
-
 }

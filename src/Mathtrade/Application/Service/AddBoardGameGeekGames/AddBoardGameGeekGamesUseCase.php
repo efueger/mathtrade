@@ -29,7 +29,7 @@ class AddBoardGameGeekGamesUseCase
         foreach ($games as $game) {
             $gameToImport = $this->makeGameToImport($game);
 
-            if(!$this->gameRepository->isGameImportedByUser(
+            if (!$this->gameRepository->isGameImportedByUser(
                 $addBoardGameGeekGamesRequest->userId(),
                 $gameToImport
             )) {
