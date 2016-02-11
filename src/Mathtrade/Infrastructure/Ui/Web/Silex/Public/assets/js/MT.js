@@ -28,9 +28,10 @@ define(['models/items','models/wildcards'],function(Items,Wildcards){
 
 		mt.excludeBulk = function(bulk){
 			excluded.add(bulk);
-			var ids = JSON.stringify(_.map(bulk,function(i){return i.get('item_id')}));
+			//var ids = JSON.stringify(_.map(bulk,function(i){return i.get('item_id')}));
+			var ids = JSON.stringify(_.map(bulk,function(i){return i.id}));
 
-			$.post('/rest/useritems/'+hash,{bulk:ids,type:2},function(resp){
+			$.post('/rest/useritems/',{bulk:ids,type:2},function(resp){
 			});
 		}
 

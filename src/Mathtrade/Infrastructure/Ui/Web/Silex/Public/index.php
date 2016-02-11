@@ -149,9 +149,32 @@ $app->get('/home', function (Silex\Application $app) {
     if (!is_array($user)) return $user;
 
     $games = $app['db']->fetchAll('SELECT i.*, !isnull(im.id) as inMT FROM newitems i LEFT JOIN items_mt im ON i.id = im.item_id WHERE account_id = ?', array($user['id']));
+  
+    $sql = "SELECT w.id as wid,w.name as wildname,i.* FROM wildcard w
+            LEFT JOIN wildcarditems wi ON w.id = wi.wildcard_id
+            LEFT JOIN newitems i ON wi.item_id = i.id
+            WHERE w.user_id = ? ORDER by pos ASC";
+    $dirty = $app['db']->fetchAll($sql, array($user['id']));
+
+    $wildcards = array();
+    foreach ($dirty as $w) {
+        if (!isset($wildcards[$w['wid']])) {
+            $wildcards[$w['wid']] = array('id' => $w['wid'], 'name' => $w['wildname'], 'wantid' => '%' . $w['wildname'], 'items' => array());
+        }
+        if (isset($w['id']))
+            $wildcards[$w['wid']]['items'][] = array(
+                'id' => $w['id'],
+                'item_id' => $w['id'],
+                'name' => $w['name'],
+
+            );
+    }
+    $wildcards = array_values($wildcards);
+
     return $app['twig']->render('home.twig', array(
         'user' => $user,
         'games' => str_replace('"', '\\"', json_encode($games, JSON_HEX_APOS)),
+        'wildcards' => str_replace('"', '\\"', json_encode($wildcards, JSON_HEX_APOS)),
     ));
 });
 
@@ -402,11 +425,12 @@ $app->get('/rest/itemstype/{type}/{hash}', function ($type, $hash) use ($app) {
 $app->mount('/rest', include CONTROLLERS . 'rest.php');
 
 
-$app->get('/rest/items/{id}/{hash}', function ($id, $hash) use ($app) {
-    $sql = "SELECT * FROM items WHERE id = ?";
-    $post = $app['db']->fetchAll($sql, array($id));
+$app->get('/rest/items/{id}/', function ($id) use ($app) {
 
-    $user = getUser($hash);
+    $user = $app['session']->get('user');
+
+    $sql = "SELECT * FROM newitems WHERE id = ?";
+    $post = $app['db']->fetchAll($sql, array($id));
 
     //Fetch want lists
     $ids = array();
@@ -415,7 +439,7 @@ $app->get('/rest/items/{id}/{hash}', function ($id, $hash) use ($app) {
     }
     $sql = "SELECT w.*,i.name,wl.name as wlname
             FROM wantlist w
-            LEFT JOIN items i ON type =1 AND w.target_id = i.item_id
+            LEFT JOIN newitems i ON type =1 AND w.target_id = i.id
             LEFT JOIN wildcard wl ON type=2 AND w.target_id = wl.id
             WHERE w.item_id IN (?) AND w.user_id = ? ORDER BY pos ASC";
     $want = $app['db']->fetchAll($sql,
@@ -424,8 +448,9 @@ $app->get('/rest/items/{id}/{hash}', function ($id, $hash) use ($app) {
     //echo $sql;
 
     foreach ($post as $key => &$p) {
+        $p['username'] = $user['username'];
         foreach ($want as $j => $w) {
-            if ($w['item_id'] == $p['item_id']) {
+            if ($w['item_id'] == $p['id']) {
                 $w['id'] = $w['type'] == 2 ? 'w' . $w['target_id'] : $w['target_id'];
                 $w['wantid'] = $w['id'];
                 if ($w['type'] == 2) {
@@ -481,6 +506,7 @@ $app->get('/rest/results/{hash}', function ($hash) use ($app) {
 
 /**
  * Implements the REST to add an item to our collection
+ * @version 2.0 
  */
 $app->post('/rest/items/', function (Request $request) use ($app) {
     $r = $request->request->all();
@@ -508,6 +534,7 @@ $app->post('/rest/items/', function (Request $request) use ($app) {
 
 /**
  * Allows the user to exclude or want an item from the MT
+ * @version 2.0 
  */
 $app->post('/rest/useritems/', function (Request $request) use ($app) {
     $user = $app['session']->get('user');
@@ -550,8 +577,14 @@ $app->post('/rest/useritems/', function (Request $request) use ($app) {
 });
 
 
-$app->post('/rest/wildcards/{hash}', function ($hash, Request $request) use ($app) {
-    $user = getUser($hash);
+/**
+ * Saves a wildcard from a user
+ * @version 2.0 
+ */
+$app->post('/rest/wildcards/', function (Request $request) use ($app) {
+    
+    $user = $app['session']->get('user');
+
     $post = $app['db']->insert('wildcard', array(
         'user_id' => $user['id'],
         'name' => $request->get('name')
@@ -560,8 +593,14 @@ $app->post('/rest/wildcards/{hash}', function ($hash, Request $request) use ($ap
     return new Response(json_encode(array('id' => $w, 'wantid' => '%' . $request->get('name'))), 200, array('Content-Type' => 'application/json'));
 });
 
-$app->delete('/rest/wildcards/{hash}', function ($hash, Request $request) use ($app) {
-    $user = getUser($hash);
+/**
+ * Deletes a wilcard
+ * @version 2.0 
+ */
+$app->delete('/rest/wildcards/', function (Request $request) use ($app) {
+    
+    $user = $app['session']->get('user');
+
     $post = $app['db']->delete('wildcard', array(
         'user_id' => $user['id'],
         'id' => $request->get('id')
@@ -577,8 +616,11 @@ $app->get('/rest/userwantlist/{user}', function ($user) use ($app) {
 });
 
 
-$app->post('/rest/wantlist/{hash}', function ($hash, Request $request) use ($app) {
-    $user = getUser($hash);
+/**
+ * Rest function to save a user's wantlist
+ */
+$app->post('/rest/wantlist/', function (Request $request) use ($app) {
+    $user = $app['session']->get('user');
 
     $d = json_decode($request->get('d'));
     $wantid = $request->get('wid');
@@ -601,8 +643,14 @@ $app->post('/rest/wantlist/{hash}', function ($hash, Request $request) use ($app
     return new Response(json_encode($d), returnCodeOK, array('Content-Type' => 'application/json'));
 });
 
-$app->post('/rest/wildcarditems/{hash}', function ($hash, Request $request) use ($app) {
-    $user = getUser($hash);
+/**
+ * Save items to a wildcard
+ * @version 2.0 
+ */
+$app->post('/rest/wildcarditems/', function ( Request $request) use ($app) {
+    
+    $user = $app['session']->get('user');
+    
     $d = json_decode($request->get('d'));
     $wildid = $request->get('wid');
 
@@ -613,7 +661,7 @@ $app->post('/rest/wildcarditems/{hash}', function ($hash, Request $request) use 
     //Now prepare to insert the items
     foreach ($d as $pos => $i) {
         $app['db']->insert('wildcarditems', array(
-            'item_id' => $i->item_id,
+            'item_id' => $i->id,
             'wildcard_id' => $wildid,
             'pos' => $i->pos
         ));

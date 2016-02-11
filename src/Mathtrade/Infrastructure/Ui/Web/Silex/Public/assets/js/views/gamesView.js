@@ -12,9 +12,6 @@ var gamesView =  HB.extend({
 		'click [data-want]':'want',
 	},
 
-	
-	
-
 	add:function(evt){
 		var id = $(evt.target).data('add');
 		var m = this.model.get(id);

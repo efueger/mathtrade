@@ -22,6 +22,7 @@ require(['jquery','views/mathList','models/mathItems','views/hb','MT'],function(
     var gs = new Items();
     MT.init({
       user:gs,
+      wildcards:wildcards
     });
 
     var Router = Backbone.Router.extend({
