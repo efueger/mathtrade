@@ -14,9 +14,9 @@ before_install:
 script: 
      - mkdir -p build/logs
      - bin/phpunit -c phpunit.metrics.xml.dist
-     - bin/phpcs --extensions=php --standard=PSR2 src/
-     - bin/phpmd src text 'codesize,controversial,design'
-     - bin/phpcpd src  --progress
 
 after_script:
+    - bin/phpcs --extensions=php --standard=PSR2 src/
+    - bin/phpmd src text 'codesize,controversial,design'
+    - bin/phpcpd src  --progress
     - php bin/coveralls -v
