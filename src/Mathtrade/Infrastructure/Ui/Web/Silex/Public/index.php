@@ -2,9 +2,9 @@
 
 require_once __DIR__ . '/../../../../../../../vendor/autoload.php';
 
-const RETURN_CODE_OK = 200;
 const USER_NOT_FOUND = 520;
 const SALT = '9ywmLatNHWuJJMH7k7LX';
+
 
 use Edysanchez\Mathtrade\Application\Service\AddBoardGameGeekGames\AddBoardGameGeekGamesRequest;
 use Edysanchez\Mathtrade\Application\Service\GetImportableBoardGameGeekGames\GetImportableBoardGameGeekGamesRequest;
@@ -98,7 +98,12 @@ $app->get('/home', function (Silex\Application $app) {
         return $user;
     }
 
-    $games = $app['db']->fetchAll('SELECT i.*, !isnull(im.id) as inMT FROM newitems i LEFT JOIN items_mt im ON i.id = im.item_id WHERE account_id = ?', array($user['id']));
+    $games = $app['db']->fetchAll(
+        'SELECT i.*, !isnull(im.id) as inMT
+        FROM newitems i LEFT JOIN items_mt im ON i.id = im.item_id
+        WHERE account_id = ?', array($user['id']
+        )
+    );
 
     $sql = "SELECT w.id as wid,w.name as wildname,i.* FROM wildcard w
             LEFT JOIN wildcarditems wi ON w.id = wi.wildcard_id
@@ -109,7 +114,12 @@ $app->get('/home', function (Silex\Application $app) {
     $wildcards = array();
     foreach ($dirty as $w) {
         if (!isset($wildcards[$w['wid']])) {
-            $wildcards[$w['wid']] = array('id' => $w['wid'], 'name' => $w['wildname'], 'wantid' => '%' . $w['wildname'], 'items' => array());
+            $wildcards[$w['wid']] = array(
+                'id' => $w['wid'],
+                'name' => $w['wildname'],
+                'wantid' => '%' . $w['wildname'],
+                'items' => array()
+            );
         }
         if (isset($w['id']))
             $wildcards[$w['wid']]['items'][] = array(
@@ -326,7 +336,7 @@ $app->post('/rest/addtomt', function (Request $request) use ($app) {
     } else {
         $post = $app['db']->insert('items_mt', $d);
     }
-    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), Response::HTTP_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -337,7 +347,7 @@ $app->get('/rest/itemstype/{type}/{hash}', function ($type, $hash) use ($app) {
             WHERE type = ?";
 
     $post = $app['db']->fetchAll($sql, array($user['id'], $type == 'interested' ? 1 : 2));
-    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), Response::HTTP_OK, array('Content-Type' => 'application/json'));
 });
 define('CONTROLLERS', __DIR__ . '/');
 //Delegate the rest urls to the rest controller
@@ -361,9 +371,11 @@ $app->get('/rest/items/{id}/', function ($id) use ($app) {
             LEFT JOIN newitems i ON type =1 AND w.target_id = i.id
             LEFT JOIN wildcard wl ON type=2 AND w.target_id = wl.id
             WHERE w.item_id IN (?) AND w.user_id = ? ORDER BY pos ASC";
-    $want = $app['db']->fetchAll($sql,
+    $want = $app['db']->fetchAll(
+        $sql,
         array($ids, $user['id']),
-        array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+        array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
+    );
     //echo $sql;
 
     foreach ($post as $key => &$p) {
@@ -419,7 +431,7 @@ $app->get('/rest/results/{hash}', function ($hash) use ($app) {
     }
 
 
-    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), Response::HTTP_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -447,7 +459,7 @@ $app->post('/rest/items/', function (Request $request) use ($app) {
     $post = $app['db']->fetchAll($sql, array($app['db']->lastInsertId()));
 
     //print_r($request->all());
-    return new Response(json_encode($post[0]), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post[0]), Response::HTTP_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -494,7 +506,7 @@ $app->post('/rest/useritems/', function (Request $request) use ($app) {
 
         ));
     }
-    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), Response::HTTP_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -543,7 +555,7 @@ $app->delete('/rest/wildcards/', function (Request $request) use ($app) {
 $app->get('/rest/userwantlist/{user}', function ($user) use ($app) {
     $sql = "SELECT * FROM wantlist WHERE user_id = ?";
     $post = $app['db']->fetchAll($sql, array($user));
-    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), Response::HTTP_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -573,14 +585,13 @@ $app->post('/rest/wantlist/', function (Request $request) use ($app) {
     print_r($d);
     return new Response(
         json_encode($d),
-        RETURN_CODE_OK,
+        Response::HTTP_OK,
         array('Content-Type' => 'application/json')
     );
 });
 
 /**
  * Save items to a wildcard
- * @version 2.0
  */
 $app->post('/rest/wildcarditems/', function ( Request $request) use ($app) {
 
@@ -614,7 +625,7 @@ $app->post('/gethash/{userName}', function ($userName, Request $request) use ($a
 
     $sql = "SELECT distinct username FROM items WHERE username = ?";
     $user = $app['db']->fetchAll($sql, array($userName));
-    $returnCode = RETURN_CODE_OK;
+    $returnCode = Response::HTTP_OK;
     if (!(0 === count($user))) {
         $hash = Application::generateHash($userName);
         $app['db']->insert('users', array(
