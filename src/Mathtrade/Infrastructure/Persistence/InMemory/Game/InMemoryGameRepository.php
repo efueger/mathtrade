@@ -32,7 +32,7 @@ class InMemoryGameRepository implements GameRepository
      */
     public function isGameImportedByUser($userName, Game $game)
     {
-        $userGames = [];
+        $userGames = array();
 
         /** @var Game $ownedGame */
         foreach ($this->repo as $user => $games) {

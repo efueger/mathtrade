@@ -101,7 +101,7 @@ class AddBoardGameGeekGamesUseCaseTest extends \PHPUnit_Framework_TestCase
      */
     protected function makePlainGame(Game $game)
     {
-        return [
+        return array(
             'name' => $game->name(),
             'bgg_img' => $game->thumbnail(),
             'description' => $game->description(),
@@ -109,6 +109,6 @@ class AddBoardGameGeekGamesUseCaseTest extends \PHPUnit_Framework_TestCase
             'collid' => $game->collectionId(),
             'id' => null,
             'wantname' => null
-        ];
+        );
     }
 }
