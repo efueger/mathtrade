@@ -65,7 +65,7 @@ class AddBoardGameGeekGamesUseCaseTest extends \PHPUnit_Framework_TestCase
 
         $game= $this->makePlainGame($this->game);
 
-        $this->addBoardGameGeekGamesRequest = new AddBoardGameGeekGamesRequest(self::A_USER_NAME,[$game]);
+        $this->addBoardGameGeekGamesRequest = new AddBoardGameGeekGamesRequest(self::A_USER_NAME,array($game));
         $this->addBoardGameGeekGamesUseCase = new AddBoardGameGeekGamesUseCase($this->gameRepository);
         $this->addBoardGameGeekGamesUseCase->execute($this->addBoardGameGeekGamesRequest);
         $this->assertEquals(1, count($this->gameRepository->findByUserName(self::A_USER_NAME))) ;
