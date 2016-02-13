@@ -61,7 +61,7 @@ $rest->get('/itemsbyuser/', function () use ($app) {
 
     $sql = "SELECT w.*,i.name,wl.name as wlname
             FROM wantlist w
-            LEFT JOIN items i ON type =1 AND w.target_id = i.item_id
+            LEFT JOIN newitems i ON type =1 AND w.target_id = i.id
             LEFT JOIN wildcard wl ON type=2 AND w.target_id = wl.id
             WHERE w.item_id IN (?) and w.user_id = ? ORDER BY pos ASC";
     $want = $app['db']->fetchAll(
@@ -71,20 +71,21 @@ $rest->get('/itemsbyuser/', function () use ($app) {
     );
     //echo $sql;
 
-    foreach ($post as $key => &$p) {
-        foreach ($want as $j => $w) {
-            if ($w['item_id'] == $p['item_id']) {
-                $w['id'] = $w['type'] == 2 ? 'w' . $w['target_id'] : $w['target_id'];
-                $w['wantid'] = $w['id'];
-                if ($w['type'] == 2) {
-                    $w['name'] = $w['wlname'];
-                    $w['wantid'] = "%" . $w['wlname'];
-                }
-                $p['wantlist'][] = $w;
-                unset($want[$j]);
-            }
-        }
-    }
+	foreach ($post as $key => &$p) {
+		$p['username'] = $user['username'];
+		foreach ($want as $j => $w) {
+			if ($w['item_id'] == $p['id']) {
+				$w['id'] = $w['type']==2?'w'.$w['target_id']:$w['target_id'];
+				$w['wantid'] = $w['id'];
+				if ($w['type']==2) {
+					$w['name'] = $w['wlname'];
+					$w['wantid'] = "%".$w['wlname'];
+				}
+				$p['wantlist'][] = $w;
+				unset($want[$j]);
+			}
+		}
+	}
 
 
     return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));

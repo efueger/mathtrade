@@ -10,7 +10,8 @@
 
 {% verbatim %}
 <script id="games-template" type="text/x-handelbars-template">
-     <h2>Mis juegos</h2>
+     <h2>Mis juegos <a href="#addgame" class="btn btn-default btn-primary">Añadir Juego</a></h2>
+
     {{#each this}}
     <div class="row" style="margin-top:10px;">
         {{#if is_pack}}
@@ -265,5 +266,6 @@
 
 <script type="text/javascript">
     var games = JSON.parse('{{ games|raw }}');  
+    var wildcards = JSON.parse('{{ wildcards|raw }}');  
 </script>
 {% endblock %}

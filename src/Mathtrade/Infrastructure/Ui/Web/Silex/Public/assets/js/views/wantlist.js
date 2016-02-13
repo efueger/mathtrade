@@ -23,21 +23,23 @@ var wantList =  HB.extend({
 
 	},
 
+	/**
+	 * Save a user's want list
+	 * @param  {objct} evt event
+	 */
 	saveWant: function(evt) {
 		var id = $(evt.target).data('save-want');
-		$.post('/rest/wantlist/'+hash,{
+		$.post('/rest/wantlist/',{
 			d:this.model.at(0).wantlist.serialize(),
 			wid:id,
 		});
-
-
 	},
 
 	saveWild: function(evt) {
 		var id = $(evt.target).data('save-wild');
 		var m = this.wildcards.get(id);
 		if (m == undefined)m = this.wildcards.get('w'+id);
-		$.post('/rest/wildcarditems/'+hash,{
+		$.post('/rest/wildcarditems/',{
 			d:JSON.stringify(m.items.toJSON()),
 			wid:m.get('id'),
 		});
@@ -69,7 +71,7 @@ var wantList =  HB.extend({
 		var m = this.wildcards.get(id);
 		m.set('name',val);
 
-		$.post('/rest/wildcards/'+hash,{
+		$.post('/rest/wildcards/',{
 			name:m.get('name')
 		},function(r){
 			m.set({id:r.id,wantid:r.wantid});
@@ -91,7 +93,7 @@ var wantList =  HB.extend({
 		//this.wish.add(m);
 		this.render();
 		$.ajax({
-		    url: '/rest/wildcards/'+hash,
+		    url: '/rest/wildcards/',
 		    type: 'DELETE',
 		    data:{id:m.get('id')}
 		});
@@ -99,6 +101,7 @@ var wantList =  HB.extend({
 
 	onRender:function(){
 		var self = this;
+		console.log(this.model.toJSON());
 		_.defer(function(){
 
 			//$('#wishlist li').draggable({ 

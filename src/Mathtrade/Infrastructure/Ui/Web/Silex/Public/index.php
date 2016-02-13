@@ -98,14 +98,33 @@ $app->get('/home', function (Silex\Application $app) {
         return $user;
     }
 
-    $games = $app['db']->fetchAll(
-        'SELECT i.*, !isnull(im.id) as inMT '.
-        'FROM newitems i LEFT JOIN items_mt im ON i.id = im.item_id WHERE account_id = ?',
-        array($user['id'])
-    );
+    $games = $app['db']->fetchAll('SELECT i.*, !isnull(im.id) as inMT FROM newitems i LEFT JOIN items_mt im ON i.id = im.item_id WHERE account_id = ?', array($user['id']));
+
+    $sql = "SELECT w.id as wid,w.name as wildname,i.* FROM wildcard w
+            LEFT JOIN wildcarditems wi ON w.id = wi.wildcard_id
+            LEFT JOIN newitems i ON wi.item_id = i.id
+            WHERE w.user_id = ? ORDER by pos ASC";
+    $dirty = $app['db']->fetchAll($sql, array($user['id']));
+
+    $wildcards = array();
+    foreach ($dirty as $w) {
+        if (!isset($wildcards[$w['wid']])) {
+            $wildcards[$w['wid']] = array('id' => $w['wid'], 'name' => $w['wildname'], 'wantid' => '%' . $w['wildname'], 'items' => array());
+        }
+        if (isset($w['id']))
+            $wildcards[$w['wid']]['items'][] = array(
+                'id' => $w['id'],
+                'item_id' => $w['id'],
+                'name' => $w['name'],
+
+            );
+    }
+    $wildcards = array_values($wildcards);
+
     return $app['twig']->render('home.twig', array(
         'user' => $user,
         'games' => str_replace('"', '\\"', json_encode($games, JSON_HEX_APOS)),
+        'wildcards' => str_replace('"', '\\"', json_encode($wildcards, JSON_HEX_APOS)),
     ));
 });
 
@@ -253,6 +272,7 @@ $app->get('/import/results', function (Silex\Application $app) {
 
     $start = false;
     foreach ($lines as $i => $l) {
+
         if (!$start) {
             if (!preg_match('/TRADE LOOPS/', $l)) {
                 continue;
@@ -286,7 +306,7 @@ $app->get('/import/results', function (Silex\Application $app) {
 $app->get('/rest/items', function (Silex\Application $app) {
     $sql = "SELECT * FROM items";
     $post = $app['db']->fetchAll($sql);
-    return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -321,7 +341,49 @@ $app->get('/rest/itemstype/{type}/{hash}', function ($type, $hash) use ($app) {
 });
 
 //Delegate the rest urls to the rest controller
-$app->mount('/rest', __DIR__ . '/' . 'rest.php');
+$app->mount('/rest', __DIR__ . '/rest.php');
+
+
+$app->get('/rest/items/{id}/', function ($id) use ($app) {
+
+    $user = $app['session']->get('user');
+
+    $sql = "SELECT * FROM newitems WHERE id = ?";
+    $post = $app['db']->fetchAll($sql, array($id));
+
+    //Fetch want lists
+    $ids = array();
+    foreach ($post as $i) {
+        $ids[] = $i['id'];
+    }
+    $sql = "SELECT w.*,i.name,wl.name as wlname
+            FROM wantlist w
+            LEFT JOIN newitems i ON type =1 AND w.target_id = i.id
+            LEFT JOIN wildcard wl ON type=2 AND w.target_id = wl.id
+            WHERE w.item_id IN (?) AND w.user_id = ? ORDER BY pos ASC";
+    $want = $app['db']->fetchAll($sql,
+        array($ids, $user['id']),
+        array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY));
+    //echo $sql;
+
+    foreach ($post as $key => &$p) {
+        $p['username'] = $user['username'];
+        foreach ($want as $j => $w) {
+            if ($w['item_id'] == $p['id']) {
+                $w['id'] = $w['type'] == 2 ? 'w' . $w['target_id'] : $w['target_id'];
+                $w['wantid'] = $w['id'];
+                if ($w['type'] == 2) {
+                    $w['name'] = $w['wlname'];
+                    $w['wantid'] = "%" . $w['wlname'];
+                }
+                $p['wantlist'][] = $w;
+                unset($want[$j]);
+            }
+        }
+    }
+
+    return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
+});
 
 
 $app->get('/rest/results/{hash}', function ($hash) use ($app) {
@@ -436,8 +498,13 @@ $app->post('/rest/useritems/', function (Request $request) use ($app) {
 });
 
 
-$app->post('/rest/wildcards/{hash}', function ($hash, Request $request) use ($app) {
-    $user = Application::getUser($hash);
+/**
+ * Saves a wildcard from a user
+ */
+$app->post('/rest/wildcards/', function (Request $request) use ($app) {
+
+    $user = $app['session']->get('user');
+
     $post = $app['db']->insert('wildcard', array(
         'user_id' => $user['id'],
         'name' => $request->get('name')
@@ -454,8 +521,13 @@ $app->post('/rest/wildcards/{hash}', function ($hash, Request $request) use ($ap
     );
 });
 
-$app->delete('/rest/wildcards/{hash}', function ($hash, Request $request) use ($app) {
-    $user = Application::getUser($hash);
+/**
+ * Deletes a wilcard
+ */
+$app->delete('/rest/wildcards/', function (Request $request) use ($app) {
+
+    $user = $app['session']->get('user');
+
     $post = $app['db']->delete('wildcard', array(
         'user_id' => $user['id'],
         'id' => $request->get('id')
@@ -475,8 +547,11 @@ $app->get('/rest/userwantlist/{user}', function ($user) use ($app) {
 });
 
 
-$app->post('/rest/wantlist/{hash}', function ($hash, Request $request) use ($app) {
-    $user = Application::getUser($hash);
+/**
+ * Rest function to save a user's wantlist
+ */
+$app->post('/rest/wantlist/', function (Request $request) use ($app) {
+    $user = $app['session']->get('user');
 
     $d = json_decode($request->get('d'));
     $wantid = $request->get('wid');
@@ -503,8 +578,14 @@ $app->post('/rest/wantlist/{hash}', function ($hash, Request $request) use ($app
     );
 });
 
-$app->post('/rest/wildcarditems/{hash}', function ($hash, Request $request) use ($app) {
-    $user = Application::getUser($hash);
+/**
+ * Save items to a wildcard
+ * @version 2.0
+ */
+$app->post('/rest/wildcarditems/', function ( Request $request) use ($app) {
+
+    $user = $app['session']->get('user');
+
     $d = json_decode($request->get('d'));
     $wildid = $request->get('wid');
 
@@ -515,7 +596,7 @@ $app->post('/rest/wildcarditems/{hash}', function ($hash, Request $request) use 
     //Now prepare to insert the items
     foreach ($d as $pos => $i) {
         $app['db']->insert('wildcarditems', array(
-            'item_id' => $i->item_id,
+            'item_id' => $i->id,
             'wildcard_id' => $wildid,
             'pos' => $i->pos
         ));
