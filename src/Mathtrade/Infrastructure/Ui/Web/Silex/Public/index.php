@@ -339,9 +339,9 @@ $app->get('/rest/itemstype/{type}/{hash}', function ($type, $hash) use ($app) {
     $post = $app['db']->fetchAll($sql, array($user['id'], $type == 'interested' ? 1 : 2));
     return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
 });
-
+define('CONTROLLERS', __DIR__ . '/');
 //Delegate the rest urls to the rest controller
-$app->mount('/rest', __DIR__ . '/rest.php');
+$app->mount('/rest', include CONTROLLERS . 'rest.php');
 
 
 $app->get('/rest/items/{id}/', function ($id) use ($app) {
