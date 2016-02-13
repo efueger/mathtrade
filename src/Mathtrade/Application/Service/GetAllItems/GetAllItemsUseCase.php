@@ -15,7 +15,8 @@ class GetAllItemsUseCase
      * GetAllItemsUseCase constructor.
      * @param ItemRepository $itemsRepository
      */
-    public function __construct(ItemRepository $itemsRepository){
+    public function __construct(ItemRepository $itemsRepository)
+    {
         $this->itemsRepository = $itemsRepository;
     }
 
@@ -26,16 +27,27 @@ class GetAllItemsUseCase
     {
         $response = new GetAllItemsResponse();
         $items = $this->itemsRepository->findAll();
-        foreach($items as $item) {
-            $newItem = array(
-                'id' => $item->id(),
-                'img' => $item->img(),
-                'name' => $item->name(),
-                'user_name' => $item->userName()
-            );
-
+        foreach ($items as $item) {
+            $newItem = $this->makePlainGame($item);
             $response->items[] = $newItem;
         }
+
         return $response;
+    }
+
+    /**
+     * @param $item
+     * @return array
+     */
+    protected function makePlainGame($item)
+    {
+        $newItem = array(
+            'id' => $item->id(),
+            'img' => $item->img(),
+            'name' => $item->name(),
+            'user_name' => $item->userName()
+        );
+
+        return $newItem;
     }
 }

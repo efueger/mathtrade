@@ -1,6 +1,6 @@
 <?php
 
-namespace EdySanchez\Mathtrade\Test\Application\Service;
+namespace Edysanchez\Mathtrade\Test\Application\Service;
 
 
 use Edysanchez\Mathtrade\Application\Service\GetAllItems\GetAllItemsUseCase;
@@ -24,7 +24,7 @@ class GetAllItemsUseCaseTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function whenNoHavingItemsShouldNotReturn()
+    public function GivenAnEmptyGameRepositoryWhenGettingAllItemsThenShouldReturnNothing()
     {
         $useCase = new GetAllItemsUseCase($this->inMemoryItemRepository);
         $response = $useCase->execute();
@@ -34,7 +34,7 @@ class GetAllItemsUseCaseTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function whenHavingItemsShouldReturnAllTheItems()
+    public function GivenANonEmptyGameRepositoryWhenGettingAllItsItemsThenReturnAllTheItems()
     {
         $this->inMemoryItemRepository->add(new Item(44, "item1",null ,"user1"));
         $this->inMemoryItemRepository->add(new Item(45, "item2",null ,"user2"));

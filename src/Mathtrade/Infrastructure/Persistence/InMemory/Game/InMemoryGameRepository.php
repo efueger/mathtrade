@@ -2,72 +2,50 @@
 
 namespace Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Game;
 
-use Edysanchez\Mathtrade\Domain\Model\Game;
-use Edysanchez\Mathtrade\Domain\Model\GameRepository;
-use Symfony\Component\DependencyInjection\Exception\BadMethodCallException;
+use Edysanchez\Mathtrade\Domain\Model\Game\Game;
+use Edysanchez\Mathtrade\Domain\Model\Game\GameRepository;
 
 class InMemoryGameRepository implements GameRepository
 {
     protected $repo;
     protected $nextId=0;
 
-    public function __construct()
+    public function __construct($repo)
     {
-        $this->repo = array();
+        $this->repo = $repo;
+    }
+
+    public function add($userName, Game $game)
+    {
+        $this->repo[$userName][] = $game;
+    }
+
+    public function findByUserName($userName)
+    {
+        return $this->repo[$userName];
     }
 
     /**
-     * @param $game
-     * @return Game
+     * @param $userName
+     * @param Game $game
+     * @return bool
      */
-    public function persist($game)
+    public function isGameImportedByUser($userName, Game $game)
     {
-        $tmpGame = $this->find($game->id());
-        if ($tmpGame === null) {
-            $game->setId($this->nextId);
-            $this->nextId++;
-            array_push($this->repo, $game);
-        } else {
-            $tmpGame = $game;
-        }
-    }
+        $userGames = [];
 
-    /**
-     * @param $id
-     * @return Game|null
-     */
-    public function find($id)
-    {
-        foreach ($this->repo as $game) {
-            if ($game->id() === $id) {
-                return $game;
+        /** @var Game $ownedGame */
+        foreach ($this->repo as $user => $games) {
+            if ($userName === $user) {
+                $userGames = $games;
             }
         }
-        return null;
-    }
+        foreach ($userGames as $ownedGame) {
+            if ($ownedGame->collectionId() === $game->collectionId()) {
+                return true;
+            }
+        }
 
-    /**
-     * @param Game $game
-     */
-    public function add($game)
-    {
-        throw new BadMethodCallException();
-    }
-
-    /**
-     * @param Game $game
-     */
-    public function save($game)
-    {
-        throw new BadMethodCallException();
-    }
-
-
-    /**
-     * @return Game
-     */
-    public function findAll()
-    {
-        throw new \BadMethodCallException();
+        return false;
     }
 }
