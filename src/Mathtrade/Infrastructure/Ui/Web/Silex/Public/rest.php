@@ -71,21 +71,21 @@ $rest->get('/itemsbyuser/', function () use ($app) {
     );
     //echo $sql;
 
-	foreach ($post as $key => &$p) {
-		$p['username'] = $user['username'];
-		foreach ($want as $j => $w) {
-			if ($w['item_id'] == $p['id']) {
-				$w['id'] = $w['type']==2?'w'.$w['target_id']:$w['target_id'];
-				$w['wantid'] = $w['id'];
-				if ($w['type']==2) {
-					$w['name'] = $w['wlname'];
-					$w['wantid'] = "%".$w['wlname'];
-				}
-				$p['wantlist'][] = $w;
-				unset($want[$j]);
-			}
-		}
-	}
+    foreach ($post as $key => &$p) {
+        $p['username'] = $user['username'];
+        foreach ($want as $j => $w) {
+            if ($w['item_id'] == $p['id']) {
+                $w['id'] = $w['type']==2?'w'.$w['target_id']:$w['target_id'];
+                $w['wantid'] = $w['id'];
+                if ($w['type']==2) {
+                    $w['name'] = $w['wlname'];
+                    $w['wantid'] = "%".$w['wlname'];
+                }
+                $p['wantlist'][] = $w;
+                unset($want[$j]);
+            }
+        }
+    }
 
 
     return new Response(json_encode($post), RETURN_CODE_OK, array('Content-Type' => 'application/json'));
