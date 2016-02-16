@@ -14,6 +14,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 $app =  Application::bootstrap();
 
+
+$app->get('/all_items', function (Silex\Application $app)  {
+    $get_all_mathtrade_items = $app['get_all_mathtrade_items'];
+    $getAll = $get_all_mathtrade_items->execute();
+    return new Response(json_encode($getAll));
+});
+
 $app->get('/landing', function (Silex\Application $app) {
     $items = file_get_contents('mtitems.data');
     $its = json_decode(str_replace("\\\"", '"', $items));
@@ -163,7 +170,11 @@ $app->get('/bggimport/get', function (Silex\Application $app) {
     $response = $useCase->execute($boardGameGeekImportRequest);
 
 
-    return new Response(json_encode($response->games()), 200, array('Content-Type' => 'application/json'));
+    return new Response(
+        json_encode($response->games()),
+        Response::HTTP_OK,
+        array('Content-Type' => 'application/json')
+    );
 });
 
 
@@ -180,7 +191,7 @@ $app->post('/bggimport/add', function (Silex\Application $app) {
     $addBoardGameGeekGamesRequest = new AddBoardGameGeekGamesRequest($user['id'], $games);
     $app['add_board_game_geek_games']->execute($addBoardGameGeekGamesRequest);
 
-    return new Response(json_encode($games), 200, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($games), Response::HTTP_OK, array('Content-Type' => 'application/json'));
 });
 
 /**
@@ -320,7 +331,6 @@ $app->get('/rest/items', function (Silex\Application $app) {
 });
 
 
-//Returns all the items
 $app->post('/rest/addtomt', function (Request $request) use ($app) {
 
     $d = array(
@@ -376,7 +386,6 @@ $app->get('/rest/items/{id}/', function ($id) use ($app) {
         array($ids, $user['id']),
         array(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY)
     );
-    //echo $sql;
 
     foreach ($post as $key => &$p) {
         $p['username'] = $user['username'];
@@ -394,7 +403,7 @@ $app->get('/rest/items/{id}/', function ($id) use ($app) {
         }
     }
 
-    return new Response(json_encode($post), returnCodeOK, array('Content-Type' => 'application/json'));
+    return new Response(json_encode($post), Response::HTTP_OK, array('Content-Type' => 'application/json'));
 });
 
 
@@ -528,7 +537,7 @@ $app->post('/rest/wildcards/', function (Request $request) use ($app) {
                 'id' => $w,
                 'wantid' => '%' . $request->get('name'))
         ),
-        200,
+        Response::HTTP_OK,
         array('Content-Type' => 'application/json')
     );
 });
@@ -546,7 +555,7 @@ $app->delete('/rest/wildcards/', function (Request $request) use ($app) {
     ));
     return new Response(
         json_encode($post),
-        200,
+        Response::HTTP_OK,
         array('Content-Type' => 'application/json')
     );
 });
@@ -615,7 +624,7 @@ $app->post('/rest/wildcarditems/', function ( Request $request) use ($app) {
 
     return new Response(
         json_encode($d),
-        200,
+        Response::HTTP_OK,
         array('Content-Type' => 'application/json')
     );
 });
@@ -638,7 +647,11 @@ $app->post('/gethash/{userName}', function ($userName, Request $request) use ($a
         $errorCode = USER_NOT_FOUND;
     }
 
-    return new Response(json_encode($hash), 200, array('Content-Type' => 'application/json'));
+    return new Response(
+        json_encode($hash),
+        Response::HTTP_OK,
+        array('Content-Type' => 'application/json')
+    );
 });
 
 
@@ -652,9 +665,6 @@ $app->get('/mt/get', function (Silex\Application $app) {
 
         preg_match('/"forumposts">(.*)<a id="lastPost/', $string, $match);
 
-
-        //ini_set('display_errors',0);
-        // die();
         preg_match_all('/post_wrapper">(.*?)class="botslice"/', $match[1], $posts);
 
         if (!isset($pages)) {

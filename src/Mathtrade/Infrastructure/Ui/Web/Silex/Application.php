@@ -6,10 +6,11 @@ use DerAlex\Silex\YamlConfigServiceProvider;
 use Doctrine\DBAL\Connection;
 use Edysanchez\Mathtrade\Application\Service\AddBoardGameGeekGames\AddBoardGameGeekGamesUseCase;
 use Edysanchez\Mathtrade\Application\Service\GetAllItems\GetAllItemsUseCase;
+use Edysanchez\Mathtrade\Application\Service\GetAllMathtradeItems\GetAllMathtradeItemsUseCase;
 use Edysanchez\Mathtrade\Application\Service\GetImportableBoardGameGeekGames\GetImportableBoardGameGeekGamesUseCase;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\DoctrineClient;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\Game\GameRepository;
-use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\Item\ItemRepository;
+use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\MathtradeItem\MathtradeItemRepository;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\XmlApi\Game\BoardGameGeekRepository;
 use Silex\Provider\DoctrineServiceProvider;
 use Silex\Provider\TwigServiceProvider;
@@ -101,11 +102,16 @@ class Application
             'db.options' => $app['config']['database']
         ));
 
-        $app['item_repository'] = $app->share(function () {
-            $repo = new ItemRepository();
+        $app['item_repository'] = $app->share(function () use ($app){
+            $repo = new MathtradeItemRepository($app['doctrine_client']);
 
             return $repo;
         });
+
+        $app['game_repository'] = $app->share(function () use ($app) {
+            return new GameRepository($app['doctrine_client']);
+        });
+
 
         $app['doctrine_client'] = $app->share(function () use ($app) {
             $databaseConfig = $app['config']['database'];
@@ -118,16 +124,13 @@ class Application
                 $databaseConfig['driver']
             );
         });
-        $app['game_repository'] = $app->share(function () use ($app) {
-            return new GameRepository($app['doctrine_client']);
-        });
 
         $app['add_board_game_geek_games'] = $app->share(function () use ($app) {
             return new AddBoardGameGeekGamesUseCase($app['game_repository']);
         });
 
-        $app['get_all_items'] = $app->share(function () use ($app) {
-            return new GetAllItemsUseCase($app['item_repository']);
+        $app['get_all_mathtrade_items'] = $app->share(function () use ($app) {
+            return new GetAllMathtradeItemsUseCase($app['item_repository']);
         });
 
         $app['board_game_geek_game_repository'] = $app->share(function () {
@@ -136,12 +139,6 @@ class Application
 
         $app['board_game_geek_import'] = $app->share(function () use ($app) {
             return new GetImportableBoardGameGeekGamesUseCase($app['board_game_geek_game_repository']);
-        });
-
-        $app->get('/all_items', function () use ($app) {
-            $getAll = $app['get_all_items']->execute();
-
-            return new Response(json_encode($getAll));
         });
 
         return $app;

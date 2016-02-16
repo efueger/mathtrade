@@ -1,13 +1,14 @@
 <?php
-namespace Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\Item;
+namespace Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\MathtradeItem;
 
-use Edysanchez\Mathtrade\Domain\Model\Item\Item;
-use Edysanchez\Mathtrade\Domain\Model\Item\ItemRepository;
 
-class InMemoryItemRepository implements ItemRepository
+use Edysanchez\Mathtrade\Domain\Model\MathtradeItem\MathtradeItem;
+use Edysanchez\Mathtrade\Domain\Model\MathtradeItem\MathtradeItemRepository;
+
+class InMemoryMathtradeItemRepository implements MathtradeItemRepository
 {
     /**
-     * @var Item[]
+     * @var MathtradeItem[]
      */
     private $repository;
 
@@ -18,7 +19,7 @@ class InMemoryItemRepository implements ItemRepository
 
     /**
      * @param $id
-     * @return Item|null
+     * @return MathtradeItem|null
      */
     public function find($id)
     {
@@ -31,9 +32,9 @@ class InMemoryItemRepository implements ItemRepository
     }
 
     /**
-     * @param Item $item
+     * @param MathtradeItem $item
      */
-    public function add(Item $item)
+    public function add(MathtradeItem $item)
     {
         $this->repository[] = $item;
     }
