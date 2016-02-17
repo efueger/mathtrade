@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 $app =  Application::bootstrap();
 
 
-$app->get('/all_items', function (Silex\Application $app)  {
+$app->get('/all_items', function (Silex\Application $app) {
     $get_all_mathtrade_items = $app['get_all_mathtrade_items'];
     $getAll = $get_all_mathtrade_items->execute();
     return new Response(json_encode($getAll));
@@ -108,7 +108,8 @@ $app->get('/home', function (Silex\Application $app) {
     $games = $app['db']->fetchAll(
         'SELECT i.*, !isnull(im.id) as inMT
         FROM newitems i LEFT JOIN items_mt im ON i.id = im.item_id
-        WHERE account_id = ?', array($user['id']
+        WHERE account_id = ?',
+        array($user['id']
         )
     );
 
@@ -128,13 +129,15 @@ $app->get('/home', function (Silex\Application $app) {
                 'items' => array()
             );
         }
-        if (isset($w['id']))
+        if (isset($w['id'])) {
             $wildcards[$w['wid']]['items'][] = array(
                 'id' => $w['id'],
                 'item_id' => $w['id'],
                 'name' => $w['name'],
 
             );
+        }
+
     }
     $wildcards = array_values($wildcards);
 
@@ -602,7 +605,7 @@ $app->post('/rest/wantlist/', function (Request $request) use ($app) {
 /**
  * Save items to a wildcard
  */
-$app->post('/rest/wildcarditems/', function ( Request $request) use ($app) {
+$app->post('/rest/wildcarditems/', function (Request $request) use ($app) {
 
     $user = $app['session']->get('user');
 

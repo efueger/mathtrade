@@ -34,5 +34,4 @@ class MathtradeItem
     {
         return $this->games;
     }
-
 }

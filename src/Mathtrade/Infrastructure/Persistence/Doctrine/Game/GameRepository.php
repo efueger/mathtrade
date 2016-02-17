@@ -59,12 +59,10 @@ class GameRepository implements BaseGameRepository
     public function find($id)
     {
         $gamesSql = "SELECT id,account_id,name,description,bgg_id,bgg_img,collid FROM newitems where id =?";
-        $gamesResultset = $this->connection->fetchAll($gamesSql,array($id));
+        $gamesResultset = $this->connection->fetchAll($gamesSql, array($id));
 
         $game = $this->makeGame($gamesResultset[0]);
         return $game;
-
-
     }
 
     /**

@@ -48,4 +48,9 @@ class InMemoryGameRepository implements GameRepository
 
         return false;
     }
+
+    public function find($id)
+    {
+        throw new \BadMethodCallException();
+    }
 }

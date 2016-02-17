@@ -102,7 +102,7 @@ class Application
             'db.options' => $app['config']['database']
         ));
 
-        $app['item_repository'] = $app->share(function () use ($app){
+        $app['item_repository'] = $app->share(function () use ($app) {
             $repo = new MathtradeItemRepository($app['doctrine_client'], $app['game_repository']);
 
             return $repo;
