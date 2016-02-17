@@ -17,4 +17,6 @@ interface GameRepository
      * @return mixed
      */
     public function isGameImportedByUser($id, Game $game);
+
+    public function find($id);
 }

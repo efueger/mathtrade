@@ -5,7 +5,7 @@ namespace Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\MathtradeItem
 use Edysanchez\Mathtrade\Domain\Model;
 use BadMethodCallException;
 use Doctrine\DBAL\DriverManager;
-use Edysanchez\Mathtrade\Domain\Model\Game\Game;
+use Edysanchez\Mathtrade\Domain\Model\Game\GameRepository;
 use Edysanchez\Mathtrade\Domain\Model\MathtradeItem\MathtradeItem;
 use Edysanchez\Mathtrade\Domain\Model\MathtradeItem\MathtradeItemRepository as BaseMathtradeItemRepository;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\DoctrineClient;
@@ -13,13 +13,22 @@ use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\DoctrineClient;
 class MathtradeItemRepository implements BaseMathtradeItemRepository
 {
     private $connection;
+    /**
+     * @var DoctrineClient
+     */
+    private $client;
+    /**
+     * @var GameRepository
+     */
+    private $gameRepository;
 
     /**
      * DoctrineItemRepository constructor.
      * @param DoctrineClient $client
+     * @param GameRepository $gameRepository
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function __construct(DoctrineClient $client)
+    public function __construct(DoctrineClient $client, GameRepository $gameRepository)
     {
         $connectionParams = array(
             'dbname' => $client->dbName(),
@@ -29,6 +38,8 @@ class MathtradeItemRepository implements BaseMathtradeItemRepository
             'driver' => $client->driver(),
         );
         $this->connection = DriverManager::getConnection($connectionParams);
+        $this->client = $client;
+        $this->gameRepository = $gameRepository;
     }
 
     /**
@@ -47,22 +58,10 @@ class MathtradeItemRepository implements BaseMathtradeItemRepository
         $mathtradeItems = array();
         $games = array();
         foreach ($mathtradeItemsResultSet as $mathtradeItemResult) {
-            $gamesSql = "SELECT id,account_id,name,description,bgg_id,bgg_img,collid FROM newitems where id =?";
-            $gamesResultsets = $this->connection->fetchAll($gamesSql,array($mathtradeItemResult['item_id']));
-            $games = array();
-            foreach ($gamesResultsets as $gamesResultset) {
-                /**
-                 * @var Game $game
-                 */
-                $game = new Game($gamesResultset['id'], $gamesResultset['name']);
-                $game->setCollectionId($gamesResultset['collid']);
-                $game->setThumbnail($gamesResultset['bgg_img']);
-                $game->setDescription($gamesResultset['description']);
-                $game->setBoardGameGeekId($gamesResultset['bgg_id']);
-                $game->setUserId($gamesResultset['account_id']);
 
-                $games[] = $game;
-            }
+            $games = array();
+            $games[] = $this->gameRepository->find(intval($mathtradeItemResult['item_id']));
+
             $mathtradeItem = new MathtradeItem(
                 utf8_encode($mathtradeItemResult['id']),
                 $games

@@ -55,4 +55,29 @@ class GameRepository implements BaseGameRepository
         );
         return 0<count($results);
     }
+
+    public function find($id)
+    {
+        $gamesSql = "SELECT id,account_id,name,description,bgg_id,bgg_img,collid FROM newitems where id =?";
+        $gamesResultset = $this->connection->fetchAll($gamesSql,array($id));
+
+        $game = $this->makeGame($gamesResultset[0]);
+        return $game;
+
+
+    }
+
+    /**
+     * @param $plainGame
+     */
+    private function makeGame($plainGame)
+    {
+        $game = new Game($plainGame['id'], $plainGame['name']);
+        $game->setCollectionId($plainGame['collid']);
+        $game->setThumbnail($plainGame['bgg_img']);
+        $game->setDescription($plainGame['description']);
+        $game->setBoardGameGeekId($plainGame['bgg_id']);
+        $game->setUserId($plainGame['account_id']);
+        return $game;
+    }
 }

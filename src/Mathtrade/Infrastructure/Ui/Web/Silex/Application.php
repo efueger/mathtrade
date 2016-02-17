@@ -103,7 +103,7 @@ class Application
         ));
 
         $app['item_repository'] = $app->share(function () use ($app){
-            $repo = new MathtradeItemRepository($app['doctrine_client']);
+            $repo = new MathtradeItemRepository($app['doctrine_client'], $app['game_repository']);
 
             return $repo;
         });
