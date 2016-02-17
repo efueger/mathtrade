@@ -14,12 +14,12 @@ class MathtradeItem
     /**
      * @var Game[]
      */
-    private $games;
+    private $game;
 
-    public function __construct($id, $gameList)
+    public function __construct($id, $game)
     {
         $this->id = $id;
-        $this->games = $gameList;
+        $this->game = $game;
     }
 
     public function id()
@@ -30,8 +30,8 @@ class MathtradeItem
     /**
      * @return \Edysanchez\Mathtrade\Domain\Model\Game\Game[]
      */
-    public function games()
+    public function game()
     {
-        return $this->games;
+        return $this->game;
     }
 }

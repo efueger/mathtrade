@@ -42,23 +42,19 @@ class GetAllMathtradeItemsUseCase
      */
     protected function makePlainGame(MathtradeItem $item)
     {
-        $games = $item->games();
-        $plaingames = array();
-        foreach ($games as $game) {
-            $plainGame = array(
-                'id' => $game->id(),
-                'name' => $game->name(),
-                'description' => $game->description(),
-                'bgg_id' => $game->boardGameGeekId(),
-                'collid' => $game->collectionId(),
-                'bgg_img' => $game->thumbnail(),
-                'account_id' => $game->userId()
-            );
-            $plaingames[] = $plainGame;
-        }
+        $game = $item->game();
+        $plainGame = array(
+            'id' => $game->id(),
+            'name' => $game->name(),
+            'description' => $game->description(),
+            'bgg_id' => $game->boardGameGeekId(),
+            'collid' => $game->collectionId(),
+            'bgg_img' => $game->thumbnail(),
+            'account_id' => $game->userId()
+        );
         $newItem = array(
             'id' => $item->id(),
-            'games' => $plaingames
+            'game' => $plainGame
         );
 
         return $newItem;

@@ -37,10 +37,13 @@ class GetAllMathtradeItemsUseCaseTest extends \PHPUnit_Framework_TestCase
      */
     public function GivenANonEmptyGameRepositoryWhenGettingAllItsItemsThenReturnAllTheItems()
     {
-        $this->inMemoryItemRepository->add(new MathtradeItem(44, new Game(23,'game')));
+        $game = new Game(23, 'game');
+        $game->setUserId(25);
+        $this->inMemoryItemRepository->add(new MathtradeItem(44, $game));
         $this->inMemoryItemRepository->add(new MathtradeItem(45, new Game(24,'game')));
         $useCase = new GetAllMathtradeItemsUseCase($this->inMemoryItemRepository);
         $response = $useCase->execute();
         $this->assertEquals(2,count($response->items));
+        $this->assertEquals(25, $response->items[0]['game']['account_id']);
     }
 }
