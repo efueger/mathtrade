@@ -20,9 +20,9 @@ class InMemoryGameRepository implements GameRepository
         $this->repo[$userName][] = $game;
     }
 
-    public function findByUserName($userName)
+    public function find($id)
     {
-        return $this->repo[$userName];
+        return $this->repo[$id];
     }
 
     /**
@@ -47,10 +47,5 @@ class InMemoryGameRepository implements GameRepository
         }
 
         return false;
-    }
-
-    public function find($id)
-    {
-        throw new \BadMethodCallException();
     }
 }

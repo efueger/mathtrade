@@ -11,8 +11,8 @@ class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
     const A_GAME_ID = 0;
     const A_GAME_NAME = 'game';
     const A_GAME_DESCRIPTION = 'description';
-    const A_USER_NAME = 'user';
-    const USER_NAME_WITH_GAMES = 'userGames';
+    const A_USER_ID = 20;
+    const ANOTHER_USER_ID = 21;
     const A_BGG_ID = 12;
     const A_DESCRIPTION = 'A description';
     const COLLECTION_ID = 54;
@@ -30,7 +30,7 @@ class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
         $game->setCollectionId(self::COLLECTION_ID);
         $game->setThumbnail(self::THUMBNAIL);
         $repo = array();
-        $repo[self::USER_NAME_WITH_GAMES] = array($game);
+        $repo[self::ANOTHER_USER_ID] = array($game);
 
         $this->repo = new InMemoryGameRepository($repo);
     }
@@ -41,7 +41,7 @@ class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
     public function findEmptyRepositoryShouldReturnNull()
     {
         $this->setExpectedException('\Exception');
-        $this->assertEmpty($this->repo->findByUsername(self::A_USER_NAME));
+        $this->assertEmpty($this->repo->find(self::A_USER_ID));
     }
 
     /**
@@ -50,7 +50,7 @@ class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
     public function findUserWithoutGamesInRepositoryShouldReturnNull()
     {
         $this->setExpectedException('\Exception');
-        $this->assertEmpty($this->repo->findByUsername(self::A_USER_NAME));
+        $this->assertEmpty($this->repo->find(self::A_USER_ID));
     }
 
     /**
@@ -60,7 +60,7 @@ class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
     {
 
         /** @var Game[] */
-        $games = $this->repo->findByUsername(self::USER_NAME_WITH_GAMES);
+        $games = $this->repo->find(self::ANOTHER_USER_ID);
         $this->assertNotEmpty($games);
         $this->assertEquals($games[0]->name(), self::A_GAME_NAME);
         $this->assertEquals($games[0]->id(), self::A_GAME_ID);

@@ -4,6 +4,7 @@ namespace Edysanchez\Mathtrade\Test\Application\Service;
 
 
 use Edysanchez\Mathtrade\Application\Service\GetAllMathtradeItems\GetAllMathtradeItemsUseCase;
+use Edysanchez\Mathtrade\Domain\Model\Game\Game;
 use Edysanchez\Mathtrade\Domain\Model\MathtradeItem\MathtradeItem;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\MathtradeItem\InMemoryMathtradeItemRepository;
 
@@ -36,8 +37,8 @@ class GetAllMathtradeItemsUseCaseTest extends \PHPUnit_Framework_TestCase
      */
     public function GivenANonEmptyGameRepositoryWhenGettingAllItsItemsThenReturnAllTheItems()
     {
-        $this->inMemoryItemRepository->add(new MathtradeItem(44, 'item1',null ,'user1'));
-        $this->inMemoryItemRepository->add(new MathtradeItem(45, 'item2',null ,'user2'));
+        $this->inMemoryItemRepository->add(new MathtradeItem(44, new Game(23,'game')));
+        $this->inMemoryItemRepository->add(new MathtradeItem(45, new Game(24,'game')));
         $useCase = new GetAllMathtradeItemsUseCase($this->inMemoryItemRepository);
         $response = $useCase->execute();
         $this->assertEquals(2,count($response->items));

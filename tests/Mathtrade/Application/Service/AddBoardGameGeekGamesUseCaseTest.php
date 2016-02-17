@@ -16,7 +16,7 @@ class AddBoardGameGeekGamesUseCaseTest extends \PHPUnit_Framework_TestCase
     const A_GAME_DESCRIPTION = 'a game';
 
     const A_COLLECTION_ID = 12;
-    const A_USER_NAME = 'username';
+    const A_USER_ID = 55;
 
     const ANOTHER_GAME_ID = 2;
     const ANOTHER_GAME_NAME = 'another game name';
@@ -65,10 +65,10 @@ class AddBoardGameGeekGamesUseCaseTest extends \PHPUnit_Framework_TestCase
 
         $game= $this->makePlainGame($this->game);
 
-        $this->addBoardGameGeekGamesRequest = new AddBoardGameGeekGamesRequest(self::A_USER_NAME,array($game));
+        $this->addBoardGameGeekGamesRequest = new AddBoardGameGeekGamesRequest(self::A_USER_ID,array($game));
         $this->addBoardGameGeekGamesUseCase = new AddBoardGameGeekGamesUseCase($this->gameRepository);
         $this->addBoardGameGeekGamesUseCase->execute($this->addBoardGameGeekGamesRequest);
-        $this->assertEquals(1, count($this->gameRepository->findByUserName(self::A_USER_NAME))) ;
+        $this->assertEquals(1, count($this->gameRepository->find(self::A_USER_ID))) ;
 
     }
 
@@ -79,10 +79,10 @@ class AddBoardGameGeekGamesUseCaseTest extends \PHPUnit_Framework_TestCase
     {
         $anotherGame= $this->makePlainGame($this->anotherGame);
 
-        $this->addBoardGameGeekGamesRequest = new AddBoardGameGeekGamesRequest(self::A_USER_NAME,array($anotherGame));
+        $this->addBoardGameGeekGamesRequest = new AddBoardGameGeekGamesRequest(self::A_USER_ID,array($anotherGame));
         $this->addBoardGameGeekGamesUseCase = new AddBoardGameGeekGamesUseCase($this->gameRepository);
         $this->addBoardGameGeekGamesUseCase->execute($this->addBoardGameGeekGamesRequest);
-        $this->assertEquals(2, count($this->gameRepository->findByUserName(self::A_USER_NAME))) ;
+        $this->assertEquals(2, count($this->gameRepository->find(self::A_USER_ID))) ;
     }
 
     /**
@@ -91,7 +91,7 @@ class AddBoardGameGeekGamesUseCaseTest extends \PHPUnit_Framework_TestCase
      */
     protected function createRepo($games)
     {
-        $repository = new InMemoryGameRepository(array(self::A_USER_NAME => $games));
+        $repository = new InMemoryGameRepository(array(self::A_USER_ID => $games));
         return $repository;
     }
 
