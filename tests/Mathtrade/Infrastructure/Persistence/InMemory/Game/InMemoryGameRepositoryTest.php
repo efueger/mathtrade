@@ -24,7 +24,7 @@ class InMemoryGameRepositoryTest extends \PHPUnit_Framework_TestCase
     public function  setUp() {
 
         /** @var  Game */
-        $game=new Game(self::A_GAME_ID, self::A_GAME_NAME);
+        $game=new Game(self::A_GAME_ID, self::A_GAME_NAME, self::A_USER_ID);
         $game->setBoardGameGeekId(self::A_BGG_ID);
         $game->setDescription(self::A_DESCRIPTION);
         $game->setCollectionId(self::COLLECTION_ID);

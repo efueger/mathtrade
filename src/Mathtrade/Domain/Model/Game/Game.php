@@ -30,12 +30,16 @@ class Game
      */
     protected $collectionId;
 
+    /**
+     * @var int
+     */
     protected $userId;
 
-    public function __construct($id, $name)
+    public function __construct($id, $name, $userId)
     {
         $this->id = $id;
         $this->name = $name;
+        $this->userId = $userId;
     }
 
     /**
@@ -124,13 +128,5 @@ class Game
     public function userId()
     {
         return $this->userId;
-    }
-
-    /**
-     * @param mixed $userId
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
     }
 }

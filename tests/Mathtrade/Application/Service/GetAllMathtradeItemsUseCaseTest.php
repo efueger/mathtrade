@@ -10,6 +10,7 @@ use Edysanchez\Mathtrade\Infrastructure\Persistence\InMemory\MathtradeItem\InMem
 
 class GetAllMathtradeItemsUseCaseTest extends \PHPUnit_Framework_TestCase
 {
+    const A_USER_ID = 25;
 
     /**
      * @var InMemoryMathtradeItemRepository
@@ -37,13 +38,12 @@ class GetAllMathtradeItemsUseCaseTest extends \PHPUnit_Framework_TestCase
      */
     public function GivenANonEmptyGameRepositoryWhenGettingAllItsItemsThenReturnAllTheItems()
     {
-        $game = new Game(23, 'game');
-        $game->setUserId(25);
+        $game = new Game(23, 'game', self::A_USER_ID);
         $this->inMemoryItemRepository->add(new MathtradeItem(44, $game));
-        $this->inMemoryItemRepository->add(new MathtradeItem(45, new Game(24,'game')));
+        $this->inMemoryItemRepository->add(new MathtradeItem(45, new Game(24,'game',self::A_USER_ID)));
         $useCase = new GetAllMathtradeItemsUseCase($this->inMemoryItemRepository);
         $response = $useCase->execute();
         $this->assertEquals(2,count($response->items));
-        $this->assertEquals(25, $response->items[0]['game']['account_id']);
+        $this->assertEquals(self::A_USER_ID, $response->items[0]['game']['account_id']);
     }
 }
