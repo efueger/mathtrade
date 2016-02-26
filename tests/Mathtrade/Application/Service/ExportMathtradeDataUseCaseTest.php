@@ -26,7 +26,8 @@ class ExportMathtradeDataUseCaseTest extends \PHPUnit_Framework_TestCase
         $this->itemsRepository = new InMemoryMathtradeItemRepository();
         $this->exportMathtradeDataUseCase = new ExportMathtradeDataUseCase($this->itemsRepository);
         $response = $this->exportMathtradeDataUseCase->execute();
-        $this->assertEmpty($response->exportData()['games']);
+        $exportData = $response->exportData();
+        $this->assertEmpty($exportData['games']);
     }
 
     /**
@@ -38,6 +39,7 @@ class ExportMathtradeDataUseCaseTest extends \PHPUnit_Framework_TestCase
         $this->itemsRepository->add(new MathtradeItem(self::A_ITEM_ID, new Game(self::A_GAME_ID, 'game', self::A_USER_ID)));
         $this->exportMathtradeDataUseCase = new ExportMathtradeDataUseCase($this->itemsRepository);
         $response = $this->exportMathtradeDataUseCase->execute();
-        $this->assertNotEmpty($response->exportData()['games']);
+        $exportData = $response->exportData();
+        $this->assertNotEmpty($exportData['games']);
     }
 }
