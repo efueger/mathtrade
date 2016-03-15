@@ -70,12 +70,11 @@ class GameRepository implements BaseGameRepository
      */
     private function makeGame($plainGame)
     {
-        $game = new Game($plainGame['id'], $plainGame['name']);
+        $game = new Game($plainGame['id'], $plainGame['name'], $plainGame['account_id']);
         $game->setCollectionId($plainGame['collid']);
         $game->setThumbnail($plainGame['bgg_img']);
         $game->setDescription($plainGame['description']);
         $game->setBoardGameGeekId($plainGame['bgg_id']);
-        $game->setUserId($plainGame['account_id']);
         return $game;
     }
 }

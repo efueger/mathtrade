@@ -5,12 +5,14 @@ namespace Edysanchez\Mathtrade\Infrastructure\Ui\Web\Silex;
 use DerAlex\Silex\YamlConfigServiceProvider;
 use Doctrine\DBAL\Connection;
 use Edysanchez\Mathtrade\Application\Service\AddBoardGameGeekGames\AddBoardGameGeekGamesUseCase;
+use Edysanchez\Mathtrade\Application\Service\ExportMathtradeData\ExportMathtradeDataUseCase;
 use Edysanchez\Mathtrade\Application\Service\GetAllItems\GetAllItemsUseCase;
 use Edysanchez\Mathtrade\Application\Service\GetAllMathtradeItems\GetAllMathtradeItemsUseCase;
 use Edysanchez\Mathtrade\Application\Service\GetImportableBoardGameGeekGames\GetImportableBoardGameGeekGamesUseCase;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\DoctrineClient;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\Game\GameRepository;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\MathtradeItem\MathtradeItemRepository;
+use Edysanchez\Mathtrade\Infrastructure\Persistence\Doctrine\WildCard\WildCardRepository;
 use Edysanchez\Mathtrade\Infrastructure\Persistence\XmlApi\Game\BoardGameGeekRepository;
 use Silex\Provider\DoctrineServiceProvider;
 use Silex\Provider\TwigServiceProvider;
@@ -112,6 +114,13 @@ class Application
             return new GameRepository($app['doctrine_client']);
         });
 
+        $app['mathtrade_item_repository'] = $app->share(function () use ($app) {
+            return new MathtradeItemRepository($app['doctrine_client'], $app['game_repository']);
+        });
+
+        $app['wildcard_repository'] = $app->share(function () use ($app) {
+           return new WildCardRepository($app['doctrine_client'], $app['mathtrade_item_repository']);
+        });
 
         $app['doctrine_client'] = $app->share(function () use ($app) {
             $databaseConfig = $app['config']['database'];
@@ -139,6 +148,10 @@ class Application
 
         $app['board_game_geek_import'] = $app->share(function () use ($app) {
             return new GetImportableBoardGameGeekGamesUseCase($app['board_game_geek_game_repository']);
+        });
+
+        $app['export_mathtrade_data'] = $app->share(function () use ($app) {
+           return new ExportMathtradeDataUseCase($app['mathtrade_item_repository'], $app['wildcard_repository']);
         });
 
         return $app;

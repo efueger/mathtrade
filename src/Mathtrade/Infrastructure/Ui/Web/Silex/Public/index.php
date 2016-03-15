@@ -7,6 +7,7 @@ const SALT = '9ywmLatNHWuJJMH7k7LX';
 
 
 use Edysanchez\Mathtrade\Application\Service\AddBoardGameGeekGames\AddBoardGameGeekGamesRequest;
+use Edysanchez\Mathtrade\Application\Service\ExportMathtradeData\ExportMathtradeDataUseCase;
 use Edysanchez\Mathtrade\Application\Service\GetImportableBoardGameGeekGames\GetImportableBoardGameGeekGamesRequest;
 use Edysanchez\Mathtrade\Infrastructure\Ui\Web\Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,6 +42,21 @@ $app->get('/', function (Silex\Application $app) {
     return $app['twig']->render('landing.twig');
 });
 
+$app->get('/export', function (Silex\Application $app) {
+
+    /**
+     * @var $useCase ExportMathtradeDataUseCase
+     */
+    $useCase = $app['export_mathtrade_data'];
+    $response = $useCase->execute();
+    $data = $response->exportData();
+    return new Response(
+        json_encode($data),
+        Response::HTTP_OK,
+        array('Content-Type' => 'application/json')
+    );
+
+});
 
 /**
  * Display the signin page
@@ -325,6 +341,8 @@ $app->get('/import/results', function (Silex\Application $app) {
 
     echo $results;
 });
+
+
 
 //Returns all the items
 $app->get('/rest/items', function (Silex\Application $app) {

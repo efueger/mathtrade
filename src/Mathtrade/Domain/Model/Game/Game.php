@@ -4,36 +4,36 @@ namespace Edysanchez\Mathtrade\Domain\Model\Game;
 
 class Game
 {
-    protected $id;
+    public $id;
     /**
      * @var string
      */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $description;
+    public $name;
 
     /**
      * @var string
      */
-    protected $thumbnail;
+    public $description;
+
+    /**
+     * @var string
+     */
+    public $thumbnail;
 
     /**
      * @var int
      */
-    protected $boardGameGeekId;
+    public $boardGameGeekId;
 
     /**
      * @var int
      */
-    protected $collectionId;
+    public $collectionId;
 
     /**
      * @var int
      */
-    protected $userId;
+    public $userId;
 
     public function __construct($id, $name, $userId)
     {
