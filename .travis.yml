@@ -1,6 +1,10 @@
 language: php
 
-php: 
+addons:
+  code_climate:
+    repo_token: 6e55e1aeb6f83b6954a22c5a20e9ffbc88343e6ed77e22870d746f702608501e
+
+php:
     - 5.3
     - 5.4
     - 5.5
@@ -16,7 +20,4 @@ script:
      - bin/phpunit -c phpunit.metrics.xml.dist
 
 after_script:
-    - bin/phpcs --extensions=php --standard=PSR2 src/
-    - bin/phpmd src text 'codesize,controversial,design'
-    - bin/phpcpd src  --progress
-    - php bin/coveralls -v
+    - bin/test-reporter#
