@@ -20,4 +20,4 @@ script:
      - bin/phpunit -c phpunit.metrics.xml.dist
 
 after_script:
-    - bin/test-reporter#
+    - bin/test-reporter
